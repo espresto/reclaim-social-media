@@ -48,6 +48,7 @@ class reclaim_module {
     */
     public static function import_via_curl($apiurl, $timeout) {
         $ch = curl_init();
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_URL, $apiurl);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout);
