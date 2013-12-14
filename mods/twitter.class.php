@@ -65,7 +65,7 @@ class twitter_reclaim_module extends reclaim_module {
                 'count' => self::$count,
                 'screen_name' => get_option('twitter_username'),
                 'include_rts' => "false",
-                'exclude_replies' => "false",
+                'exclude_replies' => "true",
                 'include_entities' => "true"
             ), true);
 
@@ -84,18 +84,21 @@ class twitter_reclaim_module extends reclaim_module {
         foreach($rawData as $entry){
             
             $content = self::get_content($entry);
-            $image = self::get_image_url($entry);
-            
+            // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(                
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_date' => date('Y-m-d H:i:s', strtotime($entry["created_at"])),
+// neu
+				'post_content'   => $content['embedcode'],
+// changed
                 'post_excerpt' => $content['embedcode'],
+//                'post_excerpt' => $content['original'],
                 'post_title' => strip_tags($content['original']),
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'ext_permalink' => 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"],
-                'ext_image' => $image,
+                'ext_image' => $content['image'],
                 'ext_guid' => $entry["id_str"]                
             );            
         }        
@@ -132,21 +135,12 @@ class twitter_reclaim_module extends reclaim_module {
 
         $content = array(
             'original' =>  $post_content,
-            'embedcode' => $embedcode
+            'embedcode' => $embedcode,
+            'image' => $image_url
         );
         
         return $content;        
     }
 
-    function get_image_url($entry) {
-        $image = '';
-        if (isset($entry['entities']['media']) && $entry['entities']['media']) {
-            foreach ($entry['entities']['media'] as $media) {
-                if ($media['type']=="photo") {
-                    $image = $media['media_url'];
-                }
-            }
-        }
-        return $image;
-    }     
+
 }
