@@ -78,45 +78,76 @@ class reclaim_module {
                     $inserted_post_id = wp_insert_post($post);
                     update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
                     update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
-                    if ($post['ext_image']) {
+                    if ($post['ext_image']!="") {
+	                    update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
                         self::post_thumbnail($post['ext_image'], $inserted_post_id);
                     }
                 }
             }
         }
     }
-    
-    /**
-    *
-    */    
-    public static function post_thumbnail($source, $post_id){
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
-        $wp_upload_dir = wp_upload_dir();
-        $filename = basename($source);
-        if (strpos($filename, '?')) {
-            $filename = substr($filename, 0, strpos($filename, '?'));
-        }              
-        if (strpos($filename, '.') === false) {
-            $filename = $filename.'.jpg';
-        }
-        $filepath = $wp_upload_dir['path'].'/'.$filename;        
-        if(wp_mkdir_p($wp_upload_dir['path'])) {    
-            if (@copy($source, $filepath)) {                                                        
-                $wp_filetype = wp_check_filetype($filepath, null);  
-                $attachment = array(
-                    'guid' => $wp_upload_dir['url'] . '/' . $filename, 
-                    'post_mime_type' => $wp_filetype['type'],
-                    'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
-                    'post_content' => '',
-                    'post_status' => 'inherit'
-                );
-                $attach_id = wp_insert_attachment($attachment, $filepath, $post_id);            
-                $attach_data = wp_generate_attachment_metadata($attach_id, $filepath);
-                wp_update_attachment_metadata($attach_id, $attach_data);        
+        
+    public static function post_thumbnail($source, $post_id) {
+    // source http://digitalmemo.neobie.net/grab-save
+			$imageurl = $source;
+			$imageurl = stripslashes($imageurl);
+			$uploads = wp_upload_dir();
+			$ext = pathinfo( basename($imageurl) , PATHINFO_EXTENSION);
+			$newfilename = basename($imageurl);
+			
+			$filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
+			$wp_filetype = wp_check_filetype($filename, null );
+			$fullpathfilename = $uploads['path'] . "/" . $filename;
+			
+			try {
+				if ( !substr_count($wp_filetype['type'], "image") ) {
+					self::log( basename($imageurl) . ' is not a valid image. ' . $wp_filetype['type']  . '' );
+				}
+			
+				$image_string = self::my_get_remote_content($imageurl);
+				
+				$fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
+				if ( !$fileSaved ) {
+					self::log("The file cannot be saved.");
+				}
+				
+				$attachment = array(
+					 'post_mime_type' => $wp_filetype['type'],
+					 'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
+					 'post_content' => '',
+					 'post_status' => 'inherit',
+					 'guid' => $uploads['url'] . "/" . $filename
+				);
+				$attach_id = wp_insert_attachment( $attachment, $fullpathfilename, $post_id );
+				if ( !$attach_id ) {
+					self::log("Failed to save record into database.");
+				}
+				require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+				$attach_data = wp_generate_attachment_metadata( $attach_id, $fullpathfilename );
+				wp_update_attachment_metadata( $attach_id,  $attach_data );
                 set_post_thumbnail( $post_id, $attach_id);
-            }        
-        }
-    }
+			
+			} catch (Exception $e) {
+				self::log($e->getMessage());
+			}
+	}
+
+	public static function my_get_remote_content($url) {
+	  $response = wp_remote_get($url, 
+	    array(
+	      'headers' => array(
+	        'user-agent' => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2)'
+	      )
+	    )
+	  );
+	  if( is_wp_error( $response ) ) {
+	    throw new Exception('Error fetching remote content');
+	  } else {
+	    $data = wp_remote_retrieve_body($response);
+	    return $data;
+	  }  
+	}
+		
     
     public static function log($message) {
         file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
