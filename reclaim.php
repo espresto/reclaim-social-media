@@ -25,8 +25,13 @@ class reclaim_core {
         }
         
         foreach ($this->mods_loaded as $mod){
-            if ($mod['active'] && ($this->is_stale_mod($mod['name'] && get_option('reclaim_auto_update')) || (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])))) {
-                call_user_func(array($mod['name'].'_reclaim_module', 'import'));
+            $isStaleMod = $this->is_stale_mod($mod['name']);
+            $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
+
+            if ($mod['active']) {
+                if (($isStaleMod && get_option('reclaim_auto_update')) || $adminResync) {
+                    call_user_func(array($mod['name'].'_reclaim_module', 'import'));
+                }
             }
         }
         
@@ -35,7 +40,7 @@ class reclaim_core {
 	add_filter('post_link', array($this, 'original_permalink'), 1, 3);
 	add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);   
     }
-    
+
     public function get_interval(){
         $interval = get_option('reclaim_update_interval');
         if (false === $interval) {
@@ -125,4 +130,3 @@ add_action('init', 'reclaim_init');
 function reclaim_init() {
     $reclaim = new reclaim_core();
 }
-?>
