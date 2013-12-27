@@ -8,6 +8,10 @@ Author: to be disclosed
 License: GPL
 */
 
+if (file_exists( __DIR__ . '/vendor/autoload.php')) {
+    require __DIR__ . '/vendor/autoload.php';
+}
+
 define('RECLAIM_UPDATE_INTERVAL', 10*60);
 define('RECLAIM_PLUGIN_PATH', dirname( __FILE__));
 

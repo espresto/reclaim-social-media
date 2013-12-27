@@ -153,4 +153,3 @@ class reclaim_module {
         file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
     }
 }
-?>
