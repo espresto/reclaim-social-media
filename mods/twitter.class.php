@@ -50,8 +50,6 @@ class twitter_reclaim_module extends reclaim_module {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            require_once(RECLAIM_PLUGIN_PATH.'/lib/tmhOAuth/tmhOAuth.php');
-            require_once(RECLAIM_PLUGIN_PATH.'/lib/tmhOAuth/tmhUtilities.php');
 
             $tmhOAuth = new tmhOAuth(array(
                 'consumer_key' => get_option('twitter_consumer_key'),
@@ -141,6 +139,4 @@ class twitter_reclaim_module extends reclaim_module {
         
         return $content;        
     }
-
-
 }
