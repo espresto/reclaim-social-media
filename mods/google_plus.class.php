@@ -4,6 +4,7 @@ class google_plus_reclaim_module extends reclaim_module {
     private static $apiurl = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
     private static $count = 20;
     private static $timeout = 15;
+    private static $post_format = 'aside'; // or 'status', 'aside'
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
@@ -57,8 +58,10 @@ class google_plus_reclaim_module extends reclaim_module {
             $data[] = array(                
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_format' => self::$post_format,
                 'post_date' => date('Y-m-d H:i:s', strtotime($entry["published"])),                
-                'post_excerpt' => $content,
+                'post_content' => $content,
+//                'post_excerpt' => $content,
                 'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',
