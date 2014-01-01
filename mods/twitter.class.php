@@ -4,6 +4,7 @@ class twitter_reclaim_module extends reclaim_module {
     private static $apiurl = "http://api.twitter.com/1.1/statuses/user_timeline.json";
     private static $count = 20;
     private static $lang = 'de';
+    private static $post_format = 'status'; // or 'status', 'aside'
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
@@ -87,10 +88,11 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_date' => date('Y-m-d H:i:s', strtotime($entry["created_at"])),
+                'post_format' => self::$post_format,
 // neu
 				'post_content'   => $content['embedcode'],
 // changed
-                'post_excerpt' => $content['embedcode'],
+//                'post_excerpt' => $content['embedcode'],
 //                'post_excerpt' => $content['original'],
                 'post_title' => strip_tags($content['original']),
                 'post_type' => 'post',
