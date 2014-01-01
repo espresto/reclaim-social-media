@@ -40,10 +40,16 @@ class reclaim_core {
         }
         
         add_action('admin_menu', array($this, 'admin_menu'));
+		add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
         
 	add_filter('post_link', array($this, 'original_permalink'), 1, 3);
 	add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);   
     }
+
+	public function prefix_add_reclaim_stylesheet() {
+    	wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
+    	wp_enqueue_style('prefix-style');
+	}
 
     public function get_interval(){
         $interval = get_option('reclaim_update_interval');
