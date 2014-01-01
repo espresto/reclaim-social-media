@@ -78,16 +78,22 @@ class reclaim_module {
                     $inserted_post_id = wp_insert_post($post);
                     update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
                     update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
+                    if ($post['ext_embed_code']!="") { 
+	                    update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
+                    }
                     if ($post['ext_image']!="") {
 	                    update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
-                        self::post_thumbnail($post['ext_image'], $inserted_post_id);
+                        self::post_thumbnail($post['ext_image'], $inserted_post_id, $post['post_title']);
                     }
+                    if ($post['post_format']!="") {
+	                    set_post_format($inserted_post_id, $post['post_format']);
+	                }
                 }
             }
         }
     }
         
-    public static function post_thumbnail($source, $post_id) {
+    public static function post_thumbnail($source, $post_id, $title) {
     // source http://digitalmemo.neobie.net/grab-save
 			$imageurl = $source;
 			$imageurl = stripslashes($imageurl);
@@ -98,6 +104,8 @@ class reclaim_module {
 			$filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
 			$wp_filetype = wp_check_filetype($filename, null );
 			$fullpathfilename = $uploads['path'] . "/" . $filename;
+
+			if ($title == "") {$title = preg_replace('/\.[^.]+$/', '', $filename);}
 			
 			try {
 				if ( !substr_count($wp_filetype['type'], "image") ) {
@@ -113,7 +121,7 @@ class reclaim_module {
 				
 				$attachment = array(
 					 'post_mime_type' => $wp_filetype['type'],
-					 'post_title' => preg_replace('/\.[^.]+$/', '', $filename),
+					 'post_title' => $title,
 					 'post_content' => '',
 					 'post_status' => 'inherit',
 					 'guid' => $uploads['url'] . "/" . $filename
