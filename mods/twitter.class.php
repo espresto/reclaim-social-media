@@ -80,9 +80,11 @@ class twitter_reclaim_module extends reclaim_module {
 
     private static function map_data($rawData) {
         $data = array();
+        $tags = array();
         foreach($rawData as $entry){
             
             $content = self::get_content($entry);
+            $tags = self::get_hashtags($entry);
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(                
                 'post_author' => get_option(self::$shortname.'_author'),
@@ -97,6 +99,7 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_title' => strip_tags($content['original']),
                 'post_type' => 'post',
                 'post_status' => 'publish',
+                'tags_input' => $tags,
                 'ext_permalink' => 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"],
                 'ext_image' => $content['image'],
                 'ext_guid' => $entry["id_str"]                
@@ -104,7 +107,17 @@ class twitter_reclaim_module extends reclaim_module {
         }        
         return $data;
     }
-    
+
+    private static function get_hashtags($entry){
+		$tags = array();
+        if (count($entry['entities']['hashtags'])) {
+            foreach ($entry['entities']['hashtags'] as $hashtag) {
+                $tags[] = $hashtag['text'];
+            }
+        }
+        return $tags;
+	}    
+
     private static function get_content($entry){
         $post_content = $entry['text'];
         $post_content = html_entity_decode($post_content); // ohne trim?
@@ -131,7 +144,7 @@ class twitter_reclaim_module extends reclaim_module {
 	        // Autolink hashtags (wordpress funktion)
         $post_content = preg_replace('/(^|[^0-9A-Z&\/]+)(#|\xef\xbc\x83)([0-9A-Z_]*[A-Z_]+[a-z0-9_\xc0-\xd6\xd8-\xf6\xf8\xff]*)/iu', '${1}<a href="http://twitter.com/search?q=%23${3}" title="#${3}">${2}${3}</a>', $post_content);
 
-        $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('Y-m-d H:i:s', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';    
+        $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';    
 
         $content = array(
             'original' =>  $post_content,
