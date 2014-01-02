@@ -12,9 +12,15 @@
         }
     ],
     "type": "wordpress-plugin",
+	"repositories": [
+    	{
+        	"type": "vcs",
+	        "url": "https://github.com/Youpie/simple-html-dom"
+	    }
+	],
     "require": {
         "php": ">=5.2.4",
         "themattharris/tmhoauth": "0.8.3",
-        "samacs/simple_html_dom": "1.5"
+        "simple-html-dom/simple-html-dom": "*"
     }
 }
