@@ -2,8 +2,8 @@
     "name": "espresto/reclaim_social_media",
     "description": "RECLAIM YOUR DIGITAL LIFE. Take back control of everything you create, curate and share on the internet.",
     "keywords": ["wordpress", "plugin", "reclaim", "social media"],
-    "homepage": "reclaim.fm",
-    "license": "GPLv2",
+    "homepage": "http://reclaim.fm",
+    "license": "GPL-2.0",
     "authors": [
         {
         "name": "Felix Schwenzel",
@@ -22,5 +22,11 @@
         "php": ">=5.2.4",
         "themattharris/tmhoauth": "0.8.3",
         "simple-html-dom/simple-html-dom": "*"
-    }
+    },
+	"autoload": {
+    	"classmap": [
+	        "vendor/simple-html-dom/simple-html-dom/"
+	    ]
+	}
+
 }
