@@ -17,3 +17,8 @@ if reclaim grabs a tweet it constructs an embed code with clickable hashtags and
 the twitter embed code is being rendered with twitters widget.js javascript, which is a little invasive on users privacy but looks nice. also, the embedcode is fully searchable within wordpress. in case an image is attached, it is being saved in the wordpress media library and set as featured image. this results in some themes, taht show the image twice.
 
 the idea is, to copy all the relevant data from the services you use and enable you, to keep a copy on your own server.
+
+demo
+----
+
+http://root.wirres.net/reclaim/
