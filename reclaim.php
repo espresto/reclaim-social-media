@@ -49,6 +49,9 @@ class reclaim_core {
 	public function prefix_add_reclaim_stylesheet() {
     	wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
     	wp_enqueue_style('prefix-style');
+//		wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
+//		wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
+//		wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
 	}
 
     public function get_interval(){
