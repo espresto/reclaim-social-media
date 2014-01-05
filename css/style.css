@@ -1,4 +1,99 @@
-.format-status .entry-title {
+.list-view .site-content .format-status .entry-title
+{
+	display: none;
+}
+.list-view .site-content .format-image .post-thumbnail 
+{
 	display: none;
 }
 
+@media screen and (max-width: 400px) {
+
+.list-view .site-content .format-status .entry-title, 
+.list-view .site-content .format-aside .entry-title, 
+.list-view .site-content .format-link .entry-title, 
+.list-view .site-content .format-quote .entry-title 
+{
+display: block;
+}
+.list-view .site-content .format-image .post-thumbnail 
+{
+display: block;
+}
+}
+
+.entry-content div.fblink,
+.entry-content blockquote.fblink,
+.entry-content div.glink,
+.entry-content blockquote.glink
+{
+	background-color: #EEE;
+	margin-top: 10px;
+	padding: 5px;
+	display: block;
+}
+
+.format-status .entry-content div.fblink div.fbimage img,
+.format-aside .entry-content div.fblink div.fbimage img,
+.format-link .entry-content div.fblink div.fbimage img,
+.format-quote .entry-content div.fblink div.fbimage img,
+.format-chat .entry-content div.fblink div.fbimage img,
+.format-status .entry-content blockquote.fblink div.fbimage img,
+.format-aside .entry-content blockquote.fblink div.fbimage img,
+.format-link .entry-content blockquote.fblink div.fbimage img,
+.format-quote .entry-content blockquote.fblink div.fbimage img,
+.format-chat .entry-content blockquote.fblink div.fbimage img,
+.entry-content blockquote.twitter-tweet div.twimage img, 
+.format-link .entry-content div.glink div.gimage img,
+.format-link .entry-content blockquote.glink div.gimage img
+{
+	display: none;
+}
+
+.entry-content div.fbimage 
+{
+/*
+border-right: 1px solid #d3dae8;
+float: left;
+height: 116px;
+line-height: 110px;
+margin-right: 11px;
+min-width: 72px;
+position: relative;
+text-align: center;
+overflow: hidden;
+*/
+}
+
+div.entry-content p.fbviewpost-link, 
+div.entry-content p.fbviewpost-facebook,
+div.entry-content p.twviewpost-link, 
+div.entry-content p.twviewpost-twitter,
+div.entry-content p.gviewpost-link,
+div.entry-content p.gviewpost-google
+{
+float: right;
+clear: none;
+padding-top: 4px;
+padding-left: 4px;
+font-size: 11px;
+}
+div.entry-content p.fbviewpost-facebook a
+{
+font-size: 11px;
+}
+
+div.entry-content div.fblink-title
+{
+}
+
+div.entry-content p.fblink-caption 
+{
+font-size: 12px;
+margin: 0;
+}
+div.entry-content div.fblink-title.props
+{
+font-size: 12px;
+margin: 0;
+}
