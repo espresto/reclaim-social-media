@@ -20,31 +20,56 @@ class facebook_reclaim_module extends reclaim_module {
         
         register_setting('reclaim-social-settings', 'facebook_username');
         register_setting('reclaim-social-settings', 'facebook_user_id');
-        register_setting('reclaim-social-settings', 'facebook_username_slug');
         register_setting('reclaim-social-settings', 'facebook_app_id');
         register_setting('reclaim-social-settings', 'facebook_app_secret');
         register_setting('reclaim-social-settings', 'facebook_oauth_token');
     }
-
+	
+	
     public static function display_settings() {
+		if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') && (isset($_SESSION['facebook_user_profile']))) {
+			$user_profile 		= $_SESSION['facebook_user_profile'];
+			$user_access_token 	= $_SESSION['facebook_user_access_token'];
+			$error 				= $_SESSION['e'];
+
+	        if ($error) {
+		        echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
+//		        echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $e ),'</p></div>';
+	        }
+			else {
+				update_option('facebook_user_id', $user_profile->identifier);
+				update_option('facebook_username', $user_profile->displayName);
+				update_option('facebook_oauth_token', $user_access_token->accessToken);
+
+			}
+//			print_r($_SESSION);
+//			echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
+//			echo $user_access_token->accessToken;
+//			$user_profile->displayName
+		    if(session_id()) {
+			    session_destroy ();
+			}
+			
+		}
+
 ?>
         <tr valign="top">
-            <th colspan="2"><strong><?php _e('facebook', 'reclaim'); ?></strong></th>
+            <th colspan="2"><h3><?php _e('Facebook', 'reclaim'); ?></h3></th>
         </tr>
 <?php        
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook user ID (548616784)', 'reclaim'); ?></th>
-            <td><input type="text" name="facebook_user_id" value="<?php echo get_option('facebook_user_id'); ?>" /></td>
+            <th scope="row"><?php _e('facebook user ID', 'reclaim'); ?></th>
+            <td><?php echo get_option('facebook_user_id'); ?>
+            <input type="hidden" name="facebook_user_id" value="<?php echo get_option('facebook_user_id'); ?>" />
+            </td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook username slug (diplix)', 'reclaim'); ?></th>
-            <td><input type="text" name="facebook_username_slug" value="<?php echo get_option('facebook_username_slug'); ?>" /></td>
-        </tr>
-        <tr valign="top">
-            <th scope="row"><?php _e('facebook username (Felix Schwenzel)', 'reclaim'); ?></th>
-            <td><input type="text" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" /></td>
+            <th scope="row"><?php _e('facebook user name', 'reclaim'); ?></th>
+            <td><?php echo get_option('facebook_username'); ?>
+            <input type="hidden" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
+            </td>
         </tr>        
         <tr valign="top">
             <th scope="row"><?php _e('facebook app id', 'reclaim'); ?></th>
@@ -52,26 +77,43 @@ class facebook_reclaim_module extends reclaim_module {
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('facebook app secret', 'reclaim'); ?></th>
-            <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" /></td>
+            <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" />
+            <input type="hidden" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" />
+            </td>
         </tr>     
         </tr>
-<!--
-        <tr valign="top">
-            <th scope="row"><?php _e('facebook oauth token (optional)', 'reclaim'); ?></th>
-            <td><input type="text" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" /></td>
         </tr>
--->
         <tr valign="top">
-            <th scope="row"><?php _e('get facebook permissions', 'reclaim'); ?></th>
+            <th scope="row"></th>
             <td>
             <?php
-            if ( (get_option('facebook_app_id')!="") && (get_option('facebook_app_secret')!="") ) {
-            	echo '<a href="'
-            	.plugins_url( '/helper/access_token.php' , dirname(__FILE__) ) .'?app_id='
-            	.get_option('facebook_app_id')
-            	.'&app_secret='.get_option('facebook_app_secret')
-            	.'&reclaim_settings_page='.get_bloginfo('wpurl') . "/wp-admin/admin.php?page=reclaim/reclaim.php"
-            	.'">click to get permissions</a>';
+            if ( 
+            (get_option('facebook_app_id')!="") 
+            && (get_option('facebook_app_secret')!="") 
+            
+            ) {
+				$link_text = 'Authorize with Facebook';
+	            // && (get_option('facebook_oauth_token')!="")
+				if ( (get_option('facebook_user_id')!="") && (get_option('facebook_oauth_token')!="") ) {
+					echo '<p>Facebook authorized as '.get_option('facebook_username').'</p>';
+					$link_text = 'Authorize anyway';
+				}
+
+				// send to helper script
+				// put all configuration into session
+				// todo
+			    $config = self::construct_hyperauth_config();
+				$callback =  get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod=facebook';
+
+				$_SESSION['config'] = $config;
+				$_SESSION['mod'] = 'facebook';
+
+
+            	echo '<a class="button button-secondary" href="'
+            	.plugins_url( '/helper/hyperauth_helper.php' , dirname(__FILE__) ) 
+            	.'?callbackUrl='.$callback
+            	.'">'.$link_text.'</a>';
+
             }
             else {
             	echo 'enter facebook app id and facebook app secret';
@@ -85,16 +127,35 @@ class facebook_reclaim_module extends reclaim_module {
 <?php
     }
 
+	public static function construct_hyperauth_config() {
+		$config = array( 
+	   // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found) 
+		"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/src/'),
+		"providers" => array ( 
+			"Facebook" => array(
+				"enabled" => true,
+				"keys"    => array ( "id" => "546405348782128", "secret" => "b839417def5d9e2d396f2f9df8db225d" ), 
+
+			),
+	   	), 
+	// optional
+		// dev mode
+		"debug_mode" => true,
+
+		);
+		return $config;
+	}
+
     public static function import() {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (!get_option('facebook_oauth_token') && get_option('facebook_app_id') && get_option('facebook_app_secret')) {
             parent::log(sprintf(__('getting FB token', 'reclaim'), self::$shortname));
-            self::get_access_token();
+//            self::get_access_token();
         }
 
-        if (get_option('facebook_username') && get_option('facebook_username_slug') &&  get_option('facebook_oauth_token')) {
+        if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('facebook_username_slug'), self::$count, get_option('facebook_oauth_token')), self::$timeout);
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token')), self::$timeout);
             $rawData = json_decode($rawData, true);
             
             $data = self::map_data($rawData);
@@ -182,7 +243,7 @@ class facebook_reclaim_module extends reclaim_module {
             $link = htmlentities($entry["link"]);
         } else {
             $id = substr(strstr($entry['id'], '_'),1);
-            $link = "https://www.facebook.com/".get_option('facebook_username_slug')."/posts/".$id;                
+            $link = "https://www.facebook.com/".get_option('facebook_user_id')."/posts/".$id;                
         } 
         return $link;
     } 
@@ -239,7 +300,7 @@ class facebook_reclaim_module extends reclaim_module {
             else {
                 $entry_name = __('multiple items', 'reclaim');  // manchmal liefert fb nix (nochmal id checken?)
             }
-			// facebook_username = "Felix Schwenzel", facebook_user_id = "548616784", facebook_username_slug = "diplix"
+
             $description = "like. ";
             $description .= sprintf(__('%s liked <a href="%s">%s</a>', 'reclaim'), get_option('facebook_username'), $link, $entry_name);            
         }
@@ -264,7 +325,7 @@ class facebook_reclaim_module extends reclaim_module {
 		$description = make_clickable($description);
 		//now other's content
 		$fblink_description = "";
-        if ($image) {
+        if ($image!="") {
             $fblink_description .= '<div class="fbimage"><img src="'.$image.'"></div>';
         }
         if (isset($entry['name']) && $entry['name']) {
