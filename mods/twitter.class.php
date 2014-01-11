@@ -21,7 +21,7 @@ class twitter_reclaim_module extends reclaim_module {
     public static function display_settings() {
 ?>
         <tr valign="top">
-            <th colspan="2"><strong><?php _e('twitter', 'reclaim'); ?></strong></th>
+            <th colspan="2"><h3><?php _e('Twitter', 'reclaim'); ?></h3></th>
         </tr>
 <?php           
         parent::display_settings(self::$shortname);
