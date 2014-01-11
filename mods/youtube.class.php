@@ -1,8 +1,9 @@
 <?php
 class youtube_reclaim_module extends reclaim_module {
     private static $shortname = 'youtube';
-    private static $timeout = 15;
+    private static $timeout = 20;
     private static $apiurl = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&prettyprint=true&orderby=published&racy=include&v=2&client=ytapi-youtube-profile";
+    private static $post_format = 'video'; // or 'status', 'aside'
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
@@ -13,7 +14,7 @@ class youtube_reclaim_module extends reclaim_module {
     public static function display_settings() {
 ?>
         <tr valign="top">
-            <th colspan="2"><strong><?php _e('youtube', 'reclaim'); ?></strong></th>
+            <th colspan="2"><h3><?php _e('Youtube', 'reclaim'); ?></h3></th>
         </tr>
 <?php           
         parent::display_settings(self::$shortname);
@@ -50,8 +51,10 @@ class youtube_reclaim_module extends reclaim_module {
             $data[] = array(                
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_format' => self::$post_format,
                 'post_date' => date('Y-m-d H:i:s', strtotime($entry['published']['$t'])),                
-                'post_excerpt' => $content,
+//                'post_excerpt' => $content,
+                'post_content' => $content,
                 'post_title' => $entry['title']['$t'],
                 'post_type' => 'post',
                 'post_status' => 'publish',
