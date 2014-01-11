@@ -44,7 +44,7 @@ class flickr_reclaim_module extends reclaim_module {
     public static function display_settings() {
 ?>
         <tr valign="top">
-            <th colspan="2"><strong><?php _e('flickr', 'reclaim'); ?></strong></th>
+            <th colspan="2"><h3><?php _e('Flickr', 'reclaim'); ?></h3></th>
         </tr>
 <?php           
         parent::display_settings(self::$shortname);
@@ -86,16 +86,15 @@ class flickr_reclaim_module extends reclaim_module {
     private static function map_data($rawData) {
         $data = array();      
         foreach($rawData['items'] as $entry){
-            $title = $entry['title'];
             //date_taken
             //published
             //description
             //tags
+            $title = $entry['title'];
             $id = self::get_id($entry["link"]);
             $image_url = self::get_image_url($entry["media"]["m"]);
             $description = self::get_flickr_description($entry["description"]);
             $tags = explode(" ",$entry['tags']);
-            parent::log('id: '.$id);
             $content = self::get_content($entry,$id,$image_url,$description);
             // 
             $data[] = array(                
