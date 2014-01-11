@@ -51,3 +51,4 @@ function reclaim_text_excerpt($text, $length, $use_words, $finish_word, $finish_
 
     return trim(strip_tags($out));
 }
+
