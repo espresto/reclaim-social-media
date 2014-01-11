@@ -21,7 +21,8 @@
     "require": {
         "php": ">=5.2.4",
         "themattharris/tmhoauth": "0.8.3",
-        "simple-html-dom/simple-html-dom": "*"
+        "simple-html-dom/simple-html-dom": "*",
+        "hybridauth/hybridauth": "3.0.0.*@dev"
     },
 	"autoload": {
     	"classmap": [
