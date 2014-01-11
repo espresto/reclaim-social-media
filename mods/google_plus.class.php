@@ -16,19 +16,24 @@ class google_plus_reclaim_module extends reclaim_module {
     public static function display_settings() {
 ?>
         <tr valign="top">
-            <th colspan="2"><strong><?php _e('google +', 'reclaim'); ?></strong></th>
+            <th colspan="2"><h3><?php _e('Google+', 'reclaim'); ?></h3></th>
         </tr>
 <?php           
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
-            <th scope="row"><?php _e('google + user id', 'reclaim'); ?></th>
-            <td><input type="text" name="google_plus_user_id" value="<?php echo get_option('google_plus_user_id'); ?>" /></td>
+            <th scope="row">
+            	Google+ App settings
+            </th>
+            <td>
+            	<label for="google_plus_user_id"><?php _e('Google+ User ID', 'reclaim'); ?></label>
+            	<input type="text" name="google_plus_user_id" class="widefat" value="<?php echo get_option('google_plus_user_id'); ?>" />
+				<p class="description"><?php _e('Your Google+ profile ID is the long number at the end of your page or profile URL.', 'reclaim'); ?></p>
+				<hr />
+            	<label for="google_api_key"><?php _e('Google API Key', 'reclaim'); ?></label>
+            	<input type="text" name="google_api_key" class="widefat" value="<?php echo get_option('google_api_key'); ?>" />
+            </td>
         </tr>
-        <tr valign="top">
-            <th scope="row"><?php _e('google API key', 'reclaim'); ?></th>
-            <td><input type="text" name="google_api_key" value="<?php echo get_option('google_api_key'); ?>" /></td>
-        </tr>        
 <?php
     }
 
