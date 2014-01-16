@@ -52,7 +52,7 @@ class youtube_reclaim_module extends reclaim_module {
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry['published']['$t'])),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry['published']['$t']))),
 //                'post_excerpt' => $content,
                 'post_content' => $content,
                 'post_title' => $entry['title']['$t'],
