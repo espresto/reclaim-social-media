@@ -40,4 +40,4 @@ http://root.wirres.net/reclaim/
 ## Installation
 Download a [release](https://github.com/espresto/reclaim-social-media/releases) or
 clone the repository. If you clone, don't forget to run composer. Also remember,
-the plugin is not yet stable.
+the plugin is not stable yet.
