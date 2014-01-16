@@ -4,7 +4,7 @@ class bookmarks_reclaim_module extends reclaim_module {
 //    private static $apiurl = "https://www.goodreads.com/review/list_rss/%s?shelf=read";
     private static $timeout = 15;
 	private static $count = 30;
-    private static $post_format = 'link'; // no specific format 
+    private static $post_format = 'link'; // no specific format
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
@@ -16,7 +16,7 @@ class bookmarks_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Bookmarks', 'reclaim'); ?></h3></th>
         </tr>
-<?php           
+<?php
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
@@ -32,16 +32,16 @@ class bookmarks_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import() {
+    public static function import($forceResync) {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('bookmarks_api_url') ) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));            
+            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
 			if ( ! class_exists( 'SimplePie' ) )
 				require_once( ABSPATH . WPINC . '/class-feed.php' );
 
 			$rss_source = get_option('bookmarks_api_url');
 			/* Create the SimplePie object */
-			$feed = new SimplePie(); 
+			$feed = new SimplePie();
 			/* Set the URL of the feed you're retrieving */
 			$feed->set_feed_url( $rss_source );
 			/* Tell SimplePie to cache the feed using WordPress' cache class */
@@ -51,20 +51,20 @@ class bookmarks_reclaim_module extends reclaim_module {
 			/* Tell SimplePie how long to cache the feed data in the WordPress database */
 			$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', get_option('reclaim_update_interval'), $rss_source ) );
 			/* Run any other functions or filters that WordPress normally runs on feeds */
-			do_action_ref_array( 'wp_feed_options', array( &$feed, $rss_source ) ); 
+			do_action_ref_array( 'wp_feed_options', array( &$feed, $rss_source ) );
 			/* Initiate the SimplePie instance */
-			$feed->init(); 
+			$feed->init();
 			/* Tell SimplePie to send the feed MIME headers */
-			$feed->handle_content_type(); 
+			$feed->handle_content_type();
 
 			if ( $feed->error() ) {
 	            parent::log(sprintf(__('no %s data', 'reclaim'), self::$shortname));
 		        parent::log($feed->error());
-			} 
+			}
 			else {
                 $data = self::map_data($feed);
                 parent::insert_posts($data);
-                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));                
+                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             }
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
@@ -89,12 +89,12 @@ class bookmarks_reclaim_module extends reclaim_module {
 			$tags = array_diff($tags, array("w", "s"));
 
 //            $content = self::get_content($item,$id,$image_url,$description);
-			
-            $data[] = array(                
+
+            $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($published)),                
+                'post_date' => date('Y-m-d H:i:s', strtotime($published)),
 //                'post_excerpt' => $description,
                 'post_content' => $description,
                 'post_title' => $title,
@@ -104,8 +104,8 @@ class bookmarks_reclaim_module extends reclaim_module {
                 'ext_image' => $image_url,
                 'tags_input' => $tags,
                 'ext_guid' => $id
-            );                 
-            
+            );
+
         }
         return $data;
     }
@@ -126,7 +126,7 @@ class bookmarks_reclaim_module extends reclaim_module {
 		else {
 			$image_html ="";
 		}
-		$post_content_constructed = 
+		$post_content_constructed =
 			'<div class="grmessage"><p>Ich habe <em><a href="'.$item->get_permalink.'">'.$item->get_title().'</a></em> von '.$author_name.' gelesen.</p>'
 			.'<p>'.$user_review.'</p>'
 //			.$image_html
@@ -140,8 +140,8 @@ class bookmarks_reclaim_module extends reclaim_module {
             'constructed' =>  $post_content_constructed,
             'image' => $image_url
         );
-        
-        return $content;        
+
+        return $content;
     }
 
 

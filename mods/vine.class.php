@@ -12,12 +12,12 @@ class vine_reclaim_module extends reclaim_module {
     private static $apiurl = "";
 
     private static $timeout = 15;
-    private static $count = 20; 
+    private static $count = 20;
     private static $post_format = 'video'; // or 'status', 'aside'
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
-        
+
         register_setting('reclaim-social-settings', 'vine_user_id');
         register_setting('reclaim-social-settings', 'vine_password');
     }
@@ -27,7 +27,7 @@ class vine_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Vine', 'reclaim'); ?></h3></th>
         </tr>
-<?php           
+<?php
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
@@ -41,20 +41,20 @@ class vine_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import() {
+    public static function import($forceResync) {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('vine_user_id') ) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));            
-			
+            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
+
 			$key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
 			$userId = strtok($key,'-');
 			$rawData = self::vineTimeline($userId,$key);
-//            parent::log(print_r($rawData,1));            
+//            parent::log(print_r($rawData,1));
 
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
                 parent::insert_posts($data);
-                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));                
+                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             }
             else {
 	            parent::log(sprintf(__('no %s data', 'reclaim'), self::$shortname));
@@ -66,7 +66,7 @@ class vine_reclaim_module extends reclaim_module {
     }
 
     private static function map_data($rawData) {
-        $data = array();      
+        $data = array();
 		//echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['records'] as $entry){
             $description = $entry['description'];
@@ -85,12 +85,12 @@ class vine_reclaim_module extends reclaim_module {
             $image_url = $image_url_explode[0];
             $tags = $entry['tags'];
             $content = self::get_content($entry,$id,$image_url,$title);
-            // 
-            $data[] = array(                
+            //
+            $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry["created"])),                
+                'post_date' => date('Y-m-d H:i:s', strtotime($entry["created"])),
 //                'post_excerpt' => $description,
 //                'post_content' => $content['constructed'],
                 'post_content' => $content['embed_code'],
@@ -102,8 +102,8 @@ class vine_reclaim_module extends reclaim_module {
                 'tags_input' => $tags,
                 'ext_embed_code' => $content['embed_code'],
                 'ext_guid' => $id
-            );                 
-            
+            );
+
         }
         return $data;
     }
@@ -137,8 +137,8 @@ class vine_reclaim_module extends reclaim_module {
             'embed_code' => $embed_code,
             'image' => $image_url
         );
-        
-        return $content;        
+
+        return $content;
     }
 
 
@@ -148,8 +148,8 @@ class vine_reclaim_module extends reclaim_module {
 	$username = urlencode($username);
 	$password = urlencode($password);
 	$token = sha1($username); // I believe this field is currently optional, but always sent via the app
-	
-	$postFields = "deviceToken=$token&password=$password&username=$username"; 
+
+	$postFields = "deviceToken=$token&password=$password&username=$username";
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $loginUrl);
@@ -168,7 +168,7 @@ class vine_reclaim_module extends reclaim_module {
 	else
 	{
 		// Key aLso contains numeric userId as the portion of the string preceding the first dash
-		return $result->data->key; 
+		return $result->data->key;
 	}
 
 	curl_close($ch);
@@ -193,7 +193,7 @@ class vine_reclaim_module extends reclaim_module {
 	if (!$result)
 	{
 		echo curl_error($ch);
-        parent::log('curl error:'.curl_error($ch));            
+        parent::log('curl error:'.curl_error($ch));
 	}
 	else
 	{

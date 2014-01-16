@@ -4,16 +4,16 @@ class reclaim_module {
     public static function register_settings($modname) {
         register_setting('reclaim-social-settings', $modname.'_active');
         register_setting('reclaim-social-settings',  $modname.'_category');
-        register_setting('reclaim-social-settings',  $modname.'_author');        
+        register_setting('reclaim-social-settings',  $modname.'_author');
     }
 
     public static function display_settings($modname) {
-?>        
+?>
         <tr valign="top">
             <th scope="row"><?php _e('Active', 'reclaim'); ?></th>
             <td><input type="checkbox" name="<?php echo $modname; ?>_active" value="1" <?php checked(get_option($modname.'_active')); ?> />
                 <?php if (get_option($modname.'_active')) :?>
-                    <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em>                  
+                    <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em>
                     <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
                 <?php endif;?>
             </td>
@@ -25,14 +25,14 @@ class reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('Author', 'reclaim'); ?></th>
             <td><?php wp_dropdown_users(array('name' => $modname.'_author', 'selected' => get_option($modname.'_author'))); ?></td>
-        </tr>         
-<?php        
+        </tr>
+<?php
     }
 
     /**
     * Interface
-    */ 
-    public static function import() {
+    */
+    public static function import($forceResync) {
 
     }
 
@@ -74,11 +74,11 @@ class reclaim_module {
                         )
                     )
                 ));
-                if (!$exists) {                
+                if (!$exists) {
                     $inserted_post_id = wp_insert_post($post);
                     update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
                     update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
-                    if ($post['ext_embed_code']!="") { 
+                    if ($post['ext_embed_code']!="") {
 	                    update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
                     }
                     if ($post['ext_image']!="") {
@@ -105,7 +105,7 @@ class reclaim_module {
             }
         }
     }
-        
+
     public static function post_thumbnail($source, $post_id, $title) {
     // source http://digitalmemo.neobie.net/grab-save
 			$imageurl = $source;
@@ -113,25 +113,25 @@ class reclaim_module {
 			$uploads = wp_upload_dir();
 			$ext = pathinfo( basename($imageurl) , PATHINFO_EXTENSION);
 			$newfilename = basename($imageurl);
-			
+
 			$filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
 			$wp_filetype = wp_check_filetype($filename, null );
 			$fullpathfilename = $uploads['path'] . "/" . $filename;
 
 			if ($title == "") {$title = preg_replace('/\.[^.]+$/', '', $filename);}
-			
+
 			try {
 				if ( !substr_count($wp_filetype['type'], "image") ) {
 					self::log( basename($imageurl) . ' is not a valid image. ' . $wp_filetype['type']  . '' );
 				}
-			
+
 				$image_string = self::my_get_remote_content($imageurl);
-				
+
 				$fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
 				if ( !$fileSaved ) {
 					self::log("The file cannot be saved.");
 				}
-				
+
 				$attachment = array(
 					 'post_mime_type' => $wp_filetype['type'],
 					 'post_title' => $title,
@@ -147,14 +147,14 @@ class reclaim_module {
 				$attach_data = wp_generate_attachment_metadata( $attach_id, $fullpathfilename );
 				wp_update_attachment_metadata( $attach_id,  $attach_data );
                 set_post_thumbnail( $post_id, $attach_id);
-			
+
 			} catch (Exception $e) {
 				self::log($e->getMessage());
 			}
 	}
 
 	public static function my_get_remote_content($url) {
-	  $response = wp_remote_get($url, 
+	  $response = wp_remote_get($url,
 	    array(
 	      'headers' => array(
 	        'user-agent' => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2)'
@@ -166,10 +166,10 @@ class reclaim_module {
 	  } else {
 	    $data = wp_remote_retrieve_body($response);
 	    return $data;
-	  }  
+	  }
 	}
-		
-    
+
+
     public static function log($message) {
         file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
     }
@@ -189,9 +189,9 @@ class reclaim_module {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 	Original can be found at https://github.com/scottmac/opengraph/blob/master/OpenGraph.php
-   
+
 */
 
 class OpenGraph implements Iterator
@@ -261,7 +261,7 @@ class OpenGraph implements Iterator
 
 		$doc = new DOMDocument();
 		$doc->loadHTML($HTML);
-		
+
 		libxml_use_internal_errors($old_libxml_error);
 
 		$tags = $doc->getElementsByTagName('meta');
@@ -272,7 +272,7 @@ class OpenGraph implements Iterator
 		$page = new self();
 
 		$nonOgDescription = null;
-		
+
 		foreach ($tags AS $tag) {
 			if ($tag->hasAttribute('property') &&
 			    strpos($tag->getAttribute('property'), 'og:') === 0) {
@@ -297,8 +297,8 @@ class OpenGraph implements Iterator
 				$key = strtr(substr($tag->getAttribute('property'), 0), '-', '_');
 				$page->_values[$key] = $tag->getAttribute('content');
 			}
-						
-			//Added this if loop to retrieve description values from sites like the New York Times who have malformed it. 
+
+			//Added this if loop to retrieve description values from sites like the New York Times who have malformed it.
 			if ($tag ->hasAttribute('value') && $tag->hasAttribute('property') &&
 			    strpos($tag->getAttribute('property'), 'og:') === 0) {
 				$key = strtr(substr($tag->getAttribute('property'), 3), '-', '_');
@@ -308,7 +308,7 @@ class OpenGraph implements Iterator
 			if ($tag->hasAttribute('name') && $tag->getAttribute('name') === 'description') {
                 $nonOgDescription = $tag->getAttribute('content');
             }
-			
+
 		}
 		//Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
 		if (!isset($page->_values['title'])) {
@@ -336,7 +336,7 @@ class OpenGraph implements Iterator
         }
 
 		if (empty($page->_values)) { return false; }
-		
+
 		return $page;
 	}
 
@@ -351,7 +351,7 @@ class OpenGraph implements Iterator
 		if (array_key_exists($key, $this->_values)) {
 			return $this->_values[$key];
 		}
-		
+
 		if ($key === 'schema') {
 			foreach (self::$TYPES AS $schema => $types) {
 				if (array_search($this->_values['type'], $types)) {
@@ -388,7 +388,7 @@ class OpenGraph implements Iterator
 		if (array_key_exists('latitude', $this->_values) && array_key_exists('longitude', $this->_values)) {
 			return true;
 		}
-		
+
 		$address_keys = array('street_address', 'locality', 'region', 'postal_code', 'country_name');
 		$valid_address = true;
 		foreach ($address_keys AS $key) {

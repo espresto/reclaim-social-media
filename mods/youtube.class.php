@@ -7,8 +7,8 @@ class youtube_reclaim_module extends reclaim_module {
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
-        
-        register_setting('reclaim-social-settings', 'youtube_username');               
+
+        register_setting('reclaim-social-settings', 'youtube_username');
     }
 
     public static function display_settings() {
@@ -16,23 +16,23 @@ class youtube_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Youtube', 'reclaim'); ?></h3></th>
         </tr>
-<?php           
+<?php
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('youtube username', 'reclaim'); ?></th>
             <td><input type="text" name="youtube_username" value="<?php echo get_option('youtube_username'); ?>" /></td>
-        </tr>      
+        </tr>
 <?php
     }
 
-    public static function import() {
+    public static function import($forceResync) {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('youtube_username')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('youtube_username')), self::$timeout);
             $rawData = json_decode($rawData, true);
-            
+
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
                 parent::insert_posts($data);
@@ -47,12 +47,12 @@ class youtube_reclaim_module extends reclaim_module {
         $data = array();
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry);
-            
-            $data[] = array(                
+
+            $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry['published']['$t'])),                
+                'post_date' => date('Y-m-d H:i:s', strtotime($entry['published']['$t'])),
 //                'post_excerpt' => $content,
                 'post_content' => $content,
                 'post_title' => $entry['title']['$t'],
@@ -61,20 +61,20 @@ class youtube_reclaim_module extends reclaim_module {
                 'ext_permalink' => $entry["link"][0]['href'],
                 'ext_image' => $entry['media$group']['media$thumbnail'][2]['url'],
                 'ext_guid' =>  $entry['id']['$t']
-            );               
-            
+            );
+
         }
         return $data;
     }
-    
+
     private static function get_content($entry){
 	$video_id = 0;
         $post_content = '';
         if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $entry["link"][0]['href'], $match)) {
             $video_id = $match[1];
-        }        
-        $post_content = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';   
+        }
+        $post_content = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
         return $post_content;
-    }    
+    }
 }
 ?>
