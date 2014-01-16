@@ -95,13 +95,12 @@ class flickr_reclaim_module extends reclaim_module {
             $image_url = self::get_image_url($entry["media"]["m"]);
             $description = self::get_flickr_description($entry["description"]);
             $tags = explode(" ",$entry['tags']);
-            $content = self::get_content($entry,$id,$image_url,$description);
-            //
+            $content = self::construct_content($entry,$id,$image_url,$description);
             $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry["date_taken"])),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["date_taken"]))),
 //                'post_excerpt' => $description,
                 'post_content' => $content['constructed'],
                 'post_title' => $title,
@@ -152,14 +151,14 @@ class flickr_reclaim_module extends reclaim_module {
 	}
 
 
-    private static function get_content($entry,$id,$image_url,$description){
+    private static function construct_content($entry,$id,$image_url,$description){
 		// flickr embed code:
 		// <iframe src="http://www.flickr.com/photos/92049783@N06/8497830300/player/" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
         $post_content_original = $entry['description'];
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
 		$post_content_constructed_simple = '<a href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
-		$post_content_constructed = '[gallery size="large" columns="1"]'.'<p>'.$description.'</p>';
+		$post_content_constructed = '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>';
 
 		$embed_code = '<frameset><iframe src="'.$entry['link'].'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
 
