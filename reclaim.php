@@ -151,8 +151,13 @@ class reclaim_core {
         else {
             $postId = $id;
         }
-
-        $link = get_post_meta($postId, 'original_permalink', true);
+        
+    $link = get_post_meta($postId, 'original_permalink', true);
+    if ( $link != "" ) {
+		// added this, because otherwise link slug would be added in some occasions
+//        $link .= '#'; // adds hash to the original_permalink
+//        $link .= '?'; // strange: resets original
+        }
 	if ($link){
             $permalink = $link;
         }
