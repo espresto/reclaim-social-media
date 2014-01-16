@@ -66,7 +66,7 @@ class google_plus_reclaim_module extends reclaim_module {
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => $post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry["published"])),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["published"]))),
                 'post_content' => $content,
 //                'post_excerpt' => $content,
                 'post_title' => $title,
