@@ -47,15 +47,27 @@ class reclaim_module {
     *
     */
     public static function import_via_curl($apiurl, $timeout) {
-        $ch = curl_init();
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_URL, $apiurl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout);
-        $output = curl_exec($ch);
-        curl_close($ch);
-        return trim($output);
+		$args = array(
+			'timeout'     => $timeout,
+			'redirection' => 5,
+			'httpversion' => '1.0',
+			'user-agent'  => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' ),
+			'blocking'    => true,
+			'headers'     => array(),
+			'cookies'     => array(),
+			'body'        => null,
+			'compress'    => false,
+			'decompress'  => true,
+			'sslverify'   => true,
+			'stream'      => false,
+			'filename'    => null
+		);
+		$response = wp_remote_get( $apiurl, $args );
+		if ($response['response']['code']!=200) {
+			self::log('error while loading '.$apiurl.': '.$response['response']['message']);
+			return false;
+		}
+        return trim($response['body']);
     }
 
     /**
@@ -78,6 +90,13 @@ class reclaim_module {
                     $inserted_post_id = wp_insert_post($post);
                     update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
                     update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
+					
+					if (isset($post['post_meta'])) {
+						foreach ($post['post_meta'] as $key => $value) {
+		                    update_post_meta($inserted_post_id, $key, $value);
+						}
+					}
+
                     if ($post['ext_embed_code']!="") {
 	                    update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
                     }
@@ -90,12 +109,13 @@ class reclaim_module {
 						// to do:
 						// * activate or deactivate in settings
 						// * check if image-url was already saved (in another article) if so, use it instead
-
-						$graph = OpenGraph::fetch($post['ext_permalink']);
-						$image_url = $graph->image;
-	                    if ($image_url!="") {
-		                    update_post_meta($inserted_post_id, 'image_url', $image_url);
-        	                self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
+						if ($post['ext_permalink']!="") {
+							$graph = OpenGraph::fetch($post['ext_permalink']);
+							$image_url = $graph->image;
+	    	                if ($image_url!="") {
+		    	                update_post_meta($inserted_post_id, 'image_url', $image_url);
+        	    	            self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
+            	    	    }
             	        }
                     }
                     if ($post['post_format']!="") {
@@ -226,20 +246,8 @@ class OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static public function fetch($URI) {
-        $curl = curl_init($URI);
-
-        curl_setopt($curl, CURLOPT_FAILONERROR, true);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 15);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-//        curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
+		$response = wp_remote_get( $URI );
+		$response = $response['body'];
         if (!empty($response)) {
             return self::_parse($response);
         } else {
