@@ -84,13 +84,21 @@ class vine_reclaim_module extends reclaim_module {
             $image_url_explode = explode('?', $entry["thumbnailUrl"]);
             $image_url = $image_url_explode[0];
             $tags = $entry['tags'];
-            $content = self::get_content($entry,$id,$image_url,$title);
-            //
+            $content = self::construct_content($entry,$id,$image_url,$title);
+            $post_meta["geo_address"] = $entry['venueAddress'];
+			if ($entry["venueCity"]!="")
+	            $post_meta["geo_address"] .= ', '.$entry['venueCity'];
+			if ($entry["venueState"]!="")
+	            $post_meta["geo_address"] .= ', '.$entry['venueState'];
+			$post_meta["venueName"] = $entry['venueName'];
+			$post_meta["foursquareVenueId"] = $entry['foursquareVenueId'];
+			$post_meta["venueCategoryId"] = $entry['venueCategoryId'];
+
             $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry["created"])),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created"]))),
 //                'post_excerpt' => $description,
 //                'post_content' => $content['constructed'],
                 'post_content' => $content['embed_code'],
@@ -101,14 +109,15 @@ class vine_reclaim_module extends reclaim_module {
                 'ext_image' => $image_url,
                 'tags_input' => $tags,
                 'ext_embed_code' => $content['embed_code'],
-                'ext_guid' => $id
+                'ext_guid' => $id,
+                'post_meta' => $post_meta
             );
 
         }
         return $data;
     }
 
-    private static function get_content($entry,$id,$image_url,$description){
+    private static function construct_content($entry,$id,$image_url,$description){
         $post_content_original = $description;
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
@@ -118,7 +127,7 @@ class vine_reclaim_module extends reclaim_module {
 */
 		$post_content_constructed = 'ich habe <a href="'.$entry['permalinkUrl'].'">ein vine-video</a> hochgeladen.'
 		.'<a href="'.$entry['permalinkUrl'].'">'
-		.'[gallery size="large" columns="1"]'
+		.'<div class="viimage">[gallery size="large" columns="1" link="file"]</div>'
 		.'</a>';
 
 		// vine embed code:
@@ -126,7 +135,7 @@ class vine_reclaim_module extends reclaim_module {
 		.'<noframes>'
 		.'ich habe <a href="'.$entry['permalinkUrl'].'">ein vine-video</a> hochgeladen.'
 		.'<a href="'.$entry['permalinkUrl'].'">'
-		.'[gallery size="large" columns="1"]'
+		.'<div class="viimage">[gallery size="large" columns="1" link="file"]</div>'
 		.'</a>'
 		.'</noframes></frameset>'
 		.'<script async src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>';
