@@ -76,13 +76,13 @@ class twitter_reclaim_module extends reclaim_module {
                 $tmhOAuth->request('GET', self::$apiurl, $reqOptions, true);
 
                 if ($tmhOAuth->response['code'] == 200) {
-                    parent::log(sprintf(__('Retrieved set of twitter messages: %s', 'reclaim'), $tmhOAuth->response['code']));
-
                     $data = self::map_data(json_decode($tmhOAuth->response['response'], true));
-                    $reqOk = count($data) > 0;
-                    $lastid = $data[count($data)-1]["ext_guid"];
-
                     parent::insert_posts($data);
+
+                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid;
+                    $lastid = $data[count($data)-1]["ext_guid"];
+                    parent::log(sprintf(__('Retrieved set of twitter messages: %d, last id: %s, req-ok: %d', 'reclaim'), count($data), $lastid, $reqOk));
+
                     update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
                 }
                 else {
