@@ -49,10 +49,23 @@ class twitter_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import() {
+    public static function import($forceResync) {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
+
+            $lastseenid = get_option('reclaim_'.self::$shortname.'_last_seen_id');
+            $reqOptions = array(
+                'lang' => self::$lang,
+                'count' => self::$count,
+                'screen_name' => get_option('twitter_username'),
+                'include_rts' => "false",
+                'exclude_replies' => "true",
+                'include_entities' => "true"
+            );
+            if (strlen($lastseenid) > 0 && !$forceResync) {
+                $reqOptions['since_id'] = $lastseenid;
+            }
 
             do {
                 $tmhOAuth = new tmhOAuth(array(
@@ -62,14 +75,6 @@ class twitter_reclaim_module extends reclaim_module {
                     'user_secret' => get_option('twitter_user_secret'),
                 ));
 
-                $reqOptions = array(
-                    'lang' => self::$lang,
-                    'count' => self::$count,
-                    'screen_name' => get_option('twitter_username'),
-                    'include_rts' => "false",
-                    'exclude_replies' => "true",
-                    'include_entities' => "true"
-                );
                 if (isset($lastid)) {
                     $reqOptions['max_id'] = $lastid;
                 }
@@ -80,16 +85,21 @@ class twitter_reclaim_module extends reclaim_module {
                     parent::insert_posts($data);
 
                     $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid;
+                    if (!isset($lastid) && $reqOk) {
+                        // store the last-seen-id, which is the first message of the first request
+                        $lastseenid = $data[0]["ext_guid"];
+                    }
                     $lastid = $data[count($data)-1]["ext_guid"];
-                    parent::log(sprintf(__('Retrieved set of twitter messages: %d, last id: %s, req-ok: %d', 'reclaim'), count($data), $lastid, $reqOk));
-
-                    update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
+                    parent::log(sprintf(__('Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: %s, req-ok: %d', 'reclaim'), count($data), $lastseenid, $lastid, $reqOk));
                 }
                 else {
                     $reqOk = false;
                     parent::log(sprintf(__('GET failed with: %s', 'reclaim'), $tmhOAuth->response['code']));
                 }
             } while ($reqOk);
+
+            update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
+            update_option('reclaim_'.self::$shortname.'_last_seen_id', $lastseenid);
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
