@@ -22,25 +22,25 @@ class reclaim_core {
 		add_action('init', 'myStartSession', 1);
 
         require_once('helper-functions.php');
-        /* Load modules */        
+        /* Load modules */
         require_once('mod.class.php');
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
             require_once($file);
             $name = basename($file, '.class.php');
             $this->mods_loaded[] = array('name' => $name, 'active' => get_option($name.'_active'));
         }
-        
+
         foreach ($this->mods_loaded as $mod){
             $isStaleMod = $this->is_stale_mod($mod['name']);
             $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
 
             if ($mod['active']) {
                 if (($isStaleMod && get_option('reclaim_auto_update')) || $adminResync) {
-                    call_user_func(array($mod['name'].'_reclaim_module', 'import'));
+                    call_user_func(array($mod['name'].'_reclaim_module', 'import'), $adminResync);
                 }
             }
         }
-        
+
         add_action('admin_menu', array($this, 'admin_menu'));
 		add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
 
@@ -48,9 +48,9 @@ class reclaim_core {
 		// don't know if this works properly
 		add_action('wp_logout', 'myEndSession');
 		add_action('wp_login', 'myEndSession');
-        
+
 		add_filter('post_link', array($this, 'original_permalink'), 1, 3);
-		add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);   
+		add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);
     }
 
 	public function myStartSession() {
@@ -69,7 +69,7 @@ class reclaim_core {
 //		wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
 //		wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
 //		wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
-//		
+//
 	}
 
     public function get_interval(){
@@ -78,8 +78,8 @@ class reclaim_core {
             $interval = RECLAIM_UPDATE_INTERVAL;
         }
         return $interval;
-    } 
-    
+    }
+
     public function is_stale_mod($mod){
         $last = get_option('reclaim_'.$mod.'_last_update');
         if (false === $last) {
@@ -89,7 +89,7 @@ class reclaim_core {
             $interval = $this->get_interval();
             $ret = ( (current_time( 'timestamp' ) - $last) > $interval );
         }
-        return $ret;  
+        return $ret;
     }
 
     public function admin_menu(){
@@ -118,15 +118,15 @@ class reclaim_core {
             <table class="form-table">
             <tr valign="top">
                 <th colspan="2"><h3><?php _e('General Settings', 'reclaim'); ?></h3></th>
-            </tr>   
+            </tr>
             <tr valign="top">
                 <th scope="row"><?php _e('Auto-update', 'reclaim'); ?></th>
                 <td><input type="checkbox" name="reclaim_auto_update" value="1" <?php checked(get_option('reclaim_auto_update')); ?> /></td>
-            </tr>            
+            </tr>
             <tr valign="top">
                 <th scope="row"><?php _e('Update Interval (in seconds)', 'reclaim'); ?></th>
                 <td><input type="text" name="reclaim_update_interval" value="<?php echo self::get_interval(); ?>" /></td>
-            </tr>                
+            </tr>
 <?php
         foreach($this->mods_loaded as $mod) {
             call_user_func(array($mod['name'].'_reclaim_module', 'display_settings'));
@@ -138,7 +138,7 @@ class reclaim_core {
     </div>
 <?php
     }
-    
+
     public function original_permalink ($permalink = '', $post = null, $leavename = false, $sample = false) {
 	global $id;
 
@@ -147,17 +147,17 @@ class reclaim_core {
         }
         elseif (is_string($permalink) and strlen($permalink) > 0) {
             $postId = url_to_postid($permalink);
-        } 
+        }
         else {
             $postId = $id;
         }
-        
+
         $link = get_post_meta($postId, 'original_permalink', true);
 	if ($link){
             $permalink = $link;
         }
 	return $permalink;
-    } 
+    }
 }
 
 add_action('init', 'reclaim_init');
