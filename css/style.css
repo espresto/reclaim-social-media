@@ -3,7 +3,10 @@
 display: block;
 }
 
-.list-view .site-content .format-status .entry-title
+/* not rwally good to apply category filters, since user can call categories whatever she likes */
+.list-view .site-content .format-status .entry-title,
+.list-view .site-content .format-image.category-twitter .entry-title,
+.list-view .site-content .format-image.category-facebook .entry-title
 {
 	display: none;
 }
@@ -14,6 +17,11 @@ display: block;
 }
 
 .list-view .site-content .format-image.category-facebook .post-thumbnail 
+{
+/*	display: block; */
+}
+
+.list-view .site-content .format-image.category-twitter .post-thumbnail
 {
 /*	display: block; */
 }
@@ -52,10 +60,10 @@ display: block;
 .format-chat .entry-content div.fblink div.fbimage img,
 .format-status .entry-content blockquote.fblink div.fbimage img,
 .format-aside .entry-content blockquote.fblink div.fbimage img,
-.format-link .entry-content blockquote.fblink div.fbimage img,
+.format-link .entry-content blockquote.fblink div.fbimage,
 .format-quote .entry-content blockquote.fblink div.fbimage img,
 .format-chat .entry-content blockquote.fblink div.fbimage img,
-.entry-content blockquote.twitter-tweet div.twimage img, 
+/* .entry-content blockquote.twitter-tweet div.twimage img, */
 .format-link .entry-content div.glink div.gimage img,
 .format-link .entry-content blockquote.glink div.gimage img,
 .entry-content div.grimage img
