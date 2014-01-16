@@ -6,7 +6,7 @@
 */
 
 /**
-* Hybrid_Providers_Instagram (By Sebastian Lasse - https://github.com/sebilasse)
+* Hybrid_Providers_Moves (By Felix Schwenzel - https://github.com/diplix)
 */
 class Hybrid_Providers_Moves extends Hybrid_Provider_Model_OAuth2
 { 
