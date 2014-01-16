@@ -108,14 +108,31 @@ class twitter_reclaim_module extends reclaim_module {
     private static function map_data($rawData) {
         $data = array();
         $tags = array();
-        foreach($rawData as $entry) {
-            $content = self::get_content($entry);
+        foreach($rawData as $entry){
+            $content = self::construct_content($entry);
             $tags = self::get_hashtags($entry);
+
+            if ($entry['entities']['media'][0]['type']=="photo") {
+            	self::$post_format = 'image';
+            } else {
+            	self::$post_format = 'status';
+            }
+
+            // save geo coordinates?
+            // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
+            // http://codex.wordpress.org/Geodata
+			$lat = $entry['geo']['coordinates'][0];
+			$lon = $entry['geo']['coordinates'][1];
+			
+			$post_meta["geo_latitude"] = $lat;
+			$post_meta["geo_longitude"] = $lon;
+			$post_meta['favorite_count'] = $entry['favorite_count'];
+        
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
-                'post_date' => date('Y-m-d H:i:s', strtotime($entry["created_at"])),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => self::$post_format,
 // neu
 				'post_content'   => $content['embedcode'],
@@ -128,7 +145,8 @@ class twitter_reclaim_module extends reclaim_module {
                 'tags_input' => $tags,
                 'ext_permalink' => 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"],
                 'ext_image' => $content['image'],
-                'ext_guid' => $entry["id_str"]
+                'ext_guid' => $entry["id_str"],
+                'post_meta' => $post_meta
             );
         }
         return $data;
@@ -144,7 +162,7 @@ class twitter_reclaim_module extends reclaim_module {
         return $tags;
 	}
 
-    private static function get_content($entry) {
+    private static function construct_content($entry) {
         $post_content = $entry['text'];
         $post_content = html_entity_decode($post_content); // ohne trim?
         //links einsetzen/auflösen
@@ -160,7 +178,12 @@ class twitter_reclaim_module extends reclaim_module {
                 $post_content = str_replace( $media['url'], '<a href="'.$media['expanded_url'].'">'.$media['display_url'].'</a>', $post_content);
                 if ($media['type']=="photo") {
                     $image_url = $media['media_url'];
-                    $image_html = '<div class="twitter-image"><a href="'.$media['expanded_url'].'"><img src="'.$image_url.'" alt=""></a></div>';
+                    $image_html = '<div class="twitter-image">'
+//                    .'<a href="'.$media['expanded_url'].'">'
+//                    .'<img src="'.$image_url.'" alt="">'
+                    .'[gallery size="large" columns="1" link="file"]'
+//                    .'</a>'
+                    .'</div>';
                 }
             }
         }
