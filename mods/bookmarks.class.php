@@ -94,7 +94,7 @@ class bookmarks_reclaim_module extends reclaim_module {
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => date('Y-m-d H:i:s', strtotime($published)),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($published))),
 //                'post_excerpt' => $description,
                 'post_content' => $description,
                 'post_title' => $title,
@@ -130,8 +130,9 @@ class bookmarks_reclaim_module extends reclaim_module {
 			'<div class="grmessage"><p>Ich habe <em><a href="'.$item->get_permalink.'">'.$item->get_title().'</a></em> von '.$author_name.' gelesen.</p>'
 			.'<p>'.$user_review.'</p>'
 //			.$image_html
-			.'<div class="grimage"><a href="'.$item->get_permalink.'">[gallery size="large" columns="1"]</a></div>'
+			.'<div class="boimage">[gallery size="large" columns="1" link="file"]</div>'
 //			.'<blockquote>'.$book_description.'</blockquote>'
+//<a href="'.$item->get_permalink.'">
 			.'</div>'
 			;
 
