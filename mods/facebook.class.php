@@ -22,15 +22,6 @@ class facebook_reclaim_module extends reclaim_module {
     private static $count = 200;
     private static $timeout = 20;
 
-    private static function get_access_token(){
-        $rawData = parent::import_via_curl(sprintf('https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials', get_option('facebook_app_id'), get_option('facebook_app_secret')), self::$timeout);
-        $pos = strpos($rawData, '=');
-        if($pos !== false) {
-            $token = substr($rawData, $pos + 1);
-            update_option('facebook_oauth_token', $token);
-        }
-    }
-
     public static function register_settings() {
         parent::register_settings(self::$shortname);
 
@@ -155,7 +146,6 @@ class facebook_reclaim_module extends reclaim_module {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (!get_option('facebook_oauth_token') && get_option('facebook_app_id') && get_option('facebook_app_secret')) {
             parent::log(sprintf(__('getting FB token', 'reclaim'), self::$shortname));
-//            self::get_access_token();
         }
 
         if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
