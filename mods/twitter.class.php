@@ -1,4 +1,22 @@
 <?php
+/*  Copyright 2013-2014 diplix
+                   2014 Christian Muehlhaeuser <muesli@gmail.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 class twitter_reclaim_module extends reclaim_module {
     private static $shortname = 'twitter';
     private static $apiurl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
@@ -123,11 +141,11 @@ class twitter_reclaim_module extends reclaim_module {
             // http://codex.wordpress.org/Geodata
 			$lat = $entry['geo']['coordinates'][0];
 			$lon = $entry['geo']['coordinates'][1];
-			
+
 			$post_meta["geo_latitude"] = $lat;
 			$post_meta["geo_longitude"] = $lon;
 			$post_meta['favorite_count'] = $entry['favorite_count'];
-        
+
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),

@@ -1,10 +1,27 @@
 <?php
+/*  Copyright 2013-2014 diplix
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 class instagram_reclaim_module extends reclaim_module {
     private static $shortname = 'instagram';
     private static $apiurl= "https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%s";
 
     private static $timeout = 15;
-    private static $count = 40; 
+    private static $count = 40;
     private static $post_format = 'image'; // or 'status', 'aside'
 
 // callback-url: http://root.wirres.net/reclaim/wp-content/plugins/reclaim/vendor/hybridauth/hybridauth/src/
@@ -12,7 +29,7 @@ class instagram_reclaim_module extends reclaim_module {
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
-        
+
         register_setting('reclaim-social-settings', 'instagram_user_id');
         register_setting('reclaim-social-settings', 'instagram_user_name');
         register_setting('reclaim-social-settings', 'instagram_client_id');
@@ -41,13 +58,13 @@ class instagram_reclaim_module extends reclaim_module {
 		    if(session_id()) {
 			    session_destroy ();
 			}
-			
+
 		}
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
         </tr>
-<?php           
+<?php
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
@@ -79,10 +96,10 @@ class instagram_reclaim_module extends reclaim_module {
             <th scope="row"></th>
             <td>
             <?php
-            if ( 
-            (get_option('instagram_client_id')!="") 
-            && (get_option('instagram_client_secret')!="") 
-            
+            if (
+            (get_option('instagram_client_id')!="")
+            && (get_option('instagram_client_secret')!="")
+
             ) {
 				$link_text = __('Authorize with Instagram', 'reclaim');
 	            // && (get_option('facebook_oauth_token')!="")
@@ -102,7 +119,7 @@ class instagram_reclaim_module extends reclaim_module {
 
 
             	echo '<a class="button button-secondary" href="'
-            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) ) 
+            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
             	.'?'
             	.'&mod='.self::$shortname
             	.'&callbackUrl='.$callback
@@ -114,25 +131,25 @@ class instagram_reclaim_module extends reclaim_module {
             }
             ?>
             </td>
-        </tr>  
-        
+        </tr>
+
 <?php
     }
 
 	public static function construct_hybridauth_config() {
-		$config = array( 
-			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found) 
+		$config = array(
+			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
 			"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
-			"providers" => array ( 
+			"providers" => array (
 				"Instagram" => array(
 					"enabled" => true,
-					"keys"    => array ( "id" => get_option('instagram_client_id'), "secret" => get_option('instagram_client_secret') ), 
+					"keys"    => array ( "id" => get_option('instagram_client_id'), "secret" => get_option('instagram_client_secret') ),
 					"wrapper" => array(
 						"path"  => dirname( __FILE__ ) . '/../vendor/hybridauth/hybridauth/additional-providers/hybridauth-instagram/Providers/Instagram.php',
 						"class" => "Hybrid_Providers_Instagram",
 					),
 				),
-	   		), 
+	   		),
 		);
 		return $config;
 	}
@@ -144,7 +161,7 @@ class instagram_reclaim_module extends reclaim_module {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
-            
+
             if ($rawData) {
             	$data = self::map_data($rawData);
             	parent::insert_posts($data);
@@ -157,7 +174,7 @@ class instagram_reclaim_module extends reclaim_module {
     }
 
     private static function map_data($rawData) {
-        $data = array();      
+        $data = array();
 		//echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['data'] as $entry){
             $description = $entry['caption']['text'];
@@ -176,12 +193,12 @@ class instagram_reclaim_module extends reclaim_module {
             // http://codex.wordpress.org/Geodata
 			$lat = $entry['location']['latitude'];
 			$lon = $entry['location']['longitude'];
-			
+
 			// save meta like this?
-			
+
 			$post_meta["geo_latitude"] = $lat;
 			$post_meta["geo_longitude"] = $lon;
-			
+
             $id = $entry["link"];
             $link = $entry["link"];
             $image_url = $entry['images']['standard_resolution']['url'];
@@ -192,7 +209,7 @@ class instagram_reclaim_module extends reclaim_module {
             $content = self::construct_content($entry,$id,$image_url,$title);
 			$content_type = "constructed";
 			if ($entry['type']=='video') {
-			// what to do with videos? 
+			// what to do with videos?
 			// post format, show embed code instead of pure image
 			// todo: get that video file and show it nativly in wp
 			// $entry['videos']['standard_resolution']['url']
@@ -204,7 +221,7 @@ class instagram_reclaim_module extends reclaim_module {
 				self::$post_format = 'image';
 			}
 
-            $data[] = array(                
+            $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
@@ -220,8 +237,8 @@ class instagram_reclaim_module extends reclaim_module {
                 'ext_embed_code' => $content['embed_code'],
                 'ext_guid' => $id,
                 'post_meta' => $post_meta
-            );                 
-            
+            );
+
         }
         return $data;
     }
@@ -254,7 +271,7 @@ class instagram_reclaim_module extends reclaim_module {
 		.'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
 //		.'</a>'
 		.'</noframes></frameset>';
-		
+
 
         $content = array(
             'original' =>  $post_content_original,
@@ -262,8 +279,8 @@ class instagram_reclaim_module extends reclaim_module {
             'embed_code' => $embed_code,
             'image' => $image_url
         );
-        
-        return $content;        
+
+        return $content;
     }
 
 
