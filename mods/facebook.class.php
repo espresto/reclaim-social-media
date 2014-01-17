@@ -160,10 +160,12 @@ class facebook_reclaim_module extends reclaim_module {
         }
 
         if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
+            $lastupdate = get_option('reclaim_'.self::$shortname.'_last_update');
+            parent::log(sprintf(__('BEGIN %s import since %s', 'reclaim'),
+                            self::$shortname,
+                            strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
 
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token'));
-            $lastupdate = get_option('reclaim_'.self::$shortname.'_last_update');
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
             }
