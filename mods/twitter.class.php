@@ -71,6 +71,7 @@ class twitter_reclaim_module extends reclaim_module {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
+            update_option('reclaim_'.self::$shortname.'_locked', 1);
 
             $lastseenid = get_option('reclaim_'.self::$shortname.'_last_seen_id');
             $reqOptions = array(
@@ -118,6 +119,7 @@ class twitter_reclaim_module extends reclaim_module {
 
             update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             update_option('reclaim_'.self::$shortname.'_last_seen_id', $lastseenid);
+            update_option('reclaim_'.self::$shortname.'_locked', 0);
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));

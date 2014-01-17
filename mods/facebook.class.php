@@ -153,6 +153,7 @@ class facebook_reclaim_module extends reclaim_module {
             parent::log(sprintf(__('BEGIN %s import since %s', 'reclaim'),
                             self::$shortname,
                             strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
+            update_option('reclaim_'.self::$shortname.'_locked', 1);
 
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, substr(get_bloginfo('language'), 0, 2), get_option('facebook_oauth_token'));
             if (strlen($lastupdate) > 0 && !$forceResync) {
@@ -176,6 +177,7 @@ class facebook_reclaim_module extends reclaim_module {
             }
 
             update_option('reclaim_'.self::$shortname.'_last_update', $lastupdate);
+            update_option('reclaim_'.self::$shortname.'_locked', 0);
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));

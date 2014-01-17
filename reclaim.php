@@ -49,10 +49,11 @@ class reclaim_core {
 
         foreach ($this->mods_loaded as $mod){
             $isStaleMod = $this->is_stale_mod($mod['name']);
+            $isLockedMod = $this->is_locked_mod($mod['name']);
             $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
 
             if ($mod['active']) {
-                if (($isStaleMod && get_option('reclaim_auto_update')) || $adminResync) {
+                if ((!$isLockedMod && $isStaleMod && get_option('reclaim_auto_update')) || !$isLockedMod && $adminResync) {
                     call_user_func(array($mod['name'].'_reclaim_module', 'import'), $adminResync);
                 }
             }
@@ -95,6 +96,17 @@ class reclaim_core {
             $interval = RECLAIM_UPDATE_INTERVAL;
         }
         return $interval;
+    }
+
+    public function is_locked_mod($mod){
+        $locked = get_option('reclaim_'.$mod.'_locked');
+        if ($locked == 1) {
+            $ret = false;
+            $message = 'reclaim_'.$mod.'_locked is 1';
+            file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
+        } else {
+            $message = 'reclaim_'.$mod.'_locked is 0';
+        }
     }
 
     public function is_stale_mod($mod){

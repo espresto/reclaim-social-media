@@ -62,6 +62,7 @@ class vine_reclaim_module extends reclaim_module {
         parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('vine_user_id') ) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
+            update_option('reclaim_'.self::$shortname.'_locked', 1);
 
 			$key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
 			$userId = strtok($key,'-');
@@ -76,6 +77,7 @@ class vine_reclaim_module extends reclaim_module {
             else {
 	            parent::log(sprintf(__('no %s data', 'reclaim'), self::$shortname));
             }
+            update_option('reclaim_'.self::$shortname.'_locked', 0);
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
