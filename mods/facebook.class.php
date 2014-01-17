@@ -18,8 +18,7 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $shortname = 'facebook';
-//    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s&locale=".get_bloginfo ( 'language' );
-    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s";
+    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
     private static $count = 200;
     private static $timeout = 20;
 
@@ -165,7 +164,7 @@ class facebook_reclaim_module extends reclaim_module {
                             self::$shortname,
                             strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
 
-            $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token'));
+            $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, substr(get_bloginfo('language'), 0, 2), get_option('facebook_oauth_token'));
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
             }
