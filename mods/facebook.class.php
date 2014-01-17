@@ -163,6 +163,12 @@ class facebook_reclaim_module extends reclaim_module {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
 
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token'));
+            $lastupdate = get_option('reclaim_'.self::$shortname.'_last_update');
+            if (strlen($lastupdate) > 0 && !$forceResync) {
+                $urlNext .= "&since=" . $lastupdate;
+            }
+            $lastupdate = current_time('timestamp');
+
             while (strlen($urlNext) > 0) {
                 parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), self::$shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
@@ -178,7 +184,7 @@ class facebook_reclaim_module extends reclaim_module {
                 parent::insert_posts($data);
             }
 
-            update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
+            update_option('reclaim_'.self::$shortname.'_last_update', $lastupdate);
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
