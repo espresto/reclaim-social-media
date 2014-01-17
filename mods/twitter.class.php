@@ -74,7 +74,7 @@ class twitter_reclaim_module extends reclaim_module {
 
             $lastseenid = get_option('reclaim_'.self::$shortname.'_last_seen_id');
             $reqOptions = array(
-                'lang' => self::$lang,
+                'lang' => substr(get_bloginfo('language'), 0, 2),
                 'count' => self::$count,
                 'screen_name' => get_option('twitter_username'),
                 'include_rts' => "false",
