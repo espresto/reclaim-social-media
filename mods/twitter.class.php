@@ -24,7 +24,7 @@ class twitter_reclaim_module extends reclaim_module {
     private static $lang = 'en';
     private static $post_format = 'status'; // or 'status', 'aside'
 
-//	const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
+//    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
@@ -139,12 +139,12 @@ class twitter_reclaim_module extends reclaim_module {
             // save geo coordinates?
             // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
             // http://codex.wordpress.org/Geodata
-			$lat = $entry['geo']['coordinates'][0];
-			$lon = $entry['geo']['coordinates'][1];
+            $lat = $entry['geo']['coordinates'][0];
+            $lon = $entry['geo']['coordinates'][1];
 
-			$post_meta["geo_latitude"] = $lat;
-			$post_meta["geo_longitude"] = $lon;
-			$post_meta['favorite_count'] = $entry['favorite_count'];
+            $post_meta["geo_latitude"] = $lat;
+            $post_meta["geo_longitude"] = $lon;
+            $post_meta['favorite_count'] = $entry['favorite_count'];
 
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
@@ -152,8 +152,8 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => self::$post_format,
-// neu
-				'post_content'   => $content['embedcode'],
+// new
+                'post_content'   => $content['embedcode'],
 // changed
 //                'post_excerpt' => $content['embedcode'],
 //                'post_excerpt' => $content['original'],
@@ -171,14 +171,14 @@ class twitter_reclaim_module extends reclaim_module {
     }
 
     private static function get_hashtags($entry) {
-		$tags = array();
+        $tags = array();
         if (count($entry['entities']['hashtags'])) {
             foreach ($entry['entities']['hashtags'] as $hashtag) {
                 $tags[] = $hashtag['text'];
             }
         }
         return $tags;
-	}
+    }
 
     private static function construct_content($entry) {
         $post_content = $entry['text'];
@@ -208,28 +208,28 @@ class twitter_reclaim_module extends reclaim_module {
         $post_content = preg_replace( "/\s((http|ftp)+(s)?:\/\/[^<>\s]+)/i", " <a href=\"\\0\" target=\"_blank\">\\0</a>",$post_content);
         $post_content = preg_replace('/[@]+([A-Za-z0-9-_]+)/', '<a href="http://twitter.com/\\1" target="_blank">\\0</a>', $post_content );
 
-	        // Autolink hashtags (wordpress funktion)
+        // Autolink hashtags (wordpress funktion)
         $post_content = preg_replace('/(^|[^0-9A-Z&\/]+)(#|\xef\xbc\x83)([0-9A-Z_]*[A-Z_]+[a-z0-9_\xc0-\xd6\xd8-\xf6\xf8\xff]*)/iu', '${1}<a href="http://twitter.com/search?q=%23${3}" title="#${3}">${2}${3}</a>', $post_content);
 
-	// original twitter embed code (more or less)
+        // original twitter embed code (more or less)
         $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
-	// if these are one's own tweets, there is no point to mark the username. also the date and time is supeficial.
-		$embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
+        // if these are one's own tweets, there is no point to mark the username. also the date and time is supeficial.
+        $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
 
 /*
-		setlocale (LC_ALL, get_bloginfo ( 'language' ) );
-		$embedcode = sprintf(
-				self::TWITTER_TWEET_TPL,
-				$post_content,
-				$image_html,
-				$entry['user']['name'],
-				$entry['user']['screen_name'],
-				$entry['user']['screen_name'],
-				get_option('twitter_username'),
-				$entry["id_str"],
-				date('d.m.Y H:i', strtotime($entry["created_at"]))
-//				date(get_option('date_format'), strtotime($entry["created_at"]))
-			);
+        setlocale (LC_ALL, get_bloginfo ( 'language' ) );
+        $embedcode = sprintf(
+                self::TWITTER_TWEET_TPL,
+                $post_content,
+                $image_html,
+                $entry['user']['name'],
+                $entry['user']['screen_name'],
+                $entry['user']['screen_name'],
+                get_option('twitter_username'),
+                $entry["id_str"],
+                date('d.m.Y H:i', strtotime($entry["created_at"]))
+                date(get_option('date_format'), strtotime($entry["created_at"]))
+        );
 */
         $content = array(
             'original' =>  $post_content,
