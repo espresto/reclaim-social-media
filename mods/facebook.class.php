@@ -20,8 +20,8 @@ class facebook_reclaim_module extends reclaim_module {
     private static $shortname = 'facebook';
 //    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s&locale=".get_bloginfo ( 'language' );
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s";
-    private static $count = 100;
-    private static $timeout = 15;
+    private static $count = 200;
+    private static $timeout = 20;
 
     private static function get_access_token(){
         $rawData = parent::import_via_curl(sprintf('https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials', get_option('facebook_app_id'), get_option('facebook_app_secret')), self::$timeout);
