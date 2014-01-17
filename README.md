@@ -4,7 +4,7 @@ Reclaim Social Media
 Reclaim Social Media version .2, based on Reclaim Social Media version .1 by
 [Felix Schwenzel](http://reclaim.fm) & Sascha Lobo.
 
-It’s a single WordPress plugin by remigi illi at [digitaleheimat.de](http://digitaleheimat.de), instead of a collection of proxy-scripts and 3rd party plugins. The code of the early version can be found at GitHub ([proxy scripts](https://github.com/diplix/reclaim-proxy-scripts)) and the [reclaim.fm site](http://reclaim.fm/tech-specs-details/).
+It’s a single WordPress plugin by Remigi Illi at [digitaleheimat.de](http://digitaleheimat.de), instead of a collection of proxy-scripts and 3rd party plugins. The code of the early version can be found at GitHub ([proxy scripts](https://github.com/diplix/reclaim-proxy-scripts)) and the [reclaim.fm site](http://reclaim.fm/tech-specs-details/).
 
 The plugin is still pretty raw but should be a good foundation for further development.
 
