@@ -128,7 +128,7 @@ class facebook_reclaim_module extends reclaim_module {
     public static function construct_hybridauth_config() {
         $config = array(
             // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
-            "base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
+            "base_url" => plugins_url('/vendor/hybridauth/hybridauth/hybridauth/', dirname(__FILE__) ),
             "providers" => array(
                 "Facebook" => array(
                     "enabled" => true,
