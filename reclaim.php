@@ -36,7 +36,7 @@ class reclaim_core {
     private $mods_loaded = array();
 
     public function __construct() {
-		add_action('init', 'myStartSession', 1);
+        add_action('init', 'myStartSession', 1);
 
         require_once('helper-functions.php');
         /* Load modules */
@@ -59,35 +59,35 @@ class reclaim_core {
         }
 
         add_action('admin_menu', array($this, 'admin_menu'));
-		add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
+        add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
 
-		// get those sessions strated, before it's too late
-		// don't know if this works properly
-		add_action('wp_logout', 'myEndSession');
-		add_action('wp_login', 'myEndSession');
+        // get those sessions strated, before it's too late
+        // don't know if this works properly
+        add_action('wp_logout', 'myEndSession');
+        add_action('wp_login', 'myEndSession');
 
-		add_filter('post_link', array($this, 'original_permalink'), 1, 3);
-		add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);
+        add_filter('post_link', array($this, 'original_permalink'), 1, 3);
+        add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);
     }
 
-	public function myStartSession() {
-    	if(!session_id()) {
-	        session_start();
-	    }
-	}
+    public function myStartSession() {
+        if(!session_id()) {
+            session_start();
+        }
+    }
 
-	public function myEndSession() {
-	    session_destroy ();
-	}
+    public function myEndSession() {
+        session_destroy ();
+    }
 
-	public function prefix_add_reclaim_stylesheet() {
-    	wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
-    	wp_enqueue_style('prefix-style');
-//		wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
-//		wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
-//		wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
+    public function prefix_add_reclaim_stylesheet() {
+        wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
+        wp_enqueue_style('prefix-style');
+//        wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
+//        wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
+//        wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
 //
-	}
+    }
 
     public function get_interval(){
         $interval = get_option('reclaim_update_interval');
@@ -110,9 +110,9 @@ class reclaim_core {
     }
 
     public function admin_menu(){
-    	if(!session_id()) {
-	        session_start();
-	    }
+        if(!session_id()) {
+            session_start();
+        }
         add_options_page( __('Reclaim Social Accounts Settings', 'reclaim'), __('Reclaim', 'reclaim'), 'manage_options', __FILE__, array($this, 'display_settings'));
         add_action('admin_init', array($this, 'register_settings'));
     }
@@ -157,9 +157,9 @@ class reclaim_core {
     }
 
     public function original_permalink ($permalink = '', $post = null, $leavename = false, $sample = false) {
-	global $id;
+        global $id;
 
-	if (is_object($post) and isset($post->ID) and !empty($post->ID)) {
+        if (is_object($post) and isset($post->ID) and !empty($post->ID)) {
             $postId = $post->ID;
         }
         elseif (is_string($permalink) and strlen($permalink) > 0) {
@@ -169,16 +169,16 @@ class reclaim_core {
             $postId = $id;
         }
 
-    $link = get_post_meta($postId, 'original_permalink', true);
-    if ( $link != "" ) {
-		// added this, because otherwise link slug would be added in some occasions
-//        $link .= '#'; // adds hash to the original_permalink
-//        $link .= '?'; // strange: resets original
+        $link = get_post_meta($postId, 'original_permalink', true);
+        if ( $link != "" ) {
+            // added this, because otherwise link slug would be added in some occasions
+            //  $link .= '#'; // adds hash to the original_permalink
+            //  $link .= '?'; // strange: resets original
         }
-	if ($link){
+        if ($link){
             $permalink = $link;
         }
-	return $permalink;
+        return $permalink;
     }
 }
 
