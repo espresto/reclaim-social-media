@@ -36,7 +36,7 @@ class reclaim_core {
     private $mods_loaded = array();
 
     public function __construct() {
-        add_action('init', 'myStartSession', 1);
+        add_action('init', array($this, 'myStartSession'),1,1);
 
         require_once('helper-functions.php');
         /* Load modules */
