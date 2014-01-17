@@ -40,15 +40,15 @@ class google_plus_reclaim_module extends reclaim_module {
 ?>
         <tr valign="top">
             <th scope="row">
-            	Google+ App settings
+                Google+ App settings
             </th>
             <td>
-            	<label for="google_plus_user_id"><?php _e('Google+ User ID', 'reclaim'); ?></label>
-            	<input type="text" name="google_plus_user_id" class="widefat" value="<?php echo get_option('google_plus_user_id'); ?>" />
-				<p class="description"><?php _e('Your Google+ profile ID is the long number at the end of your page or profile URL.', 'reclaim'); ?></p>
-				<hr />
-            	<label for="google_api_key"><?php _e('Google API Key', 'reclaim'); ?></label>
-            	<input type="text" name="google_api_key" class="widefat" value="<?php echo get_option('google_api_key'); ?>" />
+                <label for="google_plus_user_id"><?php _e('Google+ User ID', 'reclaim'); ?></label>
+                <input type="text" name="google_plus_user_id" class="widefat" value="<?php echo get_option('google_plus_user_id'); ?>" />
+                <p class="description"><?php _e('Your Google+ profile ID is the long number at the end of your page or profile URL.', 'reclaim'); ?></p>
+                <hr />
+                <label for="google_api_key"><?php _e('Google API Key', 'reclaim'); ?></label>
+                <input type="text" name="google_api_key" class="widefat" value="<?php echo get_option('google_api_key'); ?>" />
             </td>
         </tr>
 <?php
@@ -72,7 +72,7 @@ class google_plus_reclaim_module extends reclaim_module {
 
     public static function map_data($rawData) {
         $data = array();
-        foreach($rawData['items'] as $entry){
+        foreach($rawData['items'] as $entry) {
             $title = self::get_title($entry);
             $content = self::get_content($entry);
             $image = self::get_image_url($entry);
@@ -99,99 +99,96 @@ class google_plus_reclaim_module extends reclaim_module {
     }
 
     private static function get_post_format($entry) {
-	$verb = $entry['verb'];
-	$objectType = $entry['object']['objectType'];
-	$attachmentObjectType = $entry['object']['attachments'][0]['objectType'];
-//	parent::log('objectType: '.$objectType);
-//	parent::log('attachmentObjectType: '.$attachmentObjectType);
-	if ($verb=="post") {
+        $verb = $entry['verb'];
+        $objectType = $entry['object']['objectType'];
+        $attachmentObjectType = $entry['object']['attachments'][0]['objectType'];
+//        parent::log('objectType: '.$objectType);
+//        parent::log('attachmentObjectType: '.$attachmentObjectType);
 
-    }
-    else {
+        $post_format = "aside";
+        if ($objectType=="activity") {
+            $post_format = "status";
+        }
+        if ($objectType=="note") {
+            $post_format = "aside";
+        }
 
-    }
-
-           	$post_format = "aside";
-			if ($objectType=="activity") {
-            	$post_format = "status";
-            }
-			if ($objectType=="note") {
-            	$post_format = "aside";
-            }
-
-			if ( ($attachmentObjectType=="photo") || ($attachmentObjectType=="album") ) {
-            	$post_format = "image";
-            }
-			if ($attachmentObjectType=="video") {
-            	$post_format = "video";
-            }
-			if ($attachmentObjectType=="article") {
-            	$post_format = "link";
-            }
+        if ( ($attachmentObjectType=="photo") || ($attachmentObjectType=="album") ) {
+            $post_format = "image";
+        }
+        if ($attachmentObjectType=="video") {
+            $post_format = "video";
+        }
+        if ($attachmentObjectType=="article") {
+            $post_format = "link";
+        }
 
         return $post_format;
-	}
+    }
 
     private static function get_title($entry) {
-        if (preg_match( "/<b>(.*?)<\/b>/", $entry['object']['content'], $matches) && $matches[1]) $title = $matches[1];
-        else $title = $entry['title'];
+        if (preg_match( "/<b>(.*?)<\/b>/", $entry['object']['content'], $matches) && $matches[1]) {
+            $title = $matches[1];
+        }
+        else {
+            $title = $entry['title'];
+        }
 
         return $title;
     }
 
-    private static function get_content($entry){
+    private static function get_content($entry) {
         $post_content = (preg_replace( "/<b>(.*?)<\/b>/", "", $entry['object']['content']));
         $post_content = (preg_replace( "/\A<br \/><br \/>/", "", $post_content));
         $post_content = (html_entity_decode(trim($post_content)));
         $post_content = preg_replace( "/\s((http|ftp)+(s)?:\/\/[^<>\s]+)/i", " <a href=\"\\0\" target=\"_blank\">\\0</a>", $post_content);
 
-		$story = "";
-		if ($entry['verb']=="share") {
-		$story = ''.$entry['annotation'].'<br />';
-		$story .= '<p>(Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a> geshared.)</p>';
-		}
+        $story = "";
+        if ($entry['verb']=="share") {
+            $story = ''.$entry['annotation'].'<br />';
+            $story .= '<p>(Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a> geshared.)</p>';
+        }
 
-		// it's a photo
+        // it's a photo
         if (isset($entry['object'], $entry['object']['attachments']) && $entry['object']['attachments'][0]['objectType']=="photo") {
             $post_content =
-            '<div class="gimage gplus"><a href="'.$entry['object']['attachments'][0]['url'].'">'
-            .'<img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="'.$entry['object']['attachments'][0]['content'].'">'
-            .'</a></div>'
-            .'<div class="gcontent gplus">'.$post_content.'</div>';
+                '<div class="gimage gplus"><a href="'.$entry['object']['attachments'][0]['url'].'">'
+                .'<img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="'.$entry['object']['attachments'][0]['content'].'">'
+                .'</a></div>'
+                .'<div class="gcontent gplus">'.$post_content.'</div>';
             if ($story!="") {
-            $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
+                $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
             }
-
         }
-		else {
+        else {
             if ($story!="") {
-            $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
+                $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
             }
-		}
+        }
 
-		//now other's content
+        //now other's content
         if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['objectType']) && $entry['object']['attachments'][0]['objectType'] == "article" && isset($entry['object']['attachments'][0]['content']) && $entry['object']['attachments'][0]['content']) {
             $articleimage_html = '<div class="gimage"><img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="" class="gpreview-img attachment articleimage"></div>';
-//			$description .= '<blockquote class="clearfix fbname fblink">'.$fblink_description.'</blockquote>'; // other's content
+//            $description .= '<blockquote class="clearfix fbname fblink">'.$fblink_description.'</blockquote>'; // other's content
             $post_content .= '<blockquote class="clearfix glink">'
-            .$articleimage_html
-            .'<div class="glink-title garticle attachment"><a href="'.$entry['object']['attachments'][0]['url'].'">'.$entry['object']['attachments'][0]['displayName'].'</a></div>'
-            .'<p class="glink-description">'.$entry['object']['attachments'][0]['content'].'</p></blockquote>';
+                .$articleimage_html
+                .'<div class="glink-title garticle attachment"><a href="'.$entry['object']['attachments'][0]['url'].'">'.$entry['object']['attachments'][0]['displayName'].'</a></div>'
+                .'<p class="glink-description">'.$entry['object']['attachments'][0]['content'].'</p></blockquote>';
         }
         if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['objectType']) && $entry['object']['attachments'][0]['objectType'] == "video") {
             $post_content = '<div class="gimage gplus video"><a href="'.$entry['object']['attachments'][0]['url'].'"><img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="'.$entry['object']['attachments'][0]['displayName'].'"></a></div>'.'<div class="gcontent gplus">'.$post_content.'</div>';
         }
-		$post_content .= '<p class="gviewpost-google">(<a href="'.$entry['url'].'">'.__('View on Google+', 'reclaim').'</a>)</p>';
+        $post_content .= '<p class="gviewpost-google">(<a href="'.$entry['url'].'">'.__('View on Google+', 'reclaim').'</a>)</p>';
 
-		// add embedcode
-		$post_content = '<div class="g-post" data-href="'.$entry['url'].'" data-width="100%">'
-		.$post_content
-		.'</div>';
+        // add embedcode
+        $post_content = '<div class="g-post" data-href="'.$entry['url'].'" data-width="100%">'
+            .$post_content
+            .'</div>';
 
         return $post_content;
     }
 
-    private static function get_image_url($entry){
+    private static function get_image_url($entry) {
         $image = '';
         if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['image']) && $entry['object']['attachments'][0]['image']['url']) {
             if ($entry['object']['attachments'][0]['fullImage']['url']) {
