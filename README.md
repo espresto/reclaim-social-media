@@ -21,4 +21,4 @@ The idea is to copy all the relevant data from the services you use and to enabl
 http://root.wirres.net/reclaim/
 
 ## Installation
-Download a [release](https://github.com/espresto/reclaim-social-media/releases) or clone the repository. If you clone, don't forget to run composer. Also remember, the plugin is not stable yet.
+Download a [release](https://github.com/espresto/reclaim-social-media/releases) or clone the repository. If you clone it, put it as directory "reclaim" into your wp-content/plugins path. Don't forget to run composer. Also remember, the plugin is not stable yet.
