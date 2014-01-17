@@ -201,7 +201,7 @@ class reclaim_module {
             )
         );
         if( is_wp_error( $response ) ) {
-            throw new Exception('Error fetching remote content');
+            throw new Exception('Error fetching remote content from '.$url.', wp error: '.$response->get_error_message());
         } else {
             $data = wp_remote_retrieve_body($response);
             return $data;
