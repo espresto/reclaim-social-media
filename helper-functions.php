@@ -1,4 +1,21 @@
 <?php
+/*  Copyright 2013-2014 diplix
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 function reclaim_text_add_more($text, $ellipsis, $read_more) {
     // New filter in WP2.9, seems unnecessary for now
     //$ellipsis = apply_filters('excerpt_more', $ellipsis);
@@ -7,14 +24,14 @@ function reclaim_text_add_more($text, $ellipsis, $read_more) {
     $ellipsis .= sprintf(' <a href="%s" class="read_more">%s</a>', get_permalink(), $read_more);
 
     $pos = strrpos($text, '</');
-    if ($pos !== false) // Inside last HTML tag        
+    if ($pos !== false) // Inside last HTML tag
     $text = substr_replace($text, $ellipsis, $pos, 0);
-    else // After the content        
+    else // After the content
     $text .= $ellipsis;
 
     return $text;
 }
-    
+
 
 function reclaim_text_excerpt($text, $length, $use_words, $finish_word, $finish_sentence) {
     $tokens = array();
@@ -51,4 +68,3 @@ function reclaim_text_excerpt($text, $length, $use_words, $finish_word, $finish_
 
     return trim(strip_tags($out));
 }
-

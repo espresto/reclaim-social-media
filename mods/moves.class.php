@@ -1,4 +1,21 @@
 <?php
+/*  Copyright 2013-2014 diplix
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 class moves_reclaim_module extends reclaim_module {
     private static $shortname = 'moves';
     private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?pastDays=%s&access_token=%s";
@@ -15,7 +32,7 @@ class moves_reclaim_module extends reclaim_module {
 
     public static function register_settings() {
         parent::register_settings(self::$shortname);
-        
+
         register_setting('reclaim-social-settings', 'moves_user_id');
         register_setting('reclaim-social-settings', 'moves_client_id');
         register_setting('reclaim-social-settings', 'moves_client_secret');
@@ -38,13 +55,13 @@ class moves_reclaim_module extends reclaim_module {
 		    if(session_id()) {
 			    session_destroy ();
 			}
-			
+
 		}
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('moves', 'reclaim'); ?></h3></th>
         </tr>
-<?php           
+<?php
         parent::display_settings(self::$shortname);
 ?>
         <tr valign="top">
@@ -65,10 +82,10 @@ class moves_reclaim_module extends reclaim_module {
             <th scope="row"></th>
             <td>
             <?php
-            if ( 
-            (get_option('moves_client_id')!="") 
-            && (get_option('moves_client_secret')!="") 
-            
+            if (
+            (get_option('moves_client_id')!="")
+            && (get_option('moves_client_secret')!="")
+
             ) {
 				$link_text = __('Authorize with Moves', 'reclaim');
 	            // && (get_option('facebook_oauth_token')!="")
@@ -88,7 +105,7 @@ class moves_reclaim_module extends reclaim_module {
 
 
             	echo '<a class="button button-secondary" href="'
-            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) ) 
+            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
             	.'?'
             	.'&mod='.self::$shortname
             	.'&callbackUrl='.$callback
@@ -101,25 +118,25 @@ class moves_reclaim_module extends reclaim_module {
 
             ?>
             </td>
-        </tr>  
-        
+        </tr>
+
 <?php
     }
 
 	public static function construct_hybridauth_config() {
-		$config = array( 
-			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found) 
+		$config = array(
+			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
 			"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
-			"providers" => array ( 
+			"providers" => array (
 				"Moves" => array(
 					"enabled" => true,
-					"keys"    => array ( "id" => get_option('moves_client_id'), "secret" => get_option('moves_client_secret') ), 
+					"keys"    => array ( "id" => get_option('moves_client_id'), "secret" => get_option('moves_client_secret') ),
 					"wrapper" => array(
 						"path"  => dirname( __FILE__ ) . '/../helper/hybridauth/provider/Moves.php',
 						"class" => "Hybrid_Providers_Moves",
 					),
 				),
-	   		), 
+	   		),
 		);
 		return $config;
 	}
@@ -152,10 +169,10 @@ class moves_reclaim_module extends reclaim_module {
         foreach($rawData as $day){
 
 			// today?
-			if ( strtotime($day['date']) == strtotime(date('d.m.Y')) ) { 
+			if ( strtotime($day['date']) == strtotime(date('d.m.Y')) ) {
 				// no entry, if it's from today
 			} else {
-									
+
             $id = $day["date"];
             $link = '';
             $image_url = '';
@@ -171,11 +188,11 @@ class moves_reclaim_module extends reclaim_module {
 			$post_meta["distance_run"] = $day['summary'][1]['distance'];
 			$post_meta["distance_cycled"] = $day['summary'][2]['distance'];
 
-            $data[] = array(                
+            $data[] = array(
                 'post_author' => get_option(self::$shortname.'_author'),
                 'post_category' => array(get_option(self::$shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($day["date"])+79200)), 
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($day["date"])+79200)),
                 'post_content' => $content,
                 'post_title' => $title,
                 'post_type' => 'post',
@@ -185,7 +202,7 @@ class moves_reclaim_module extends reclaim_module {
                 'ext_image' => $image_url,
                 'ext_guid' => $id,
                 'post_meta' => $post_meta
-            );                 
+            );
             }
         }
         return $data;
@@ -227,7 +244,7 @@ class moves_reclaim_module extends reclaim_module {
 				$description = 'ich habe mich heute kaum bewegt.';
 			}
 
-        return $description;        
+        return $description;
     }
 
 

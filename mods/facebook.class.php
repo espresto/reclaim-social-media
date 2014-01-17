@@ -1,4 +1,21 @@
 <?php
+/*  Copyright 2013-2014 diplix
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 class facebook_reclaim_module extends reclaim_module {
     private static $shortname = 'facebook';
 //    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=de&access_token=%s&locale=".get_bloginfo ( 'language' );
@@ -110,7 +127,7 @@ class facebook_reclaim_module extends reclaim_module {
 
 
             	echo '<a class="button button-secondary" href="'
-            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) ) 
+            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
             	.'?'
             	.'&mod='.self::$shortname
             	.'&callbackUrl='.$callback
@@ -130,15 +147,15 @@ class facebook_reclaim_module extends reclaim_module {
     }
 
 	public static function construct_hybridauth_config() {
-		$config = array( 
-	   // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found) 
+		$config = array(
+	   // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
 		"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
-		"providers" => array ( 
+		"providers" => array (
 			"Facebook" => array(
 				"enabled" => true,
-				"keys"    => array ( "id" => get_option('facebook_app_id'), "secret" => get_option('facebook_app_secret') ), 
+				"keys"    => array ( "id" => get_option('facebook_app_id'), "secret" => get_option('facebook_app_secret') ),
 			),
-	   	), 
+	   	),
 		);
 		return $config;
 	}
@@ -194,8 +211,8 @@ class facebook_reclaim_module extends reclaim_module {
                 $excerpt = self::construct_content($entry, $link, $image);
                 $post_format = self::get_post_format($entry);
                 if (($post_format=="link") && isset($entry['name'])) {$title = $entry['name'];}
-                
-                $data[] = array(                
+
+                $data[] = array(
                     'post_author' => get_option(self::$shortname.'_author'),
                     'post_category' => array(get_option(self::$shortname.'_category')),
 	                'post_format' => $post_format,
@@ -278,7 +295,7 @@ class facebook_reclaim_module extends reclaim_module {
         }
         return $title;
     }
-    
+
     private static function construct_content($entry, $link = '', $image  = ''){
         $description = "";
        	$post_format = "";
@@ -331,7 +348,7 @@ class facebook_reclaim_module extends reclaim_module {
 
 	// if it's an image, render it right away, not in the teaser
 			if ( ($entry['type']=='photo') && (!isset($entry['name'])) ) {
-				$description .= 
+				$description .=
 				'<div class="fbimage">'
 //				.'<img src="'.$image.'">'
 				.'[gallery columns=1 size="large" link="file"]'
