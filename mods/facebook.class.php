@@ -161,11 +161,23 @@ class facebook_reclaim_module extends reclaim_module {
 
         if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
             parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token')), self::$timeout);
-            $rawData = json_decode($rawData, true);
 
-            $data = self::map_data($rawData);
-            parent::insert_posts($data);
+            $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token');
+            while (strlen($urlNext) > 0) {
+                parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), self::$shortname, $urlNext));
+                $rawData = parent::import_via_curl($urlNext), self::$timeout);
+                $rawData = json_decode($rawData, true);
+
+                if (isset($rawData["paging"]["next"])) {
+                    $urlNext = $rawData["paging"]["next"];
+                } else {
+                    $urlNext = "";
+                }
+
+                $data = self::map_data($rawData);
+                parent::insert_posts($data);
+            }
+
             update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
