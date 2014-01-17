@@ -166,18 +166,19 @@ class facebook_reclaim_module extends reclaim_module {
                             strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
 
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, get_option('facebook_oauth_token'));
-            if (strlen($lastupdate) > 0 && !$forceResync) {
-                $urlNext .= "&since=" . $lastupdate;
+            if ($forceResync || strlen($lastupdate) == 0) {
+                $lastupdate = "0";
             }
+            $urlNext .= "&since=" . $lastupdate;
             $lastupdate = current_time('timestamp');
 
             while (strlen($urlNext) > 0) {
-                parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), self::$shortname, $urlNext));
+                parent::log(sprintf(__('GETTING for %s since %s', 'reclaim'), self::$shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
                 $rawData = json_decode($rawData, true);
 
-                if (isset($rawData["paging"]["next"])) {
-                    $urlNext = $rawData["paging"]["next"];
+                if (isset($rawData["paging"]["previous"])) {
+                    $urlNext = $rawData["paging"]["previous"];
                 } else {
                     $urlNext = "";
                 }
