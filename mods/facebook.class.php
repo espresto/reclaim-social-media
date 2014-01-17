@@ -18,8 +18,8 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $shortname = 'facebook';
-//    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=de&access_token=%s&locale=".get_bloginfo ( 'language' );
-    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=de&access_token=%s";
+//    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s&locale=".get_bloginfo ( 'language' );
+    private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=en&access_token=%s";
     private static $count = 100;
     private static $timeout = 15;
 
