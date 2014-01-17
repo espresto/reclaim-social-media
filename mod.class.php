@@ -69,7 +69,7 @@ class reclaim_module {
             'timeout'     => $timeout,
             'redirection' => 5,
             'httpversion' => '1.0',
-            'user-agent'  => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' ),
+            'user-agent'  => 'WordPress/' . get_bloginfo('version') . '; ' . get_bloginfo( 'url' ),
             'blocking'    => true,
             'headers'     => array(),
             'cookies'     => array(),
