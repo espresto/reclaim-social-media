@@ -161,16 +161,21 @@ class facebook_reclaim_module extends reclaim_module {
             while (strlen($urlNext) > 0) {
                 parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
-                $rawData = json_decode($rawData, true);
+				if ($rawData) {
+                    $rawData = json_decode($rawData, true);
 
-                if (isset($rawData["paging"]["next"])) {
-                    $urlNext = $rawData["paging"]["next"];
-                } else {
-                    $urlNext = "";
+                    if (isset($rawData["paging"]["next"])) {
+                        $urlNext = $rawData["paging"]["next"];
+                    } else {
+                        $urlNext = "";
+                    }
+
+                    $data = self::map_data($rawData);
+                    parent::insert_posts($data);
                 }
-
-                $data = self::map_data($rawData);
-                parent::insert_posts($data);
+                else { 
+                    $urlNext = ""; 
+                }
             }
 
             update_option('reclaim_'.$this->shortname.'_last_update', $lastupdate);
