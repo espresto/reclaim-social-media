@@ -18,8 +18,8 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
-    private static $count = 200;
-    private static $timeout = 20;
+    private static $count = 400;
+    private static $timeout = 60;
 
     public function __construct() {
         $this->shortname = 'facebook';
@@ -174,7 +174,11 @@ class facebook_reclaim_module extends reclaim_module {
                     parent::insert_posts($data);
                 }
                 else { 
-                    $urlNext = ""; 
+					// throw exception or end?
+                    //$urlNext = "";
+                    parent::log(sprintf(__('%s ended with an error. continue anyway wit %s', 'reclaim'), $this->shortname, $urlNext));
+
+                    
                 }
             }
 
@@ -185,6 +189,7 @@ class facebook_reclaim_module extends reclaim_module {
 
     private function map_data($rawData) {
         $data = array();
+        if (is_array($rawData['data'])) { // sometimes it's not an array
         foreach($rawData['data'] as $entry){
             if (    (
                     /*
@@ -194,13 +199,14 @@ class facebook_reclaim_module extends reclaim_module {
                      */
                     (
                     $entry['application']['name'] != "Twitter" // no tweets
-                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
+                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff 
+                    && $entry['application']['namespace'] != "NetworkedBlogs" // no  NetworkedBlogs syndication
                     && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
                     )
                )
                && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
                && ( (!isset($entry['privacy']['value']) ) || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
-               && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_namestuff
+               && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
             ) {
                 /*
                  * OK, everything is filtered now, lets proceed ...
@@ -231,6 +237,10 @@ class facebook_reclaim_module extends reclaim_module {
             }
         }
         return $data;
+        }
+        else {
+        return false;
+        }
     }
 
     private function get_post_format($entry) {
