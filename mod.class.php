@@ -288,9 +288,8 @@ class OpenGraph implements Iterator
    */
     static public function fetch($URI) {
         $response = wp_remote_get( $URI );
-        $response = $response['body'];
-        if (!empty($response)) {
-            return self::_parse($response);
+        if( !is_wp_error( $response ) ) {
+            return self::_parse($response['body']);
         } else {
             $message = 'og:parser: no response from '.$URI;
             file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);

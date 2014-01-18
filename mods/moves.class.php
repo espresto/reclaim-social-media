@@ -165,15 +165,17 @@ class moves_reclaim_module extends reclaim_module {
         foreach($rawData as $day){
 
             // today?
-            if ( strtotime($day['date']) == strtotime(date('d.m.Y')) ) {
+            if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
                 // no entry, if it's from today
             } else {
+            // post activity after 02:00
+            if (intval(date("H"))>2) {
                 $id = $day["date"];
                 $link = '';
                 $image_url = '';
                 $tags = '';
                 $link = '';
-                $title = sprintf(__('Bewegungen am %s', 'reclaim'), date('d.m.Y', strtotime($day["date"])));
+                $title = sprintf(__('Bewegung am %s', 'reclaim'), date('d.m.Y', strtotime($day["date"])));
 
                 $content = self::construct_content($day);
 
@@ -198,6 +200,7 @@ class moves_reclaim_module extends reclaim_module {
                     'ext_guid' => $id,
                     'post_meta' => $post_meta
                 );
+                }
             }
         }
         return $data;

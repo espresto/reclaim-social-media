@@ -105,13 +105,9 @@ class reclaim_core {
 
     public function is_locked_mod($mod){
         $locked = get_option('reclaim_'.$mod.'_locked');
-        if ($locked == 1) {
-            $ret = false;
-            $message = 'reclaim_'.$mod.'_locked is 1';
-            file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
-        } else {
-            $message = 'reclaim_'.$mod.'_locked is 0';
-        }
+        $message = 'reclaim_'.$mod.'_locked is ' . $locked;
+        file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
+        return $locked == 1;
     }
 
     public function is_stale_mod($mod){

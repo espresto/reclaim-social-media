@@ -187,14 +187,14 @@ class facebook_reclaim_module extends reclaim_module {
                      * we don't want tweets, or ifft-stuff, cause that would
                      * duplicate the other feeds (or would it not?)
                      */
-                    !isset($entry['application']) || (
+                    (
                     $entry['application']['name'] != "Twitter" // no tweets
                     && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
                     && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
                     )
                )
-               && ( !isset($entry['status_type']) || $entry['status_type'] != "approved_friend" ) // no new friend anouncements
-               && ($entry['privacy']['value'] == "" || $entry['privacy']['value'] == "EVERYONE") // privacy OK? is it public?
+               && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
+               && ( (!isset($entry['privacy']['value']) ) || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
                && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_namestuff
             ) {
                 /*
