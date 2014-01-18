@@ -59,7 +59,7 @@ class reclaim_module {
     * Interface
     */
     public function prepareImport($forceResync) {
-        log(sprintf(__('BEGIN %s import %s', 'reclaim'), $this->shortName(), $forceResync));
+        $this->log(sprintf(__('BEGIN %s import %s', 'reclaim'), $this->shortname, $forceResync));
         update_option('reclaim_'.$this->shortName().'_locked', 1);
     }
 
@@ -74,7 +74,7 @@ class reclaim_module {
     */
     public function finishImport($forceResync) {
         update_option('reclaim_'.$this->shortName().'_locked', 0);
-        log(sprintf(__('END %s import', 'reclaim'), $this->shortName()));
+        $this->log(sprintf(__('END %s import', 'reclaim'), $this->shortName()));
     }
 
     /**
