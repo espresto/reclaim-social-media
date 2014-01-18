@@ -85,7 +85,7 @@ class youtube_reclaim_module extends reclaim_module {
     }
 
     private function get_content($entry) {
-	$video_id = 0;
+        $video_id = 0;
         $post_content = '';
         if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $entry["link"][0]['href'], $match)) {
             $video_id = $match[1];

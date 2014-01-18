@@ -83,9 +83,9 @@ class flickr_reclaim_module extends reclaim_module {
     public function import($forceResync) {
         if (get_option('flickr_user_id') ) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('flickr_user_id'), self::$lang), self::$timeout);
-			// http://stackoverflow.com/questions/2752439/decode-json-string-returned-from-flickr-api-using-php-curl
-			$rawData = str_replace( 'jsonFlickrFeed(', '', $rawData );
-			$rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
+            // http://stackoverflow.com/questions/2752439/decode-json-string-returned-from-flickr-api-using-php-curl
+            $rawData = str_replace( 'jsonFlickrFeed(', '', $rawData );
+            $rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
             $rawData = json_decode($rawData, true);
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
@@ -102,7 +102,7 @@ class flickr_reclaim_module extends reclaim_module {
 
     private function map_data($rawData) {
         $data = array();
-        foreach($rawData['items'] as $entry){
+        foreach($rawData['items'] as $entry) {
             //date_taken
             //published
             //description
@@ -134,49 +134,49 @@ class flickr_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private function get_id($link){
-    	// http://www.flickr.com/photos/92049783@N06/8763490364/
-		// http://stackoverflow.com/questions/15118047/php-url-explode
-		$link = substr($link, 0, -1);
-    	$r = parse_url($link);
-		$id = strrchr($r['path'], '/');
-		$id = substr($id, 1);
+    private function get_id($link) {
+        // http://www.flickr.com/photos/92049783@N06/8763490364/
+        // http://stackoverflow.com/questions/15118047/php-url-explode
+        $link = substr($link, 0, -1);
+        $r = parse_url($link);
+        $id = strrchr($r['path'], '/');
+        $id = substr($id, 1);
 
-		return $id;
-	}
+        return $id;
+    }
 
-	public function get_flickr_description($description) {
-		$html = new simple_html_dom();
-		$html->load($description);
-		// get rid of img and a
-		foreach($html->find('img') as $e)
-		    $e->outertext = '';
-		foreach($html->find('a') as $e)
-		    $e->outertext = '';
-		//find last p, thats the plain description
-		$description_plain= $html->find('p', -1)->innertext;
-		return $description_plain;
-	}
+    public function get_flickr_description($description) {
+        $html = new simple_html_dom();
+        $html->load($description);
+        // get rid of img and a
+        foreach($html->find('img') as $e)
+            $e->outertext = '';
+        foreach($html->find('a') as $e)
+            $e->outertext = '';
+        //find last p, thats the plain description
+        $description_plain= $html->find('p', -1)->innertext;
+        return $description_plain;
+    }
 
     private function get_image_url($url) {
-		// get large image instead of medium size image
-		// z: medium
-		// b: large
-//		$url = str_replace( '_m.jpg', '_z.jpg', $url );
-		$url = str_replace( '_m.jpg', '_b.jpg', $url );
-		return $url;
-	}
+        // get large image instead of medium size image
+        // z: medium
+        // b: large
+//        $url = str_replace( '_m.jpg', '_z.jpg', $url );
+        $url = str_replace( '_m.jpg', '_b.jpg', $url );
+        return $url;
+    }
 
     private function construct_content($entry,$id,$image_url,$description) {
-		// flickr embed code:
-		// <iframe src="http://www.flickr.com/photos/92049783@N06/8497830300/player/" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+        // flickr embed code:
+        // <iframe src="http://www.flickr.com/photos/92049783@N06/8497830300/player/" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
         $post_content_original = $entry['description'];
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
-		$post_content_constructed_simple = '<a href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
-		$post_content_constructed = '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>';
+        $post_content_constructed_simple = '<a href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
+        $post_content_constructed = '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>';
 
-		$embed_code = '<frameset><iframe src="'.$entry['link'].'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
+        $embed_code = '<frameset><iframe src="'.$entry['link'].'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
 
         $content = array(
             'original' =>  $post_content_original,

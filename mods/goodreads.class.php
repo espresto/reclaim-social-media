@@ -18,7 +18,7 @@
 
 class goodreads_reclaim_module extends reclaim_module {
     private static $apiurl = "https://www.goodreads.com/review/list_rss/%s?shelf=read";
-	private static $count = 10;
+    private static $count = 10;
     private static $timeout = 15;
     private static $post_format = ''; // no specific format
 
@@ -49,32 +49,32 @@ class goodreads_reclaim_module extends reclaim_module {
     public function import($forceResync) {
         if (get_option('goodreads_user_id') ) {
             update_option('reclaim_'.$this->shortname.'_locked', 1);
-			if ( ! class_exists( 'SimplePie' ) )
-				require_once( ABSPATH . WPINC . '/class-feed.php' );
+            if ( ! class_exists( 'SimplePie' ) )
+                require_once( ABSPATH . WPINC . '/class-feed.php' );
 
-			$rss_source = sprintf(self::$apiurl, get_option('goodreads_user_id'));
-			/* Create the SimplePie object */
-			$feed = new SimplePie();
-			/* Set the URL of the feed you're retrieving */
-			$feed->set_feed_url( $rss_source );
-			/* Tell SimplePie to cache the feed using WordPress' cache class */
-			$feed->set_cache_class( 'WP_Feed_Cache' );
-			/* Tell SimplePie to use the WordPress class for retrieving feed files */
-			$feed->set_file_class( 'WP_SimplePie_File' );
-			/* Tell SimplePie how long to cache the feed data in the WordPress database */
-			$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', get_option('reclaim_update_interval'), $rss_source ) );
-			/* Run any other functions or filters that WordPress normally runs on feeds */
-			do_action_ref_array( 'wp_feed_options', array( &$feed, $rss_source ) );
-			/* Initiate the SimplePie instance */
-			$feed->init();
-			/* Tell SimplePie to send the feed MIME headers */
-			$feed->handle_content_type();
+            $rss_source = sprintf(self::$apiurl, get_option('goodreads_user_id'));
+            /* Create the SimplePie object */
+            $feed = new SimplePie();
+            /* Set the URL of the feed you're retrieving */
+            $feed->set_feed_url( $rss_source );
+            /* Tell SimplePie to cache the feed using WordPress' cache class */
+            $feed->set_cache_class( 'WP_Feed_Cache' );
+            /* Tell SimplePie to use the WordPress class for retrieving feed files */
+            $feed->set_file_class( 'WP_SimplePie_File' );
+            /* Tell SimplePie how long to cache the feed data in the WordPress database */
+            $feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', get_option('reclaim_update_interval'), $rss_source ) );
+            /* Run any other functions or filters that WordPress normally runs on feeds */
+            do_action_ref_array( 'wp_feed_options', array( &$feed, $rss_source ) );
+            /* Initiate the SimplePie instance */
+            $feed->init();
+            /* Tell SimplePie to send the feed MIME headers */
+            $feed->handle_content_type();
 
-			if ( $feed->error() ) {
-	            parent::log(sprintf(__('no %s data', 'reclaim'), $this->shortname));
-		        parent::log($feed->error());
-			}
-			else {
+            if ( $feed->error() ) {
+                parent::log(sprintf(__('no %s data', 'reclaim'), $this->shortname));
+                parent::log($feed->error());
+            }
+            else {
                 $data = self::map_data($feed);
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
@@ -87,20 +87,20 @@ class goodreads_reclaim_module extends reclaim_module {
         $data = array();
         $count = self::$count;
 
-		foreach( $feed->get_items( 0, $count ) as $item ) {
-			// some more available fields:
-    	    // book_id
-        	// book_large_image_url
-        	// book_description
-        	// author_name
-        	// isbn
-        	// user_name
-        	// user_review
-        	// user_rating
-        	// user_read_at
-        	// user_date_added
-        	// average_rating
-        	// book_published
+        foreach( $feed->get_items( 0, $count ) as $item ) {
+            // some more available fields:
+            // book_id
+            // book_large_image_url
+            // book_description
+            // author_name
+            // isbn
+            // user_name
+            // user_review
+            // user_rating
+            // user_read_at
+            // user_date_added
+            // average_rating
+            // book_published
             $title = $item->get_title();
             $id = $item->get_permalink();
             $link = $item->get_permalink();
@@ -152,25 +152,24 @@ class goodreads_reclaim_module extends reclaim_module {
     private function process_content($item,$id,$image_url,$description) {
         $post_content_original = $description;
         $author_data = $item->get_item_tags('', 'author_name');
-    	$author_name = $author_data[0]['data'];
+        $author_name = $author_data[0]['data'];
         $user_review_data = $item->get_item_tags('', 'user_review');
-    	$user_review = $user_review_data[0]['data'];
+        $user_review = $user_review_data[0]['data'];
         $book_description_data = $item->get_item_tags('', 'book_description');
-    	$book_description = $book_description_data[0]['data'];
-    	if ($image_url!="") {
-	    	$image_html = '<div class="grimage"><a href="'.$item->get_permalink.'"><img src="'.$image_url.'" alt="'.$item->get_title().'"></a></div>';
-		}
-		else {
-			$image_html ="";
-		}
-		$post_content_constructed =
-			'<div class="grmessage"><p>Ich habe <em><a href="'.$item->get_permalink.'">'.$item->get_title().'</a></em> von '.$author_name.' gelesen.</p>'
-			.'<p>'.$user_review.'</p>'
-//			.$image_html
-			.'<div class="grimage"><a href="'.$item->get_permalink.'">[gallery size="large" columns="1" link="file"]</a></div>'
-//			.'<blockquote>'.$book_description.'</blockquote>'
-			.'</div>'
-			;
+        $book_description = $book_description_data[0]['data'];
+        if ($image_url!="") {
+            $image_html = '<div class="grimage"><a href="'.$item->get_permalink.'"><img src="'.$image_url.'" alt="'.$item->get_title().'"></a></div>';
+        }
+        else {
+            $image_html ="";
+        }
+        $post_content_constructed =
+            '<div class="grmessage"><p>Ich habe <em><a href="'.$item->get_permalink.'">'.$item->get_title().'</a></em> von '.$author_name.' gelesen.</p>'
+            .'<p>'.$user_review.'</p>'
+//            .$image_html
+            .'<div class="grimage"><a href="'.$item->get_permalink.'">[gallery size="large" columns="1" link="file"]</a></div>'
+//            .'<blockquote>'.$book_description.'</blockquote>'
+            .'</div>';
 
         $content = array(
             'original' =>  $post_content_original,

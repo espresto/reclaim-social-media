@@ -40,28 +40,27 @@ class instagram_reclaim_module extends reclaim_module {
     }
 
     public function display_settings() {
-		if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='instagram') && (isset($_SESSION['hybridauth_user_profile']))) {
-			$user_profile 			= json_decode($_SESSION['hybridauth_user_profile']);
-			$user_access_tokens 	= json_decode($_SESSION['hybridauth_user_access_tokens']);
-			$error 					= $_SESSION['e'];
+        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='instagram') && (isset($_SESSION['hybridauth_user_profile']))) {
+            $user_profile       = json_decode($_SESSION['hybridauth_user_profile']);
+            $user_access_tokens = json_decode($_SESSION['hybridauth_user_access_tokens']);
+            $error = $_SESSION['e'];
 
-	        if ($error) {
-		        echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
-	        }
-			else {
-				update_option('instagram_user_id', $user_profile->identifier);
-				update_option('instagram_user_name', $user_profile->displayName);
-				update_option('instagram_access_token', $user_access_tokens->access_token);
-			}
-//			print_r($_SESSION);
-//			echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
-//			echo $user_access_tokens->accessToken;
-//			echo $user_profile->displayName;
-		    if(session_id()) {
-			    session_destroy ();
-			}
-
-		}
+            if ($error) {
+                echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
+            }
+            else {
+                update_option('instagram_user_id', $user_profile->identifier);
+                update_option('instagram_user_name', $user_profile->displayName);
+                update_option('instagram_access_token', $user_access_tokens->access_token);
+            }
+//            print_r($_SESSION);
+//            echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
+//            echo $user_access_tokens->accessToken;
+//            echo $user_profile->displayName;
+            if(session_id()) {
+                session_destroy ();
+            }
+        }
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
@@ -103,21 +102,21 @@ class instagram_reclaim_module extends reclaim_module {
             && (get_option('instagram_client_secret')!="")
 
             ) {
-				$link_text = __('Authorize with Instagram', 'reclaim');
-	            // && (get_option('facebook_oauth_token')!="")
-				if ( (get_option('instagram_user_id')!="") && (get_option('instagram_access_token')!="") ) {
-					echo sprintf(__('<p>Instagram authorized as %s</p>', 'reclaim'), get_option('instagram_user_name'));
-					$link_text = __('Authorize again', 'reclaim');
-				}
+                $link_text = __('Authorize with Instagram', 'reclaim');
+                // && (get_option('facebook_oauth_token')!="")
+                if ( (get_option('instagram_user_id')!="") && (get_option('instagram_access_token')!="") ) {
+                    echo sprintf(__('<p>Instagram authorized as %s</p>', 'reclaim'), get_option('instagram_user_name'));
+                    $link_text = __('Authorize again', 'reclaim');
+                }
 
-				// send to helper script
-				// put all configuration into session
-				// todo
-			    $config = self::construct_hybridauth_config();
-				$callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
+                // send to helper script
+                // put all configuration into session
+                // todo
+                $config = self::construct_hybridauth_config();
+                $callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
 
-				$_SESSION[$this->shortname]['config'] = $config;
-//				$_SESSION[$this->shortname]['mod'] = $this->shortname;
+                $_SESSION[$this->shortname]['config'] = $config;
+//                $_SESSION[$this->shortname]['mod'] = $this->shortname;
 
 
             	echo '<a class="button button-secondary" href="'
@@ -138,23 +137,23 @@ class instagram_reclaim_module extends reclaim_module {
 <?php
     }
 
-	public function construct_hybridauth_config() {
-		$config = array(
-			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
-			"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
-			"providers" => array (
-				"Instagram" => array(
-					"enabled" => true,
-					"keys"    => array ( "id" => get_option('instagram_client_id'), "secret" => get_option('instagram_client_secret') ),
-					"wrapper" => array(
-						"path"  => dirname( __FILE__ ) . '/../vendor/hybridauth/hybridauth/additional-providers/hybridauth-instagram/Providers/Instagram.php',
-						"class" => "Hybrid_Providers_Instagram",
-					),
-				),
-	   		),
-		);
-		return $config;
-	}
+    public function construct_hybridauth_config() {
+        $config = array(
+            // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
+            "base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
+            "providers" => array (
+                "Instagram" => array(
+                    "enabled" => true,
+                    "keys"    => array ( "id" => get_option('instagram_client_id'), "secret" => get_option('instagram_client_secret') ),
+                    "wrapper" => array(
+                        "path"  => dirname( __FILE__ ) . '/../vendor/hybridauth/hybridauth/additional-providers/hybridauth-instagram/Providers/Instagram.php',
+                        "class" => "Hybrid_Providers_Instagram",
+                    ),
+                ),
+            ),
+        );
+        return $config;
+    }
 
     public function import($forceResync) {
         if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
@@ -167,14 +166,14 @@ class instagram_reclaim_module extends reclaim_module {
             	update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             	parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
             }
-	        else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
+            else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
     private function map_data($rawData) {
         $data = array();
-		//echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
+        //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['data'] as $entry){
             $description = $entry['caption']['text'];
             $venueName = $entry['location']['name'];
@@ -190,35 +189,35 @@ class instagram_reclaim_module extends reclaim_module {
             // save geo coordinates?
             // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
             // http://codex.wordpress.org/Geodata
-			$lat = $entry['location']['latitude'];
-			$lon = $entry['location']['longitude'];
+            $lat = $entry['location']['latitude'];
+            $lon = $entry['location']['longitude'];
 
-			// save meta like this?
+            // save meta like this?
 
-			$post_meta["geo_latitude"] = $lat;
-			$post_meta["geo_longitude"] = $lon;
+            $post_meta["geo_latitude"] = $lat;
+            $post_meta["geo_longitude"] = $lon;
 
             $id = $entry["link"];
             $link = $entry["link"];
             $image_url = $entry['images']['standard_resolution']['url'];
             $tags = $entry['tags']; // not sure if that works
-			$filter = $entry['filter'];
-			$tags[] = 'filter:'.$filter;
+            $filter = $entry['filter'];
+            $tags[] = 'filter:'.$filter;
 
             $content = self::construct_content($entry,$id,$image_url,$title);
-			$content_type = "constructed";
-			if ($entry['type']=='video') {
-			// what to do with videos?
-			// post format, show embed code instead of pure image
-			// todo: get that video file and show it nativly in wp
-			// $entry['videos']['standard_resolution']['url']
-				self::$post_format = 'video';
-				$content_type = "embed_code"; // use instagram embed code?
-				$content_type = "constructed";
-			}
-			else {
-				self::$post_format = 'image';
-			}
+            $content_type = "constructed";
+            if ($entry['type']=='video') {
+                // what to do with videos?
+                // post format, show embed code instead of pure image
+                // todo: get that video file and show it nativly in wp
+                // $entry['videos']['standard_resolution']['url']
+                self::$post_format = 'video';
+                $content_type = "embed_code"; // use instagram embed code?
+                $content_type = "constructed";
+            }
+            else {
+                self::$post_format = 'image';
+            }
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
@@ -247,30 +246,29 @@ class instagram_reclaim_module extends reclaim_module {
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
 /*
-		$post_content_constructed = 'ich habe ein vine-video hochgeladen.'
-		.'<a href="'.$entry['permalinkUrl'].'"><img src="'.$image_url.'" alt="'.$description.'"></a>';
+        $post_content_constructed = 'ich habe ein vine-video hochgeladen.'
+            .'<a href="'.$entry['permalinkUrl'].'"><img src="'.$image_url.'" alt="'.$description.'"></a>';
 */
-		if ($entry['type']=='image') {
-			$post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-//			.'<a href="'.$entry['link'].'">'
-			.'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
-//			.'</a>'
-			;
-		} else {
-			$post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-			.'[video src="'.$entry['videos']['standard_resolution']['url'].'" poster="'.$image_url.'"]';
-		}
+        if ($entry['type']=='image') {
+            $post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+//                .'<a href="'.$entry['link'].'">'
+                .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
+//                .'</a>'
+            ;
+        } else {
+            $post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+                .'[video src="'.$entry['videos']['standard_resolution']['url'].'" poster="'.$image_url.'"]';
+        }
 
-		// instagram embed code:
-		// <iframe src="//instagram.com/p/jD91oVoLab/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
-		$embed_code = '<frameset><iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>'
-		.'<noframes>'
-		.'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-//		.'<a href="'.$entry['link'].'">'
-		.'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
-//		.'</a>'
-		.'</noframes></frameset>';
-
+        // instagram embed code:
+        // <iframe src="//instagram.com/p/jD91oVoLab/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        $embed_code = '<frameset><iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>'
+            .'<noframes>'
+            .'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+//            .'<a href="'.$entry['link'].'">'
+            .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
+//            .'</a>'
+            .'</noframes></frameset>';
 
         $content = array(
             'original' =>  $post_content_original,
