@@ -115,53 +115,55 @@ class reclaim_module {
     *
     */
     public static function insert_posts($data) {
-        if ($data) {
-            foreach ($data as $post) {
-                $exists = get_posts(array(
-                    'post_type' => 'post',
-                    'meta_query' => array(
-                        array(
-                            'key' => 'original_guid',
-                            'value' => $post['ext_guid'],
-                            'compare' => 'like'
-                        )
+        if (!$data || !is_array($rawData['data'])) {
+            return;
+        }
+
+        foreach ($data as $post) {
+            $exists = get_posts(array(
+                'post_type' => 'post',
+                'meta_query' => array(
+                    array(
+                        'key' => 'original_guid',
+                        'value' => $post['ext_guid'],
+                        'compare' => 'like'
                     )
-                ));
-                if (!$exists) {
-                    $inserted_post_id = wp_insert_post($post);
-                    update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
-                    update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
+                )
+            ));
+            if (!$exists) {
+                $inserted_post_id = wp_insert_post($post);
+                update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
+                update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
 
-                    if (isset($post['post_meta'])) {
-                        foreach ($post['post_meta'] as $key => $value) {
-                            update_post_meta($inserted_post_id, $key, $value);
+                if (isset($post['post_meta'])) {
+                    foreach ($post['post_meta'] as $key => $value) {
+                        update_post_meta($inserted_post_id, $key, $value);
+                    }
+                }
+
+                if ($post['ext_embed_code']!="") {
+                    update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
+                }
+                if ($post['ext_image']!="") {
+                    update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
+                    self::post_thumbnail($post['ext_image'], $inserted_post_id, $post['post_title']);
+                }
+                else {
+                    // possible performance hog
+                    // to do:
+                    // * activate or deactivate in settings
+                    // * check if image-url was already saved (in another article) if so, use it instead
+                    if ($post['ext_permalink']!="") {
+                        $graph = OpenGraph::fetch($post['ext_permalink']);
+                        $image_url = $graph->image;
+                        if ($image_url!="") {
+                            update_post_meta($inserted_post_id, 'image_url', $image_url);
+                            self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
                         }
                     }
-
-                    if ($post['ext_embed_code']!="") {
-                        update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
-                    }
-                    if ($post['ext_image']!="") {
-                        update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
-                        self::post_thumbnail($post['ext_image'], $inserted_post_id, $post['post_title']);
-                    }
-                    else {
-                        // possible performance hog
-                        // to do:
-                        // * activate or deactivate in settings
-                        // * check if image-url was already saved (in another article) if so, use it instead
-                        if ($post['ext_permalink']!="") {
-                            $graph = OpenGraph::fetch($post['ext_permalink']);
-                            $image_url = $graph->image;
-                            if ($image_url!="") {
-                                update_post_meta($inserted_post_id, 'image_url', $image_url);
-                                self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
-                            }
-                        }
-                    }
-                    if ($post['post_format']!="") {
-                        set_post_format($inserted_post_id, $post['post_format']);
-                    }
+                }
+                if ($post['post_format']!="") {
+                    set_post_format($inserted_post_id, $post['post_format']);
                 }
             }
         }

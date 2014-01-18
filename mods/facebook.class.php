@@ -161,7 +161,7 @@ class facebook_reclaim_module extends reclaim_module {
             while (strlen($urlNext) > 0) {
                 parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
-				if ($rawData) {
+                if ($rawData) {
                     $rawData = json_decode($rawData, true);
 
                     if (isset($rawData["paging"]["next"])) {
@@ -173,12 +173,10 @@ class facebook_reclaim_module extends reclaim_module {
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
                 }
-                else { 
-					// throw exception or end?
+                else {
+                    // throw exception or end?
                     //$urlNext = "";
-                    parent::log(sprintf(__('%s ended with an error. continue anyway wit %s', 'reclaim'), $this->shortname, $urlNext));
-
-                    
+                    parent::log(sprintf(__('%s ended with an error. continue anyway with %s', 'reclaim'), $this->shortname, $urlNext));
                 }
             }
 
@@ -189,8 +187,11 @@ class facebook_reclaim_module extends reclaim_module {
 
     private function map_data($rawData) {
         $data = array();
-        if (is_array($rawData['data'])) { // sometimes it's not an array
-        foreach($rawData['data'] as $entry){
+        if (!is_array($rawData['data'])) {
+            // sometimes it's not an array
+            return false;
+        }
+        foreach($rawData['data'] as $entry) {
             if (    (
                     /*
                      * filtering
@@ -199,7 +200,7 @@ class facebook_reclaim_module extends reclaim_module {
                      */
                     (
                     $entry['application']['name'] != "Twitter" // no tweets
-                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff 
+                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
                     && $entry['application']['namespace'] != "NetworkedBlogs" // no  NetworkedBlogs syndication
                     && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
                     )
@@ -237,10 +238,6 @@ class facebook_reclaim_module extends reclaim_module {
             }
         }
         return $data;
-        }
-        else {
-        return false;
-        }
     }
 
     private function get_post_format($entry) {
