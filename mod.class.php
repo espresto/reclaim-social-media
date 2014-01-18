@@ -104,8 +104,8 @@ class reclaim_module {
             'filename'    => null
         );
         $response = wp_remote_get( $apiurl, $args );
-        if ($response['response']['code']!=200) {
-            self::log('error while loading '.$apiurl.': '.$response['response']['message']);
+        if( is_wp_error( $response ) ) {
+            self::log('error while loading '.$apiurl.': '.$response->get_error_message());
             return false;
         }
         return trim($response['body']);
@@ -174,6 +174,9 @@ class reclaim_module {
         $uploads = wp_upload_dir();
         $ext = pathinfo( basename($imageurl) , PATHINFO_EXTENSION);
         $newfilename = basename($imageurl);
+		// sometimes facebook offers very long filename
+		// if so, file_put_contents() throws an error
+        if (strlen($newfilename) > 70) { $newfilename = uniqid() . $ext; }
 
         $filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
         $wp_filetype = wp_check_filetype($filename, null );
