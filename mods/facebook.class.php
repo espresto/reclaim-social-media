@@ -158,10 +158,12 @@ class facebook_reclaim_module extends reclaim_module {
             }
             $lastupdate = current_time('timestamp');
 
+            $errors = 0;
             while (strlen($urlNext) > 0) {
                 parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
                 if ($rawData) {
+                    $errors = 0;
                     $rawData = json_decode($rawData, true);
 
                     if (isset($rawData["paging"]["next"])) {
@@ -175,8 +177,11 @@ class facebook_reclaim_module extends reclaim_module {
                 }
                 else {
                     // throw exception or end?
-                    //$urlNext = "";
-                    parent::log(sprintf(__('%s ended with an error. continue anyway with %s', 'reclaim'), $this->shortname, $urlNext));
+                    if (++$errors == 3) {
+                        parent::log(sprintf(__('%s ended with an error. Aborted getting %s', 'reclaim'), $this->shortname, $urlNext));
+                        return;
+                    }
+                    parent::log(sprintf(__('%s ended with an error. Continue anyway with %s', 'reclaim'), $this->shortname, $urlNext));
                 }
             }
 
