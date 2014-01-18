@@ -57,7 +57,7 @@ class reclaim_module {
     * Interface
     */
     public static function prepareImport($forceResync) {
-        parent::log(sprintf(__('BEGIN %s import %s', 'reclaim'), shortName(), $forceResync));
+        log(sprintf(__('BEGIN %s import %s', 'reclaim'), shortName(), $forceResync));
         update_option('reclaim_'.shortName().'_locked', 1);
     }
 
@@ -72,7 +72,7 @@ class reclaim_module {
     */
     public static function finishImport($forceResync) {
         update_option('reclaim_'.shortName().'_locked', 0);
-        parent::log(sprintf(__('END %s import', 'reclaim'), shortName()));
+        log(sprintf(__('END %s import', 'reclaim'), shortName()));
     }
 
     /**
