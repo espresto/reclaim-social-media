@@ -44,19 +44,22 @@ class reclaim_core {
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
             require_once($file);
             $name = basename($file, '.class.php');
-            $this->mods_loaded[] = array('name' => $name, 'active' => get_option($name.'_active'));
+            $cName = new $name.'_reclaim_module';
+            $this->mods_loaded[] = array('name' => $name,
+                                         'active' => get_option($name.'_active'),
+                                         'instance' => new $cName);
         }
 
-        foreach ($this->mods_loaded as $mod){
+        foreach ($this->mods_loaded as $mod) {
             $isStaleMod = $this->is_stale_mod($mod['name']);
-            $isLockedMod = $this->is_locked_mod($mod['name']);
             $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
+            $isLockedMod = $this->is_locked_mod($mod['name']);
 
             if ($mod['active']) {
-                if ((!$isLockedMod && $isStaleMod && get_option('reclaim_auto_update')) || !$isLockedMod && $adminResync) {
-                    call_user_func(array($mod['name'].'_reclaim_module', 'prepareImport'), $adminResync);
-                    call_user_func(array($mod['name'].'_reclaim_module', 'import'), $adminResync);
-                    call_user_func(array($mod['name'].'_reclaim_module', 'finishImport'), $adminResync);
+                if ((!$isLockedMod && $isStaleMod && get_option('reclaim_auto_update')) || $adminResync) {
+                    $mod['instance']->prepareImport($adminResync);
+                    $mod['instance']->import($adminResync);
+                    $mod['instance']->finishImport($adminResync);
                 }
             }
         }
@@ -135,7 +138,7 @@ class reclaim_core {
         register_setting('reclaim-social-settings', 'reclaim_update_interval');
         register_setting('reclaim-social-settings', 'reclaim_auto_update');
         foreach($this->mods_loaded as $mod) {
-            call_user_func(array($mod['name'].'_reclaim_module', 'register_settings'));
+            $mod['instance']->register_settings();
         }
     }
 
@@ -160,7 +163,7 @@ class reclaim_core {
             </tr>
 <?php
         foreach($this->mods_loaded as $mod) {
-            call_user_func(array($mod['name'].'_reclaim_module', 'display_settings'));
+            $mod['instance']->display_settings();
         }
 ?>
             </table>

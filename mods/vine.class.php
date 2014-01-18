@@ -23,33 +23,27 @@
 */
 
 class vine_reclaim_module extends reclaim_module {
-    private static $shortname = 'vine';
-
 	// api calls hav their own function
     private static $apiurl = "";
-
     private static $timeout = 15;
     private static $count = 20;
     private static $post_format = 'video'; // or 'status', 'aside'
 
-    public static function shortName() {
-        return self::$shortname;
-    }
-
-    public static function register_settings() {
-        parent::register_settings(self::$shortname);
+    public function register_settings() {
+        $this->shortname = 'vine';
+        parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'vine_user_id');
         register_setting('reclaim-social-settings', 'vine_password');
     }
 
-    public static function display_settings() {
+    public function display_settings() {
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Vine', 'reclaim'); ?></h3></th>
         </tr>
 <?php
-        parent::display_settings(self::$shortname);
+        parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('vine email', 'reclaim'); ?></th>
@@ -62,7 +56,7 @@ class vine_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import($forceResync) {
+    public function import($forceResync) {
         if (get_option('vine_user_id') ) {
 			$key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
 			$userId = strtok($key,'-');
@@ -72,17 +66,17 @@ class vine_reclaim_module extends reclaim_module {
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
                 parent::insert_posts($data);
-                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
             else {
-	            parent::log(sprintf(__('no %s data', 'reclaim'), self::$shortname));
+	            parent::log(sprintf(__('no %s data', 'reclaim'), $this->shortname));
             }
         }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
 
     }
 
-    private static function map_data($rawData) {
+    private function map_data($rawData) {
         $data = array();
 		//echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['records'] as $entry){
@@ -112,8 +106,8 @@ class vine_reclaim_module extends reclaim_module {
 			$post_meta["venueCategoryId"] = $entry['venueCategoryId'];
 
             $data[] = array(
-                'post_author' => get_option(self::$shortname.'_author'),
-                'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_author' => get_option($this->shortname.'_author'),
+                'post_category' => array(get_option($this->shortname.'_category')),
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created"]))),
 //                'post_excerpt' => $description,
@@ -134,7 +128,7 @@ class vine_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private static function construct_content($entry,$id,$image_url,$description){
+    private function construct_content($entry,$id,$image_url,$description) {
         $post_content_original = $description;
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
@@ -167,9 +161,7 @@ class vine_reclaim_module extends reclaim_module {
         return $content;
     }
 
-
-    private static function vineAuth($username,$password)
-{
+    private function vineAuth($username,$password) {
 	$loginUrl =	"https://api.vineapp.com/users/authenticate";
 	$username = urlencode($username);
 	$password = urlencode($password);
@@ -198,10 +190,9 @@ class vine_reclaim_module extends reclaim_module {
 	}
 
 	curl_close($ch);
-}
+    }
 
-    private static function vineTimeline($userId,$key)
-{
+    private function vineTimeline($userId,$key) {
 	// Additional endpoints available from https://github.com/starlock/vino/wiki/API-Reference
 	//$url = 'https://vine.co/api/timelines/users/906592469217587200';
 	//$url = 'https://api.vineapp.com/timelines/users/'.$userId;
@@ -227,6 +218,5 @@ class vine_reclaim_module extends reclaim_module {
 	}
 
 	curl_close($ch);
-}
-
+    }
 }

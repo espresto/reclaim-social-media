@@ -17,9 +17,7 @@
 */
 
 class instagram_reclaim_module extends reclaim_module {
-    private static $shortname = 'instagram';
     private static $apiurl= "https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%s";
-
     private static $timeout = 15;
     private static $count = 40;
     private static $post_format = 'image'; // or 'status', 'aside'
@@ -27,12 +25,9 @@ class instagram_reclaim_module extends reclaim_module {
 // callback-url: http://root.wirres.net/reclaim/wp-content/plugins/reclaim/vendor/hybridauth/hybridauth/src/
 // new app: http://instagram.com/developer/clients/manage/
 
-    public static function shortName() {
-        return self::$shortname;
-    }
-
-    public static function register_settings() {
-        parent::register_settings(self::$shortname);
+    public function register_settings() {
+        $this->shortname = 'instagram';
+        parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'instagram_user_id');
         register_setting('reclaim-social-settings', 'instagram_user_name');
@@ -41,7 +36,7 @@ class instagram_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'instagram_access_token');
     }
 
-    public static function display_settings() {
+    public function display_settings() {
 		if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='instagram') && (isset($_SESSION['hybridauth_user_profile']))) {
 			$user_profile 			= json_decode($_SESSION['hybridauth_user_profile']);
 			$user_access_tokens 	= json_decode($_SESSION['hybridauth_user_access_tokens']);
@@ -69,7 +64,7 @@ class instagram_reclaim_module extends reclaim_module {
             <th colspan="2"><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
         </tr>
 <?php
-        parent::display_settings(self::$shortname);
+        parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Instagram user id', 'reclaim'); ?></th>
@@ -116,16 +111,16 @@ class instagram_reclaim_module extends reclaim_module {
 				// put all configuration into session
 				// todo
 			    $config = self::construct_hybridauth_config();
-				$callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.self::$shortname);
+				$callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
 
-				$_SESSION[self::$shortname]['config'] = $config;
-//				$_SESSION[self::$shortname]['mod'] = self::$shortname;
+				$_SESSION[$this->shortname]['config'] = $config;
+//				$_SESSION[$this->shortname]['mod'] = $this->shortname;
 
 
             	echo '<a class="button button-secondary" href="'
             	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
             	.'?'
-            	.'&mod='.self::$shortname
+            	.'&mod='.$this->shortname
             	.'&callbackUrl='.$callback
             	.'">'.$link_text.'</a>';
 
@@ -140,7 +135,7 @@ class instagram_reclaim_module extends reclaim_module {
 <?php
     }
 
-	public static function construct_hybridauth_config() {
+	public function construct_hybridauth_config() {
 		$config = array(
 			// "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
 			"base_url" => plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),
@@ -158,7 +153,7 @@ class instagram_reclaim_module extends reclaim_module {
 		return $config;
 	}
 
-    public static function import($forceResync) {
+    public function import($forceResync) {
         if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
@@ -166,15 +161,15 @@ class instagram_reclaim_module extends reclaim_module {
             if ($rawData) {
             	$data = self::map_data($rawData);
             	parent::insert_posts($data);
-            	update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
-            	parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
+            	update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+            	parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
             }
-	        else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), self::$shortname));
+	        else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
         }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private static function map_data($rawData) {
+    private function map_data($rawData) {
         $data = array();
 		//echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['data'] as $entry){
@@ -223,8 +218,8 @@ class instagram_reclaim_module extends reclaim_module {
 			}
 
             $data[] = array(
-                'post_author' => get_option(self::$shortname.'_author'),
-                'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_author' => get_option($this->shortname.'_author'),
+                'post_category' => array(get_option($this->shortname.'_category')),
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $entry["created_time"])),
 //                'post_excerpt' => $description,
@@ -244,7 +239,7 @@ class instagram_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private static function construct_content($entry,$id,$image_url,$description){
+    private function construct_content($entry,$id,$image_url,$description) {
         $post_content_original = $description;
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
@@ -283,8 +278,4 @@ class instagram_reclaim_module extends reclaim_module {
 
         return $content;
     }
-
-
-
-
 }
