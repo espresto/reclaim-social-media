@@ -26,6 +26,10 @@ class twitter_reclaim_module extends reclaim_module {
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
 
+    public static function shortName() {
+        return self::$shortname;
+    }
+
     public static function register_settings() {
         parent::register_settings(self::$shortname);
 
@@ -68,11 +72,7 @@ class twitter_reclaim_module extends reclaim_module {
     }
 
     public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
-
             $lastseenid = get_option('reclaim_'.self::$shortname.'_last_seen_id');
             $reqOptions = array(
                 'lang' => substr(get_bloginfo('language'), 0, 2),
@@ -119,8 +119,6 @@ class twitter_reclaim_module extends reclaim_module {
 
             update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             update_option('reclaim_'.self::$shortname.'_last_seen_id', $lastseenid);
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
     }

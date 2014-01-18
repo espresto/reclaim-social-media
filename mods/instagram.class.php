@@ -27,6 +27,10 @@ class instagram_reclaim_module extends reclaim_module {
 // callback-url: http://root.wirres.net/reclaim/wp-content/plugins/reclaim/vendor/hybridauth/hybridauth/src/
 // new app: http://instagram.com/developer/clients/manage/
 
+    public static function shortName() {
+        return self::$shortname;
+    }
+
     public static function register_settings() {
         parent::register_settings(self::$shortname);
 
@@ -155,11 +159,7 @@ class instagram_reclaim_module extends reclaim_module {
 	}
 
     public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
-
         if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
 
@@ -167,7 +167,6 @@ class instagram_reclaim_module extends reclaim_module {
             	$data = self::map_data($rawData);
             	parent::insert_posts($data);
             	update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
-                update_option('reclaim_'.self::$shortname.'_locked', 0);
             	parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
             }
 	        else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), self::$shortname));

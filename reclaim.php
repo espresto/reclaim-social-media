@@ -54,7 +54,9 @@ class reclaim_core {
 
             if ($mod['active']) {
                 if ((!$isLockedMod && $isStaleMod && get_option('reclaim_auto_update')) || !$isLockedMod && $adminResync) {
+                    call_user_func(array($mod['name'].'_reclaim_module', 'prepareImport'), $adminResync);
                     call_user_func(array($mod['name'].'_reclaim_module', 'import'), $adminResync);
+                    call_user_func(array($mod['name'].'_reclaim_module', 'finishImport'), $adminResync);
                 }
             }
         }

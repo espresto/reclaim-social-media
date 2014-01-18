@@ -23,6 +23,10 @@ class goodreads_reclaim_module extends reclaim_module {
     private static $timeout = 15;
     private static $post_format = ''; // no specific format
 
+    public static function shortName() {
+        return self::$shortname;
+    }
+
     public static function register_settings() {
         parent::register_settings(self::$shortname);
         register_setting('reclaim-social-settings', 'goodreads_user_id');
@@ -44,9 +48,7 @@ class goodreads_reclaim_module extends reclaim_module {
     }
 
     public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (get_option('goodreads_user_id') ) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
             update_option('reclaim_'.self::$shortname.'_locked', 1);
 			if ( ! class_exists( 'SimplePie' ) )
 				require_once( ABSPATH . WPINC . '/class-feed.php' );
@@ -78,8 +80,6 @@ class goodreads_reclaim_module extends reclaim_module {
                 parent::insert_posts($data);
                 update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
             }
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
 

@@ -22,6 +22,10 @@ class facebook_reclaim_module extends reclaim_module {
     private static $count = 200;
     private static $timeout = 20;
 
+    public static function shortName() {
+        return self::$shortname;
+    }
+
     public static function register_settings() {
         parent::register_settings(self::$shortname);
 
@@ -143,18 +147,12 @@ class facebook_reclaim_module extends reclaim_module {
     }
 
     public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
         if (!get_option('facebook_oauth_token') && get_option('facebook_app_id') && get_option('facebook_app_secret')) {
             parent::log(sprintf(__('getting FB token', 'reclaim'), self::$shortname));
         }
 
         if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
             $lastupdate = get_option('reclaim_'.self::$shortname.'_last_update');
-            parent::log(sprintf(__('BEGIN %s import since %s', 'reclaim'),
-                            self::$shortname,
-                            strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
-
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, substr(get_bloginfo('language'), 0, 2), get_option('facebook_oauth_token'));
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
@@ -177,8 +175,6 @@ class facebook_reclaim_module extends reclaim_module {
             }
 
             update_option('reclaim_'.self::$shortname.'_last_update', $lastupdate);
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
     }

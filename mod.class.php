@@ -18,7 +18,6 @@
 */
 
 class reclaim_module {
-
     public static function register_settings($modname) {
         register_setting('reclaim-social-settings', $modname.'_active');
         register_setting('reclaim-social-settings',  $modname.'_category');
@@ -50,8 +49,30 @@ class reclaim_module {
     /**
     * Interface
     */
-    public static function import($forceResync) {
+    public static function shortName() {
+        return "";
+    }
 
+    /**
+    * Interface
+    */
+    public static function prepareImport($forceResync) {
+        parent::log(sprintf(__('BEGIN %s import %s', 'reclaim'), shortName(), $forceResync));
+        update_option('reclaim_'.shortName().'_locked', 1);
+    }
+
+    /**
+    * Interface
+    */
+    public static function import($forceResync) {
+    }
+
+    /**
+    * Interface
+    */
+    public static function finishImport($forceResync) {
+        update_option('reclaim_'.shortName().'_locked', 0);
+        parent::log(sprintf(__('END %s import', 'reclaim'), shortName()));
     }
 
     /**
