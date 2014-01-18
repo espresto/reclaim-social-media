@@ -17,24 +17,27 @@
 */
 
 class youtube_reclaim_module extends reclaim_module {
-    private static $shortname = 'youtube';
     private static $timeout = 20;
     private static $apiurl = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&prettyprint=true&orderby=published&racy=include&v=2&client=ytapi-youtube-profile";
     private static $post_format = 'video'; // or 'status', 'aside'
 
-    public static function register_settings() {
-        parent::register_settings(self::$shortname);
+    public function __construct() {
+        $this->shortname = 'youtube';
+    }
+
+    public function register_settings() {
+        parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'youtube_username');
     }
 
-    public static function display_settings() {
+    public function display_settings() {
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Youtube', 'reclaim'); ?></h3></th>
         </tr>
 <?php
-        parent::display_settings(self::$shortname);
+        parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('youtube username', 'reclaim'); ?></th>
@@ -43,33 +46,28 @@ class youtube_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
+    public function import($forceResync) {
         if (get_option('youtube_username')) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('youtube_username')), self::$timeout);
             $rawData = json_decode($rawData, true);
 
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
                 parent::insert_posts($data);
-                update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
         }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private static function map_data($rawData) {
+    private function map_data($rawData) {
         $data = array();
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry);
 
             $data[] = array(
-                'post_author' => get_option(self::$shortname.'_author'),
-                'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_author' => get_option($this->shortname.'_author'),
+                'post_category' => array(get_option($this->shortname.'_category')),
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry['published']['$t']))),
 //                'post_excerpt' => $content,
@@ -86,8 +84,8 @@ class youtube_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private static function get_content($entry){
-	$video_id = 0;
+    private function get_content($entry) {
+        $video_id = 0;
         $post_content = '';
         if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $entry["link"][0]['href'], $match)) {
             $video_id = $match[1];

@@ -18,14 +18,15 @@
 */
 
 class reclaim_module {
+    protected $shortname;
 
-    public static function register_settings($modname) {
+    public function register_settings($modname) {
         register_setting('reclaim-social-settings', $modname.'_active');
-        register_setting('reclaim-social-settings',  $modname.'_category');
-        register_setting('reclaim-social-settings',  $modname.'_author');
+        register_setting('reclaim-social-settings', $modname.'_category');
+        register_setting('reclaim-social-settings', $modname.'_author');
     }
 
-    public static function display_settings($modname) {
+    public function display_settings($modname) {
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Active', 'reclaim'); ?></th>
@@ -50,14 +51,36 @@ class reclaim_module {
     /**
     * Interface
     */
-    public static function import($forceResync) {
-
+    public function shortName() {
+        return $this->shortname;
     }
 
     /**
     * Interface
     */
-    private static function map_data($rawData) {
+    public function prepareImport($forceResync) {
+        $this->log(sprintf(__('BEGIN %s import %s', 'reclaim'), $this->shortname, $forceResync));
+        update_option('reclaim_'.$this->shortName().'_locked', 1);
+    }
+
+    /**
+    * Interface
+    */
+    public function import($forceResync) {
+    }
+
+    /**
+    * Interface
+    */
+    public function finishImport($forceResync) {
+        update_option('reclaim_'.$this->shortName().'_locked', 0);
+        $this->log(sprintf(__('END %s import', 'reclaim'), $this->shortName()));
+    }
+
+    /**
+    * Interface
+    */
+    private function map_data($rawData) {
         return $rawData;
     }
 
@@ -207,7 +230,6 @@ class reclaim_module {
             return $data;
         }
     }
-
 
     public static function log($message) {
         file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);

@@ -18,7 +18,6 @@
 */
 
 class twitter_reclaim_module extends reclaim_module {
-    private static $shortname = 'twitter';
     private static $apiurl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
     private static $count = 200;
     private static $lang = 'en';
@@ -26,8 +25,12 @@ class twitter_reclaim_module extends reclaim_module {
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
 
-    public static function register_settings() {
-        parent::register_settings(self::$shortname);
+    public function __construct() {
+        $this->shortname = 'twitter';
+    }
+
+    public function register_settings() {
+        parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'twitter_username');
         register_setting('reclaim-social-settings', 'twitter_consumer_key');
@@ -36,13 +39,13 @@ class twitter_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'twitter_user_secret');
     }
 
-    public static function display_settings() {
+    public function display_settings() {
 ?>
         <tr valign="top">
             <th colspan="2"><h3><?php _e('Twitter', 'reclaim'); ?></h3></th>
         </tr>
 <?php
-        parent::display_settings(self::$shortname);
+        parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('twitter username', 'reclaim'); ?></th>
@@ -67,13 +70,9 @@ class twitter_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
+    public function import($forceResync) {
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
-            parent::log(sprintf(__('BEGIN %s import', 'reclaim'), self::$shortname));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
-
-            $lastseenid = get_option('reclaim_'.self::$shortname.'_last_seen_id');
+            $lastseenid = get_option('reclaim_'.$this->shortname.'_last_seen_id');
             $reqOptions = array(
                 'lang' => substr(get_bloginfo('language'), 0, 2),
                 'count' => self::$count,
@@ -117,15 +116,13 @@ class twitter_reclaim_module extends reclaim_module {
                 }
             } while ($reqOk);
 
-            update_option('reclaim_'.self::$shortname.'_last_update', current_time('timestamp'));
-            update_option('reclaim_'.self::$shortname.'_last_seen_id', $lastseenid);
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
+            update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+            update_option('reclaim_'.$this->shortname.'_last_seen_id', $lastseenid);
         }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private static function map_data($rawData) {
+    private function map_data($rawData) {
         $data = array();
         $tags = array();
         foreach($rawData as $entry){
@@ -150,8 +147,8 @@ class twitter_reclaim_module extends reclaim_module {
 
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
-                'post_author' => get_option(self::$shortname.'_author'),
-                'post_category' => array(get_option(self::$shortname.'_category')),
+                'post_author' => get_option($this->shortname.'_author'),
+                'post_category' => array(get_option($this->shortname.'_category')),
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => self::$post_format,
 // new
@@ -172,7 +169,7 @@ class twitter_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private static function get_hashtags($entry) {
+    private function get_hashtags($entry) {
         $tags = array();
         if (count($entry['entities']['hashtags'])) {
             foreach ($entry['entities']['hashtags'] as $hashtag) {
@@ -182,7 +179,7 @@ class twitter_reclaim_module extends reclaim_module {
         return $tags;
     }
 
-    private static function construct_content($entry) {
+    private function construct_content($entry) {
         $post_content = $entry['text'];
         $post_content = html_entity_decode($post_content); // ohne trim?
         //links einsetzen/auflösen

@@ -17,13 +17,16 @@
 */
 
 class facebook_reclaim_module extends reclaim_module {
-    private static $shortname = 'facebook';
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
     private static $count = 200;
     private static $timeout = 20;
 
-    public static function register_settings() {
-        parent::register_settings(self::$shortname);
+    public function __construct() {
+        $this->shortname = 'facebook';
+    }
+
+    public function register_settings() {
+        parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'facebook_username');
         register_setting('reclaim-social-settings', 'facebook_user_id');
@@ -32,7 +35,7 @@ class facebook_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'facebook_oauth_token');
     }
 
-    public static function display_settings() {
+    public function display_settings() {
         if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') && (isset($_SESSION['hybridauth_user_profile']))) {
             $user_profile       = json_decode($_SESSION['hybridauth_user_profile']);
             $user_access_tokens = json_decode($_SESSION['hybridauth_user_access_tokens']);
@@ -61,7 +64,7 @@ class facebook_reclaim_module extends reclaim_module {
             <th colspan="2"><h3><?php _e('Facebook', 'reclaim'); ?></h3></th>
         </tr>
 <?php
-        parent::display_settings(self::$shortname);
+        parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('facebook user ID', 'reclaim'); ?></th>
@@ -103,15 +106,15 @@ class facebook_reclaim_module extends reclaim_module {
                 // put all configuration into session
                 // todo
                 $config = self::construct_hybridauth_config();
-                $callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.self::$shortname);
+                $callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
 
-                $_SESSION[self::$shortname]['config'] = $config;
-//                $_SESSION[self::$shortname]['mod'] = self::$shortname;
+                $_SESSION[$this->shortname]['config'] = $config;
+//                $_SESSION[$this->shortname]['mod'] = $this->shortname;
 
                 echo '<a class="button button-secondary" href="'
                     .plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
                     .'?'
-                    .'&mod='.self::$shortname
+                    .'&mod='.$this->shortname
                     .'&callbackUrl='.$callback
                     .'">'.$link_text.'</a>';
             }
@@ -125,7 +128,7 @@ class facebook_reclaim_module extends reclaim_module {
 <?php
     }
 
-    public static function construct_hybridauth_config() {
+    public function construct_hybridauth_config() {
         $config = array(
             // "base_url" the url that point to HybridAuth Endpoint (where the index.php and config.php are found)
             "base_url" => plugins_url('/vendor/hybridauth/hybridauth/hybridauth/', dirname(__FILE__) ),
@@ -142,19 +145,13 @@ class facebook_reclaim_module extends reclaim_module {
         return $config;
     }
 
-    public static function import($forceResync) {
-        parent::log(sprintf(__('%s is stale', 'reclaim'), self::$shortname));
+    public function import($forceResync) {
         if (!get_option('facebook_oauth_token') && get_option('facebook_app_id') && get_option('facebook_app_secret')) {
-            parent::log(sprintf(__('getting FB token', 'reclaim'), self::$shortname));
+            parent::log(sprintf(__('getting FB token', 'reclaim'), $this->shortname));
         }
 
         if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
-            $lastupdate = get_option('reclaim_'.self::$shortname.'_last_update');
-            parent::log(sprintf(__('BEGIN %s import since %s', 'reclaim'),
-                            self::$shortname,
-                            strlen($lastupdate) > 0 ? $lastupdate : "ever" ));
-            update_option('reclaim_'.self::$shortname.'_locked', 1);
-
+            $lastupdate = get_option('reclaim_'.$this->shortname.'_last_update');
             $urlNext = sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, substr(get_bloginfo('language'), 0, 2), get_option('facebook_oauth_token'));
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
@@ -162,7 +159,7 @@ class facebook_reclaim_module extends reclaim_module {
             $lastupdate = current_time('timestamp');
 
             while (strlen($urlNext) > 0) {
-                parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), self::$shortname, $urlNext));
+                parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
                 $rawData = json_decode($rawData, true);
 
@@ -176,14 +173,12 @@ class facebook_reclaim_module extends reclaim_module {
                 parent::insert_posts($data);
             }
 
-            update_option('reclaim_'.self::$shortname.'_last_update', $lastupdate);
-            update_option('reclaim_'.self::$shortname.'_locked', 0);
-            parent::log(sprintf(__('END %s import', 'reclaim'), self::$shortname));
+            update_option('reclaim_'.$this->shortname.'_last_update', $lastupdate);
         }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), self::$shortname));
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private static function map_data($rawData) {
+    private function map_data($rawData) {
         $data = array();
         foreach($rawData['data'] as $entry){
             if (    (
@@ -215,8 +210,8 @@ class facebook_reclaim_module extends reclaim_module {
                 }
 
                 $data[] = array(
-                    'post_author' => get_option(self::$shortname.'_author'),
-                    'post_category' => array(get_option(self::$shortname.'_category')),
+                    'post_author' => get_option($this->shortname.'_author'),
+                    'post_category' => array(get_option($this->shortname.'_category')),
                     'post_format' => $post_format,
                     'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_time"]))),
                     'post_content' => $excerpt,
@@ -233,7 +228,7 @@ class facebook_reclaim_module extends reclaim_module {
         return $data;
     }
 
-    private static function get_post_format($entry) {
+    private function get_post_format($entry) {
         if ($entry['type']=="link") {
             $post_format = "link";
         }
@@ -255,7 +250,7 @@ class facebook_reclaim_module extends reclaim_module {
         return $post_format;
     }
 
-    private static function get_link($entry) {
+    private function get_link($entry) {
         if (isset($entry["link"])) {
             $link = htmlentities($entry["link"]);
         } else {
@@ -265,7 +260,7 @@ class facebook_reclaim_module extends reclaim_module {
         return $link;
     }
 
-    private static function get_image_url($entry) {
+    private function get_image_url($entry) {
         $image = '';
         if (isset($entry['picture'])) {
             $image = $entry['picture'];
@@ -286,7 +281,7 @@ class facebook_reclaim_module extends reclaim_module {
         return $image;
     }
 
-    private static function get_title($entry) {
+    private function get_title($entry) {
         if (isset($entry["story"]) && $entry["story"]) {
             $title = $entry['story'];
         }
@@ -299,7 +294,7 @@ class facebook_reclaim_module extends reclaim_module {
         return $title;
     }
 
-    private static function construct_content($entry, $link = '', $image  = ''){
+    private function construct_content($entry, $link = '', $image  = ''){
         $description = "";
         $post_format = "";
         if ($image == "http://www.facebook.com/images/devsite/attachment_blank.png") {
