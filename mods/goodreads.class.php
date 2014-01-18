@@ -22,8 +22,11 @@ class goodreads_reclaim_module extends reclaim_module {
     private static $timeout = 15;
     private static $post_format = ''; // no specific format
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'goodreads';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
         register_setting('reclaim-social-settings', 'goodreads_user_id');
     }

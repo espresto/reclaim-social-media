@@ -21,8 +21,11 @@ class youtube_reclaim_module extends reclaim_module {
     private static $apiurl = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&prettyprint=true&orderby=published&racy=include&v=2&client=ytapi-youtube-profile";
     private static $post_format = 'video'; // or 'status', 'aside'
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'youtube';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'youtube_username');

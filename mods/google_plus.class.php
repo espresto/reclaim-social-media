@@ -22,8 +22,11 @@ class google_plus_reclaim_module extends reclaim_module {
     private static $timeout = 15;
     private static $post_format = 'aside'; // or 'status', 'aside'
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'google_plus';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'google_plus_user_id');

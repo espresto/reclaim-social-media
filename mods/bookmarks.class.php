@@ -22,8 +22,11 @@ class bookmarks_reclaim_module extends reclaim_module {
 	private static $count = 30;
     private static $post_format = 'link'; // no specific format
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'bookmarks';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
         register_setting('reclaim-social-settings', 'bookmarks_api_url');
     }

@@ -25,8 +25,11 @@ class twitter_reclaim_module extends reclaim_module {
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'twitter';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'twitter_username');

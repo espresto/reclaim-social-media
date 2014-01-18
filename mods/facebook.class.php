@@ -21,8 +21,11 @@ class facebook_reclaim_module extends reclaim_module {
     private static $count = 200;
     private static $timeout = 20;
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'facebook';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'facebook_username');

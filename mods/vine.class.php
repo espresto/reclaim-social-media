@@ -29,8 +29,11 @@ class vine_reclaim_module extends reclaim_module {
     private static $count = 20;
     private static $post_format = 'video'; // or 'status', 'aside'
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'vine';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'vine_user_id');

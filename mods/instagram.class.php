@@ -25,8 +25,11 @@ class instagram_reclaim_module extends reclaim_module {
 // callback-url: http://root.wirres.net/reclaim/wp-content/plugins/reclaim/vendor/hybridauth/hybridauth/src/
 // new app: http://instagram.com/developer/clients/manage/
 
-    public function register_settings() {
+    public function __construct() {
         $this->shortname = 'instagram';
+    }
+
+    public function register_settings() {
         parent::register_settings($this->shortname);
 
         register_setting('reclaim-social-settings', 'instagram_user_id');

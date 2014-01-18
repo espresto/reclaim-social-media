@@ -44,7 +44,7 @@ class reclaim_core {
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
             require_once($file);
             $name = basename($file, '.class.php');
-            $cName = new $name.'_reclaim_module';
+            $cName = $name.'_reclaim_module';
             $this->mods_loaded[] = array('name' => $name,
                                          'active' => get_option($name.'_active'),
                                          'instance' => new $cName);
