@@ -100,8 +100,8 @@ class google_plus_reclaim_module extends reclaim_module {
 
     private function get_post_format($entry) {
         $verb = $entry['verb'];
-        $objectType = $entry['object']['objectType'];
-        $attachmentObjectType = $entry['object']['attachments'][0]['objectType'];
+        $objectType = isset($entry['object']['objectType']) ? $entry['object']['objectType'] : '';
+        $attachmentObjectType = isset($entry['object']['attachments'][0]['objectType']) ? $entry['object']['attachments'][0]['objectType'] : '';
 //        parent::log('objectType: '.$objectType);
 //        parent::log('attachmentObjectType: '.$attachmentObjectType);
 
@@ -145,7 +145,7 @@ class google_plus_reclaim_module extends reclaim_module {
 
         $story = "";
         if ($entry['verb']=="share") {
-            $story = ''.$entry['annotation'].'<br />';
+            $story = isset($entry['annotation']) ? ''.$entry['annotation'].'<br />' : '';
             $story .= '<p>(Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a> geshared.)</p>';
         }
 
@@ -167,8 +167,19 @@ class google_plus_reclaim_module extends reclaim_module {
         }
 
         //now other's content
-        if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['objectType']) && $entry['object']['attachments'][0]['objectType'] == "article" && isset($entry['object']['attachments'][0]['content']) && $entry['object']['attachments'][0]['content']) {
-            $articleimage_html = '<div class="gimage"><img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="" class="gpreview-img attachment articleimage"></div>';
+        $attatchmentTypeIsArticle = isset($entry['object']['attachments'][0]['objectType']) &&
+            $entry['object']['attachments'][0]['objectType'] == "article";
+        $attachmentContentExists = isset($entry['object']['attachments'][0]['content']) &&
+            $entry['object']['attachments'][0]['content'];
+        if ($attatchmentTypeIsArticle && $attachmentContentExists) {
+            $attatchmentImageExists = isset($entry['object']['attachments'][0]['image']['url']) &&
+                filter_var($entry['object']['attachments'][0]['image']['url'],FILTER_VALIDATE_URL);
+            if ($attatchmentImageExists) {
+                $articleimage_html = '<div class="gimage"><img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="" class="gpreview-img attachment articleimage"></div>';
+            } else {
+                $articleimage_html = '';
+            }
+
 //            $description .= '<blockquote class="clearfix fbname fblink">'.$fblink_description.'</blockquote>'; // other's content
             $post_content .= '<blockquote class="clearfix glink">'
                 .$articleimage_html
@@ -189,16 +200,16 @@ class google_plus_reclaim_module extends reclaim_module {
     }
 
     private function get_image_url($entry) {
-        $image = '';
-        if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['image']) && $entry['object']['attachments'][0]['image']['url']) {
-            if ($entry['object']['attachments'][0]['fullImage']['url']) {
-                $image =  $entry['object']['attachments'][0]['fullImage']['url'];
+        $imageUrl = '';
+        if (isset($entry['object']['attachments'][0]['image']['url'])) {
+            if (isset($entry['object']['attachments'][0]['fullImage']['url']) &&
+                filter_var($entry['object']['attachments'][0]['fullImage']['url'], FILTER_VALIDATE_URL)) {
+                $imageUrl =  $entry['object']['attachments'][0]['fullImage']['url'];
             }
             else {
-                $image = $entry['object']['attachments'][0]['image']['url'];
+                $imageUrl = $entry['object']['attachments'][0]['image']['url'];
             }
         }
-        return $image;
+        return $imageUrl;
     }
 }
-?>

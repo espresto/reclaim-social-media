@@ -115,7 +115,7 @@ class reclaim_module {
     *
     */
     public static function insert_posts($data) {
-        if (!$data || !is_array($rawData['data'])) {
+        if (!is_array($data)) {
             return;
         }
 
@@ -141,10 +141,12 @@ class reclaim_module {
                     }
                 }
 
-                if ($post['ext_embed_code']!="") {
+                $ext_embed_code = isset($post['ext_embed_code']) ? trim($post['ext_embed_code']) : '';
+                if ($ext_embed_code) {
                     update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
                 }
-                if ($post['ext_image']!="") {
+                $ext_image = isset($post['ext_image']) ? trim($post['ext_image']) : '';
+                if ($ext_image) {
                     update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
                     self::post_thumbnail($post['ext_image'], $inserted_post_id, $post['post_title']);
                 }

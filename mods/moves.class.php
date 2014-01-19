@@ -99,7 +99,7 @@ class moves_reclaim_module extends reclaim_module {
                 // send to helper script
                 // put all configuration into session
                 // todo
-                $config = self::construct_hybridauth_config();
+                $config = $this->construct_hybridauth_config();
                 $callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
 
                 $_SESSION[$this->shortname]['config'] = $config;
@@ -152,7 +152,7 @@ class moves_reclaim_module extends reclaim_module {
             parent::log(print_r($rawData,true));
 */
             if ($rawData) {
-                $data = self::map_data($rawData);
+                $data = $this->map_data($rawData);
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
@@ -177,13 +177,13 @@ class moves_reclaim_module extends reclaim_module {
                 $link = '';
                 $title = sprintf(__('Bewegung am %s', 'reclaim'), date('d.m.Y', strtotime($day["date"])));
 
-                $content = self::construct_content($day);
+                $content = $this->construct_content($day);
 
-                $post_meta["steps_walked"] = $day['summary'][0]['steps'];
-                $post_meta["steps_run"] = $day['summary'][1]['steps'];
-                $post_meta["distance_walked"] = $day['summary'][0]['distance'];
-                $post_meta["distance_run"] = $day['summary'][1]['distance'];
-                $post_meta["distance_cycled"] = $day['summary'][2]['distance'];
+                $post_meta["steps_walked"] = isset($day['summary'][0]['steps']) ? $day['summary'][0]['steps'] : '';
+                $post_meta["steps_run"] = isset($day['summary'][1]['steps']) ? $day['summary'][1]['steps']: '';
+                $post_meta["distance_walked"] = isset($day['summary'][0]['distance']) ? $day['summary'][0]['distance'] : '';
+                $post_meta["distance_run"] = isset($day['summary'][1]['distance']) ? $day['summary'][1]['distance'] : '';
+                $post_meta["distance_cycled"] = isset($day['summary'][2]['distance']) ? $day['summary'][2]['distance'] : '';
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
