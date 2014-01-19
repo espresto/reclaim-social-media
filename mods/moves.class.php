@@ -68,12 +68,12 @@ class moves_reclaim_module extends reclaim_module {
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Moves client id', 'reclaim'); ?></th>
-            <td><input type="text" type="password" name="moves_client_id" value="<?php echo get_option('moves_client_id'); ?>" />
+            <td><input type="text" name="moves_client_id" value="<?php echo get_option('moves_client_id'); ?>" />
             </td>
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Moves client secret', 'reclaim'); ?></th>
-            <td><input type="text" type="password" name="moves_client_secret" value="<?php echo get_option('moves_client_secret'); ?>" />
+            <td><input type="text" name="moves_client_secret" value="<?php echo get_option('moves_client_secret'); ?>" />
             <input type="hidden" name="moves_user_id" value="<?php echo get_option('moves_user_id'); ?>" />
             <input type="hidden" name="moves_access_token" value="<?php echo get_option('moves_access_token'); ?>" />
             <p class="description">Get your Moves client and credentials <a href="https://dev.moves-app.com/apps">here</a>. Use <code><?php echo plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/') ?></code> as "Redirect URI"</p>
@@ -90,7 +90,6 @@ class moves_reclaim_module extends reclaim_module {
 
             ) {
                 $link_text = __('Authorize with Moves', 'reclaim');
-                // && (get_option('facebook_oauth_token')!="")
                 if ( (get_option('moves_user_id')!="") && (get_option('moves_access_token')!="") ) {
                     echo sprintf(__('<p>Moves is authorized</p>', 'reclaim'), get_option('moves_user_id'));
                     $link_text = __('Authorize again', 'reclaim');
@@ -103,8 +102,6 @@ class moves_reclaim_module extends reclaim_module {
                 $callback =  urlencode(get_bloginfo('wpurl') . '/wp-admin/options-general.php?page=reclaim/reclaim.php&link=1&mod='.$this->shortname);
 
                 $_SESSION[$this->shortname]['config'] = $config;
-//                $_SESSION[$this->shortname]['mod'] = $this->shortname;
-
 
                 echo '<a class="button button-secondary" href="'
                     .plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
@@ -114,7 +111,7 @@ class moves_reclaim_module extends reclaim_module {
                     .'">'.$link_text.'</a>';
             }
             else {
-                echo _e('enter moves app id and secret', 'reclaim');
+                _e('enter moves app id and secret', 'reclaim');
             }
 
             ?>
@@ -146,11 +143,7 @@ class moves_reclaim_module extends reclaim_module {
         if (get_option('moves_user_id') && get_option('moves_access_token') ) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, self::$count, get_option('moves_access_token')), self::$timeout);
             $rawData = json_decode($rawData, true);
-/*
-            $Moves = new \Moves\Moves(get_option('moves_access_token'));
-            $rawData = $Moves->dailySummary(array('pastDays' => self::$count)); # past $count days
-            parent::log(print_r($rawData,true));
-*/
+
             if ($rawData) {
                 $data = $this->map_data($rawData);
                 parent::insert_posts($data);
@@ -161,7 +154,13 @@ class moves_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function map_data($rawData) {
+    /**
+     * Maps moves summery data to wp-content data. Check https://dev.moves-app.com/docs/api_summaries for more info.
+     * @param array $rawData
+     * @return array
+     */
+    private function map_data(array $rawData) {
+        $data = array();
         foreach($rawData as $day){
 
             // today?
@@ -171,19 +170,13 @@ class moves_reclaim_module extends reclaim_module {
             // post activity after 02:00
             if (intval(date("H"))>2) {
                 $id = $day["date"];
-                $link = '';
                 $image_url = '';
                 $tags = '';
                 $link = '';
                 $title = sprintf(__('Bewegung am %s', 'reclaim'), date('d.m.Y', strtotime($day["date"])));
 
                 $content = $this->construct_content($day);
-
-                $post_meta["steps_walked"] = isset($day['summary'][0]['steps']) ? $day['summary'][0]['steps'] : '';
-                $post_meta["steps_run"] = isset($day['summary'][1]['steps']) ? $day['summary'][1]['steps']: '';
-                $post_meta["distance_walked"] = isset($day['summary'][0]['distance']) ? $day['summary'][0]['distance'] : '';
-                $post_meta["distance_run"] = isset($day['summary'][1]['distance']) ? $day['summary'][1]['distance'] : '';
-                $post_meta["distance_cycled"] = isset($day['summary'][2]['distance']) ? $day['summary'][2]['distance'] : '';
+                $post_meta = $this->construct_post_meta($day);
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
@@ -208,6 +201,7 @@ class moves_reclaim_module extends reclaim_module {
 
     private function construct_content($day) {
         if (isset($day['summary'])) {
+            $distance = 0;
             $description = 'ich bin heute ';
             foreach($day['summary'] as $summary) {
                 if (isset($summary['activity'])) {
@@ -242,5 +236,26 @@ class moves_reclaim_module extends reclaim_module {
         }
 
         return $description;
+    }
+
+    /**
+     * Returns meta data for every activity in a moves summary data day.
+     * @param array $day Data return from moves api. Known possible keys so far:
+     *  activity, distance, duration, steps (not if activity == cyc), calories
+     * @return array
+     */
+    private function construct_post_meta(array $day)
+    {
+        $post_meta = array();
+        foreach ($day['summary'] as $activityData) {
+            $activity = isset($activityData['activity']) ? $activityData['activity'] : 'unknown';
+            unset($activityData['activity']);
+            foreach ($activityData as $activityDataKey => $activityDataValue) {
+                $postMetaKey = $activity . '_' . $activityDataKey;
+                $post_meta[$postMetaKey] = $activityDataValue;
+            }
+        }
+
+        return $post_meta;
     }
 }
