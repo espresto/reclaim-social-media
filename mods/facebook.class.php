@@ -1,5 +1,6 @@
 <?php
 /*  Copyright 2013-2014 diplix
+                   2014 Christian Muehlhaeuser <muesli@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -156,7 +157,7 @@ class facebook_reclaim_module extends reclaim_module {
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
             }
-            $lastupdate = current_time('timestamp');
+            $newlastupdate = current_time('timestamp');
 
             $errors = 0;
             while (strlen($urlNext) > 0) {
@@ -174,6 +175,11 @@ class facebook_reclaim_module extends reclaim_module {
 
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
+
+                    if (!$forceResync && count($data) > 0 && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)) {
+                        // abort requests if we've already seen these events
+                        $urlNext = "";
+                    }
                 }
                 else {
                     // throw exception or end?
@@ -185,7 +191,7 @@ class facebook_reclaim_module extends reclaim_module {
                 }
             }
 
-            update_option('reclaim_'.$this->shortname.'_last_update', $lastupdate);
+            update_option('reclaim_'.$this->shortname.'_last_update', $newlastupdate);
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
