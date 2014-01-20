@@ -102,6 +102,8 @@ class github_reclaim_module extends reclaim_module {
                 'post_meta' => $post_meta
             );
         }
+
+        parent::log(sprintf(__('%s posted new status: %s on %s', 'reclaim'), $data["post_title"], $data["post_date"]));
         return $data;
     }
 
@@ -127,7 +129,7 @@ class github_reclaim_module extends reclaim_module {
         $title = sprintf("Pushed %d new commits to %s.", $commitCount, $repoName);
 
         $content = array(
-            'content' =>  $content,
+            'content' =>  "",
             'title' => $title,
             'url' => $url
         );
