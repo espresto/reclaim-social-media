@@ -176,7 +176,7 @@ class facebook_reclaim_module extends reclaim_module {
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
 
-                    if (!$forceResync && count($data) > 0 && intval($data[count($data)-1]["created_time"]) < intval($lastupdate)) {
+                    if (!$forceResync && count($data) > 0 && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)) {
                         // abort requests if we've already seen these events
                         $urlNext = "";
                     }
