@@ -18,6 +18,7 @@
 
 class github_reclaim_module extends reclaim_module {
     private static $apiurl = "https://api.github.com/users/%s/events/public?page=%d";
+    private static $timeout = 15;
 
     public function __construct() {
         $this->shortname = 'github';
@@ -50,8 +51,8 @@ class github_reclaim_module extends reclaim_module {
 
             $page = 0;
             do {
-                $req = sprintf($this->apiurl, get_option('github_username'), $page);
-                $feed = file($req);
+                $req = sprintf(self::$apiurl, get_option('github_username'), $page);
+                $feed = parent::import_via_curl($req, self::$timeout);
 
                 $data = self::map_data(json_decode($feed, true));
                 parent::insert_posts($data);
