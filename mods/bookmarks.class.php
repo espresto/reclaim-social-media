@@ -18,7 +18,7 @@
 
 class bookmarks_reclaim_module extends reclaim_module {
     private static $timeout = 15;
-    private static $count = 30;
+    private static $count = 30; // pinboard.in maximum: 400 ?count=400
     private static $post_format = 'link'; // no specific format
 
     public function __construct() {
@@ -98,7 +98,7 @@ class bookmarks_reclaim_module extends reclaim_module {
             $link 	= $item->get_permalink();
             $image_url = '';
             $published = $item->get_date();
-            $description = $item->get_description();
+            $description = self::process_content($item);
             $tags = explode( " ", $item->get_category()->get_label() );
             // filter tags, tnx to http://stackoverflow.com/questions/369602/delete-an-element-from-an-array
             $tags = array_diff($tags, array("w", "s"));
@@ -111,7 +111,7 @@ class bookmarks_reclaim_module extends reclaim_module {
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($published))),
 //                'post_excerpt' => $description,
-                'post_content' => $description,
+                'post_content' => $description['constructed'],
                 'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',
@@ -123,6 +123,25 @@ class bookmarks_reclaim_module extends reclaim_module {
 
         }
         return $data;
+    }
+
+    private function process_content($item) {
+        $post_content_original = $item->get_description();
+        $bookmark_domain = parse_url($item->get_permalink());
+        $bookmark_domain = $bookmark_domain['host'];
+        $post_content_constructed =
+            '<div class="bomessage">'
+            .$post_content_original
+            .'</div>'
+            .'<p class="viewpost-bookmarks syndicationlink">(<a href="'.$item->get_permalink().'">'.sprintf(__('View on %s', 'reclaim'), $bookmark_domain).'</a>)</p>'
+            ;
+
+        $content = array(
+            'original' =>  $post_content_original,
+            'constructed' =>  $post_content_constructed
+        );
+
+        return $content;
     }
 }
 
