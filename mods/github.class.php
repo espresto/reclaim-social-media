@@ -101,9 +101,9 @@ class github_reclaim_module extends reclaim_module {
                 'ext_guid' => $entry["id"],
                 'post_meta' => $post_meta
             );
+            parent::log(sprintf(__('%s posted new status: %s on %s', 'reclaim'), $content["title"], $data[count($data)-1]["post_date"]));
         }
 
-        parent::log(sprintf(__('%s posted new status: %s on %s', 'reclaim'), $data["post_title"], $data["post_date"]));
         return $data;
     }
 
