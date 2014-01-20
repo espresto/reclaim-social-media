@@ -115,7 +115,7 @@ class reclaim_module {
     *
     */
     public static function insert_posts($data) {
-        if (!$data || !is_array($data)) {
+        if (!is_array($data)) {
             return;
         }
 
