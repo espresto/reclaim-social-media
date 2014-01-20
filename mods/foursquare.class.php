@@ -179,8 +179,10 @@ class foursquare_reclaim_module extends reclaim_module {
                 // venue location cc
                 // venue location country
                 // https://foursquare.com/user/70255222/checkin/52dd869d11d22ae16e55414c
-                $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$checkin['venue']['id'];
-                $content = sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']);
+                $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$id;
+                $content = '<p>'.sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']).'</p>'
+                           .'<blockquote>'.$checkin['shout'].'</blockquote>
+';
                 $title = sprintf(__('Checked in to %s', 'reclaim'), $checkin['venue']['name']);
 
                 //$post_meta = $this->construct_post_meta($day);
