@@ -92,14 +92,13 @@ class github_reclaim_module extends reclaim_module {
                 'post_category' => array(get_option($this->shortname.'_category')),
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => $post_format,
-                'post_content'   => $content['content'],
+                'post_content'   => $content['title'],
                 'post_title' => strip_tags($content['title']),
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'tags_input' => $tags,
                 'ext_permalink' => $content['url'],
-                'ext_guid' => $entry["id"],
-                'post_meta' => $post_meta
+                'ext_guid' => $entry["id"]
             );
             parent::log(sprintf(__('%s posted new status: %s on %s', 'reclaim'), $this->shortname, $content["title"], $data[count($data)-1]["post_date"]));
         }
@@ -116,6 +115,7 @@ class github_reclaim_module extends reclaim_module {
         $before = $entry["payload"]["before"];
         $after = $entry["payload"]["head"];
         $url = $entry["repo"]["url"] . "/compare/" . substr($before, 0, 8) . "..." . substr($after, 0, 8);
+        $url = str_replace("https://api.github.com", "https://github.com", $url);
         $repoName = $entry["repo"]["name"];
 
         $commitCount = 0;
