@@ -173,8 +173,11 @@ class flickr_reclaim_module extends reclaim_module {
         $post_content_original = $entry['description'];
         $post_content_original = html_entity_decode($post_content); // ohne trim?
 
-        $post_content_constructed_simple = '<a href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
-        $post_content_constructed = '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>';
+        $post_content_constructed_simple = '<a rel="syndication" href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
+        $post_content_constructed = 
+            '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>'
+            .'<p class="viewpost-flickr">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Flickr', 'reclaim').'</a>)</p>'
+            .'';
 
         $embed_code = '<frameset><iframe src="'.$entry['link'].'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
 
