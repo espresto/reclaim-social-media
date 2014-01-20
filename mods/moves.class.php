@@ -246,16 +246,20 @@ class moves_reclaim_module extends reclaim_module {
      */
     private function construct_post_meta(array $day)
     {
+        if (isset($day['summary'])) {
         $post_meta = array();
-        foreach ($day['summary'] as $activityData) {
-            $activity = isset($activityData['activity']) ? $activityData['activity'] : 'unknown';
-            unset($activityData['activity']);
-            foreach ($activityData as $activityDataKey => $activityDataValue) {
-                $postMetaKey = $activity . '_' . $activityDataKey;
-                $post_meta[$postMetaKey] = $activityDataValue;
+            foreach ($day['summary'] as $activityData) {
+                $activity = isset($activityData['activity']) ? $activityData['activity'] : 'unknown';
+                unset($activityData['activity']);
+                foreach ($activityData as $activityDataKey => $activityDataValue) {
+                    $postMetaKey = $activity . '_' . $activityDataKey;
+                    $post_meta[$postMetaKey] = $activityDataValue;
+                }
             }
+            return $post_meta;
         }
-
-        return $post_meta;
+        else {
+            return array();
+        }
     }
 }
