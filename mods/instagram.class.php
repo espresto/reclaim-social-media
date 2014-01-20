@@ -149,6 +149,7 @@ class instagram_reclaim_module extends reclaim_module {
                         "path"  => dirname( __FILE__ ) . '/../vendor/hybridauth/hybridauth/additional-providers/hybridauth-instagram/Providers/Instagram.php',
                         "class" => "Hybrid_Providers_Instagram",
                     ),
+                    "scope" => "basic comments",
                 ),
             ),
         );
@@ -255,18 +256,21 @@ class instagram_reclaim_module extends reclaim_module {
 //                .'</a>'
             ;
         } else {
-            $post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-                .'[video src="'.$entry['videos']['standard_resolution']['url'].'" poster="'.$image_url.'"]';
+            $post_content_constructed = 
+                //'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+                '[video src="'.$entry['videos']['standard_resolution']['url'].'" poster="'.$image_url.'"]';
         }
+        $post_content_constructed .= '<p class="viewpost-instagram">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Instagram', 'reclaim').'</a>)</p>';
 
         // instagram embed code:
         // <iframe src="//instagram.com/p/jD91oVoLab/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
         $embed_code = '<frameset><iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>'
             .'<noframes>'
-            .'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-//            .'<a href="'.$entry['link'].'">'
+            //.'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+            //.'<a href="'.$entry['link'].'">'
             .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
-//            .'</a>'
+            .'<p class="viewpost-instagram">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Instagram', 'reclaim').'</a>)</p>'
+            //.'</a>'
             .'</noframes></frameset>';
 
         $content = array(
