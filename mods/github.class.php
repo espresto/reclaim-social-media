@@ -73,7 +73,9 @@ class github_reclaim_module extends reclaim_module {
             } while ($reqOk);
 
             update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
-            update_option('reclaim_'.$this->shortname.'_last_seen_id', $newlastseenid);
+
+            if (isset($newlastseenid))
+                update_option('reclaim_'.$this->shortname.'_last_seen_id', $newlastseenid);
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
