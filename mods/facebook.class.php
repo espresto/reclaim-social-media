@@ -402,7 +402,7 @@ class facebook_reclaim_module extends reclaim_module {
         }
 
         $fb_link = "https://www.facebook.com/".$entry['from']['id']."/posts/".substr($entry['id'], 10);
-        $description .= '<p class="fbviewpost-facebook">(<a href="'.$fb_link.'">'.__('View on Facebook', 'reclaim').'</a>)</p>';
+        $description .= '<p class="viewpost-facebook">(<a rel="syndication" href="'.$fb_link.'">'.__('View on Facebook', 'reclaim').'</a>)</p>';
         // add embedcode
         $description = '<div class="fb-post" data-href="'.$fb_link.'" data-width="100%">'
             .$description
