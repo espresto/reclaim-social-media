@@ -124,37 +124,5 @@ class bookmarks_reclaim_module extends reclaim_module {
         }
         return $data;
     }
-
-    private function process_content($item, $id, $image_url, $description) {
-        $post_content_original = $description;
-        $author_data = $item->get_item_tags('', 'author_name');
-        $author_name = $author_data[0]['data'];
-        $user_review_data = $item->get_item_tags('', 'user_review');
-        $user_review = $user_review_data[0]['data'];
-        $book_description_data = $item->get_item_tags('', 'book_description');
-        $book_description = $book_description_data[0]['data'];
-        if ($image_url!="") {
-            $image_html = '<div class="grimage"><a href="'.$item->get_permalink.'"><img src="'.$image_url.'" alt="'.$item->get_title().'"></a></div>';
-        }
-        else {
-            $image_html ="";
-        }
-        $post_content_constructed =
-            '<div class="grmessage"><p>Ich habe <em><a href="'.$item->get_permalink.'">'.$item->get_title().'</a></em> von '.$author_name.' gelesen.</p>'
-            .'<p>'.$user_review.'</p>'
-//            .$image_html
-            .'<div class="boimage">[gallery size="large" columns="1" link="file"]</div>'
-//            .'<blockquote>'.$book_description.'</blockquote>'
-//            <a href="'.$item->get_permalink.'">
-            .'</div>';
-
-        $content = array(
-            'original' =>  $post_content_original,
-            'constructed' =>  $post_content_constructed,
-            'image' => $image_url
-        );
-
-        return $content;
-    }
 }
 

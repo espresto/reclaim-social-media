@@ -58,9 +58,14 @@ class github_reclaim_module extends reclaim_module {
                 parent::insert_posts($data);
 
                 $reqOk = count($data) > 0;
-                if (strlen($lastseenid) == 0 && $reqOk) {
+                if (!$forceResync && $reqOk && intval($data[count($data)-1]["ext_guid"]) < intval($lastseenid)) {
+                    // abort requests if we've already seen these events
+                    $reqOk = false;
+                }
+
+                if (intval($newlastseenid) < intval($data[0]["ext_guid"]) && $reqOk) {
                     // store the last-seen-id, which is the first message of the first request
-                    $lastseenid = $data[0]["ext_guid"];
+                    $newlastseenid = $data[0]["ext_guid"];
                 }
 
                 parent::log(sprintf(__('Retrieved set of GitHub events: %d, last seen id: %s, req-ok: %d', 'reclaim'), count($data), $lastseenid, $reqOk));
@@ -68,7 +73,7 @@ class github_reclaim_module extends reclaim_module {
             } while ($reqOk);
 
             update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
-            update_option('reclaim_'.$this->shortname.'_last_seen_id', $lastseenid);
+            update_option('reclaim_'.$this->shortname.'_last_seen_id', $newlastseenid);
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
