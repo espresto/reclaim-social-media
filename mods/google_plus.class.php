@@ -189,7 +189,7 @@ class google_plus_reclaim_module extends reclaim_module {
         if (isset($entry['object'], $entry['object']['attachments'], $entry['object']['attachments'][0], $entry['object']['attachments'][0]['objectType']) && $entry['object']['attachments'][0]['objectType'] == "video") {
             $post_content = '<div class="gimage gplus video"><a href="'.$entry['object']['attachments'][0]['url'].'"><img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="'.$entry['object']['attachments'][0]['displayName'].'"></a></div>'.'<div class="gcontent gplus">'.$post_content.'</div>';
         }
-        $post_content .= '<p class="gviewpost-google">(<a href="'.$entry['url'].'">'.__('View on Google+', 'reclaim').'</a>)</p>';
+        $post_content .= '<p class="viewpost-google">(<a rel="syndication" href="'.$entry['url'].'">'.__('View on Google+', 'reclaim').'</a>)</p>';
 
         // add embedcode
         $post_content = '<div class="g-post" data-href="'.$entry['url'].'" data-width="100%">'
