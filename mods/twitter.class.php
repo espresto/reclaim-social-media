@@ -21,7 +21,6 @@ class twitter_reclaim_module extends reclaim_module {
     private static $apiurl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
     private static $count = 200;
     private static $lang = 'en';
-    private static $post_format = 'status'; // or 'status', 'aside'
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
 
@@ -130,9 +129,9 @@ class twitter_reclaim_module extends reclaim_module {
             $tags = self::get_hashtags($entry);
 
             if ($entry['entities']['media'][0]['type']=="photo") {
-            	self::$post_format = 'image';
+                $post_format = 'image';
             } else {
-            	self::$post_format = 'status';
+                $post_format = 'status';
             }
 
             // save geo coordinates?
@@ -150,7 +149,7 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
-                'post_format' => self::$post_format,
+                'post_format' => $post_format,
 // new
                 'post_content'   => $content['embedcode'],
 // changed
