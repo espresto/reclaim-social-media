@@ -124,7 +124,7 @@ class github_reclaim_module extends reclaim_module {
                 continue;
 
             $commitCount++;
-            $commitDesc[] = $commit["message"] . "\n";
+            $commitDesc .= $commit["message"] . "\n";
         }
 
         if ($commitCount > 1) {
