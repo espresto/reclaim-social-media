@@ -22,7 +22,8 @@
         "php": ">=5.2.4",
         "themattharris/tmhoauth": "0.8.3",
         "simple-html-dom/simple-html-dom": "*",
-        "hybridauth/hybridauth": "dev-master"
+        "hybridauth/hybridauth": "dev-master",
+        "euskadi31/opengraph": "dev-master"
     },
 	"autoload": {
     	"classmap": [
