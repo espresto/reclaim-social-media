@@ -115,7 +115,7 @@ class github_reclaim_module extends reclaim_module {
         $before = $entry["payload"]["before"];
         $after = $entry["payload"]["head"];
         $url = $entry["repo"]["url"] . "/compare/" . substr($before, 0, 8) . "..." . substr($after, 0, 8);
-        $url = str_replace("https://api.github.com", "https://github.com", $url);
+        $url = str_replace("https://api.github.com/repos", "https://github.com", $url);
         $repoName = $entry["repo"]["name"];
 
         $commitCount = 0;
