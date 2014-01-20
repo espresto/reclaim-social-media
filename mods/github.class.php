@@ -92,7 +92,7 @@ class github_reclaim_module extends reclaim_module {
                 'post_category' => array(get_option($this->shortname.'_category')),
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => $post_format,
-                'post_content'   => $content['title'],
+                'post_content'   => $content['content'],
                 'post_title' => strip_tags($content['title']),
                 'post_type' => 'post',
                 'post_status' => 'publish',
@@ -124,16 +124,21 @@ class github_reclaim_module extends reclaim_module {
                 continue;
 
             $commitCount++;
+            $commitDesc[] = $commit["message"] . "\n";
         }
 
-        $title = sprintf("Pushed %d new commits to %s.", $commitCount, $repoName);
+        if ($commitCount > 1) {
+            $content = sprintf("Pushed %d commits to %s: %s", $commitCount, $repoName, $commitDesc);
+            $title = sprintf("Pushed %d commits to %s.", $commitCount, $repoName);
+        } else {
+            $content = sprintf("Pushed a commit to %s: %s", $commitCount, $repoName, $commitDesc);
+            $title = sprintf("Pushed a commit to %s.", $commitCount, $repoName);
+        }
 
-        $content = array(
-            'content' =>  "",
+        return array(
+            'content' =>  $content,
             'title' => $title,
             'url' => $url
         );
-
-        return $content;
     }
 }
