@@ -131,8 +131,8 @@ class github_reclaim_module extends reclaim_module {
             $content = sprintf("Pushed %d commits to %s: %s", $commitCount, $repoName, $commitDesc);
             $title = sprintf("Pushed %d commits to %s.", $commitCount, $repoName);
         } else {
-            $content = sprintf("Pushed a commit to %s: %s", $commitCount, $repoName, $commitDesc);
-            $title = sprintf("Pushed a commit to %s.", $commitCount, $repoName);
+            $content = sprintf("Pushed a commit to %s: %s", $repoName, $commitDesc);
+            $title = sprintf("Pushed a commit to %s.", $repoName);
         }
 
         return array(
