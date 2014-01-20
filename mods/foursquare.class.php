@@ -50,6 +50,7 @@ class foursquare_reclaim_module extends reclaim_module {
             }
             else {
                 update_option('foursquare_user_id', $user_profile->identifier);
+                update_option('foursquare_user_name', $user_profile->displayName);
                 update_option('foursquare_access_token', $user_access_tokens->access_token);
             }
             if(session_id()) {
@@ -88,7 +89,7 @@ class foursquare_reclaim_module extends reclaim_module {
             ) {
                 $link_text = __('Authorize with Foursquare', 'reclaim');
                 if ( (get_option('foursquare_user_id')!="") && (get_option('foursquare_access_token')!="") ) {
-                    echo sprintf(__('<p>Foursquare is authorized</p>', 'reclaim'), get_option('foursquare_user_id'));
+                    echo sprintf(__('<p>Foursquare is authorized as %s</p>', 'reclaim'), get_option('foursquare_user_name'));
                     $link_text = __('Authorize again', 'reclaim');
                 }
 
@@ -139,8 +140,8 @@ class foursquare_reclaim_module extends reclaim_module {
 
             if ($rawData) {
                 $data = $this->map_data($rawData);
-                parent::log(print_r($data,true))
-//                parent::insert_posts($data);
+                parent::log(print_r($data,true));
+                parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
@@ -155,7 +156,7 @@ class foursquare_reclaim_module extends reclaim_module {
      */
     private function map_data(array $rawData) {
         $data = array();
-        foreach($rawData['response']['checkins'] as $checkin){
+        foreach($rawData['response']['checkins']['items'] as $checkin){
 
                 $id = $checkin['id'];
                 // there might be more than one image (or) none. 
@@ -179,9 +180,9 @@ class foursquare_reclaim_module extends reclaim_module {
                 // venue location country
                 // https://foursquare.com/user/70255222/checkin/52dd869d11d22ae16e55414c
                 $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$checkin['venue']['id'];
-                $title = sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']));
+                $content = sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']);
+                $title = sprintf(__('Checked in to %s', 'reclaim'), $checkin['venue']['name']);
 
-                $content = $title;
                 //$post_meta = $this->construct_post_meta($day);
                 $lat = $checkin['venue']['location']['lat'];
                 $lon = $checkin['venue']['location']['lng'];
@@ -196,7 +197,7 @@ class foursquare_reclaim_module extends reclaim_module {
                     'post_author' => get_option($this->shortname.'_author'),
                     'post_category' => array(get_option($this->shortname.'_category')),
                     'post_format' => self::$post_format,
-                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($checkin["createdAt"])+79200)),
+                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $checkin["createdAt"])),
                     'post_content' => $content,
                     'post_title' => $title,
                     'post_type' => 'post',
@@ -208,7 +209,6 @@ class foursquare_reclaim_module extends reclaim_module {
                     'post_meta' => $post_meta
                 );
                 }
-        }
         return $data;
     }
 
