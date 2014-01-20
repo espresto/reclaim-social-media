@@ -3,7 +3,7 @@
 display: block;
 }
 
-/* not rwally good to apply category filters, since user can call categories whatever she likes */
+/* not really good to apply category filters, since user can call categories whatever she likes */
 .list-view .site-content .format-status .entry-title,
 .list-view .site-content .format-image.category-twitter .entry-title,
 .list-view .site-content .format-image.category-facebook .entry-title
@@ -11,7 +11,10 @@ display: block;
 	display: none;
 }
 .list-view .site-content .format-video .post-thumbnail,
-.list-view .site-content .format-image .post-thumbnail 
+.list-view .site-content .format-image .post-thumbnail,
+article.format-video div.entry-media,
+article.format-image div.entry-media,
+article.format-video .wp-post-image
 {
 	display: none;
 }
@@ -86,12 +89,19 @@ overflow: hidden;
 */
 }
 
+div.entry-content p.syndicationlink,
 div.entry-content p.fbviewpost-link, 
-div.entry-content p.fbviewpost-facebook,
 div.entry-content p.twviewpost-link, 
-div.entry-content p.twviewpost-twitter,
 div.entry-content p.gviewpost-link,
-div.entry-content p.gviewpost-google
+div.entry-content p.gviewpost-google,
+div.entry-content p.fbviewpost-facebook,
+div.entry-content p.twviewpost-twitter,
+div.entry-content p.viewpost-twitter,
+div.entry-content p.viewpost-google,
+div.entry-content p.viewpost-facebook,
+div.entry-content p.viewpost-flickr,
+div.entry-content p.viewpost-instagram,
+div.entry-content p.viewpost-bookmarks 
 {
 float: right;
 clear: none;
