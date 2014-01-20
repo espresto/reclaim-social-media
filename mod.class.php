@@ -157,7 +157,7 @@ class reclaim_module {
                     // * check if image-url was already saved (in another article) if so, use it instead
                     if ($post['ext_permalink']!="") {
                         $reader = new Opengraph\Reader();
-                        $reader->parse(my_get_remote_content($post['ext_permalink']));
+                        $reader->parse(self::my_get_remote_content($post['ext_permalink']));
                         $open_graph_data = $reader->getArrayCopy();
                         $image_data = isset($open_graph_data[$reader::OG_IMAGE]) ? array_pop($open_graph_data[$reader::OG_IMAGE]) : array();
                         $image_url = isset($image_data['og:image:url']) ? $image_data['og:image:url'] : '';
