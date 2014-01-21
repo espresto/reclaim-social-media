@@ -139,7 +139,7 @@ class moves_reclaim_module extends reclaim_module {
         return $config;
     }
 
-    public function import() {
+    public function import($forceResync) {
         if (get_option('moves_user_id') && get_option('moves_access_token') ) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, self::$count, get_option('moves_access_token')), self::$timeout);
             $rawData = json_decode($rawData, true);
@@ -167,9 +167,9 @@ class moves_reclaim_module extends reclaim_module {
             if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
                 // no entry, if it's from today
             } else {
-            // post activity after 02:00
+            // post activity after 02:00 (no import between midnight and 2:00)
             if (intval(date("H"))>2) {
-                $id = $day["date"];
+                $id = 'moves-'.$day["date"];
                 $image_url = '';
                 $tags = '';
                 $link = '';
@@ -182,7 +182,7 @@ class moves_reclaim_module extends reclaim_module {
                     'post_author' => get_option($this->shortname.'_author'),
                     'post_category' => array(get_option($this->shortname.'_category')),
                     'post_format' => self::$post_format,
-                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($day["date"])+79200)),
+                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($day["date"])+72000)),
                     'post_content' => $content,
                     'post_title' => $title,
                     'post_type' => 'post',
@@ -244,8 +244,7 @@ class moves_reclaim_module extends reclaim_module {
      *  activity, distance, duration, steps (not if activity == cyc), calories
      * @return array
      */
-    private function construct_post_meta(array $day)
-    {
+    private function construct_post_meta(array $day) {
         if (isset($day['summary'])) {
         $post_meta = array();
             foreach ($day['summary'] as $activityData) {
