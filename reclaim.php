@@ -68,11 +68,11 @@ class reclaim_core {
 
         // get those sessions strated, before it's too late
         // don't know if this works properly
-        add_action('wp_logout', 'myEndSession');
-        add_action('wp_login', 'myEndSession');
+        add_action('wp_logout', array($this, 'myEndSession'), 1, 2);
+        add_action('wp_login', array($this, 'myEndSession'), 1, 3);
 
-        add_filter('post_link', array($this, 'original_permalink'), 1, 3);
-        add_filter('post_type_link', array($this, 'original_permalink'), 1, 4);
+        add_filter('post_link', array($this, 'original_permalink'), 1, 4);
+        add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
     }
 
     public function myStartSession() {
@@ -82,7 +82,9 @@ class reclaim_core {
     }
 
     public function myEndSession() {
+        if(session_id()) {
         session_destroy ();
+        }
     }
 
     public function prefix_add_reclaim_stylesheet() {
