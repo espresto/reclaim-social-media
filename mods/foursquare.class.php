@@ -140,7 +140,6 @@ class foursquare_reclaim_module extends reclaim_module {
 
             if ($rawData) {
                 $data = $this->map_data($rawData);
-                parent::log(print_r($data,true));
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
@@ -171,14 +170,6 @@ class foursquare_reclaim_module extends reclaim_module {
                     $image_url = '';
                 }
                 $tags = '';
-                // venue id 
-                // venue name
-                // venue location
-                // venue location lat
-                // venue location lng
-                // venue location cc
-                // venue location country
-                // https://foursquare.com/user/70255222/checkin/52dd869d11d22ae16e55414c
                 $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$id;
                 $content = '<p>'.sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']).'</p>'
                            .'<blockquote>'.$checkin['shout'].'</blockquote>
@@ -188,11 +179,11 @@ class foursquare_reclaim_module extends reclaim_module {
                 //$post_meta = $this->construct_post_meta($day);
                 $lat = $checkin['venue']['location']['lat'];
                 $lon = $checkin['venue']['location']['lng'];
-
-                // save meta like this?
-
                 $post_meta["geo_latitude"] = $lat;
                 $post_meta["geo_longitude"] = $lon;
+                $post_meta["venueCountry"] = $checkin['venue']['location']['country'];
+                $post_meta["venueName"] = $checkin['venue']['name'];
+                $post_meta["foursquareVenueId"] = $checkin['venue']['id'];
 
 
                 $data[] = array(
