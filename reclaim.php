@@ -41,6 +41,7 @@ class reclaim_core {
         require_once('helper-functions.php');
         /* Load modules */
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
+            require_once($file);
             $name = basename($file, '.class.php');
             $cName = $name.'_reclaim_module';
             $this->mods_loaded[] = array('name' => $name,

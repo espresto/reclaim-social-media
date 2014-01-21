@@ -28,7 +28,6 @@
 	"autoload": {
     	"classmap": [
 	        "vendor/simple-html-dom/simple-html-dom/",
-            "mods/",
             "mod.class.php"
 	    ]
 	}
