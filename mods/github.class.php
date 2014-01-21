@@ -125,6 +125,7 @@ class github_reclaim_module extends reclaim_module {
         $repoName = $entry["repo"]["name"];
 
         $commitCount = 0;
+        $commitDesc= "";
         foreach($entry["payload"]["commits"] as $commit) {
             if ($commit["sha"] == $before)
                 continue;
