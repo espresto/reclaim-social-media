@@ -231,6 +231,7 @@ class facebook_reclaim_module extends reclaim_module {
                 if (($post_format=="link") && isset($entry['name'])) {
                     $title = $entry['name'];
                 }
+                $post_meta["facebook_link_id"] = $entry["id"];
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
@@ -244,7 +245,8 @@ class facebook_reclaim_module extends reclaim_module {
                     'post_status' => 'publish',
                     'ext_permalink' => $link,
                     'ext_image' => $image,
-                    'ext_guid' => $entry["id"]
+                    'ext_guid' => $entry["id"],
+                    'post_meta' => $post_meta
                 );
             }
         }
@@ -277,7 +279,9 @@ class facebook_reclaim_module extends reclaim_module {
         if (isset($entry["link"])) {
             $link = htmlentities($entry["link"]);
         } else {
-            $id = substr(strstr($entry['id'], '_'),1);
+			$ids = explode('_', $link_id);
+            $id = $ids[1];
+//            $id = substr(strstr($entry['id'], '_'),1);
             $link = "https://www.facebook.com/".get_option('facebook_user_id')."/posts/".$id;
         }
         return $link;
