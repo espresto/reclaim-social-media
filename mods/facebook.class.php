@@ -37,12 +37,13 @@ class facebook_reclaim_module extends reclaim_module {
     }
 
     public function display_settings() {
-        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') && (isset($_SESSION['hybridauth_user_profile']))) {
+        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') ) {
             $user_profile       = json_decode($_SESSION['hybridauth_user_profile']);
             $user_access_tokens = json_decode($_SESSION['hybridauth_user_access_tokens']);
+            $login              = $_SESSION['login'];
             $error              = $_SESSION['e'];
 
-            if ($error) {
+            if ($error!="") {
                 echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
                 //echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $e ),'</p></div>';
             }
@@ -50,15 +51,23 @@ class facebook_reclaim_module extends reclaim_module {
                 update_option('facebook_user_id', $user_profile->identifier);
                 update_option('facebook_username', $user_profile->displayName);
                 update_option('facebook_oauth_token', $user_access_tokens->access_token);
+                if (session_id()) {
+                    //session_destroy ();
+                }
             }
+
+        if ( $login == 0 ) {
+                update_option('facebook_user_id', '');
+                update_option('facebook_username', '');
+                update_option('facebook_oauth_token', '');
+        } 
+
 //            print_r($_SESSION);
 //            echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
 //            echo $user_access_token->accessToken;
 //            $user_profile->displayName
-            if (session_id()) {
-                session_destroy ();
-            }
-        }
+        } 
+
 
 ?>
         <tr valign="top">
@@ -118,6 +127,13 @@ class facebook_reclaim_module extends reclaim_module {
                     .'&mod='.$this->shortname
                     .'&callbackUrl='.$callback
                     .'">'.$link_text.'</a>';
+                echo '<a class="button button-secondary" href="'
+                    .plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
+                    .'?'
+                    .'&mod='.$this->shortname
+                    .'&callbackUrl='.$callback
+                    .'&login=0'
+                    .'">logout</a>';
             }
             else {
                 echo 'enter facebook app id and facebook app secret';
@@ -218,7 +234,8 @@ class facebook_reclaim_module extends reclaim_module {
                     )
                )
                && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
-               && ( (!isset($entry['privacy']['value']) ) || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
+               // difficult: if privacy value is empty, is it public? it seems to me, but i'm not sure
+               && ( ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
                && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
             ) {
                 /*
@@ -280,7 +297,7 @@ class facebook_reclaim_module extends reclaim_module {
         if (isset($entry["link"])) {
             $link = htmlentities($entry["link"]);
         } else {
-			$ids = explode('_', $link_id);
+			$ids = explode('_', $entry['id']);
             $id = $ids[1];
 //            $id = substr(strstr($entry['id'], '_'),1);
             $link = "https://www.facebook.com/".get_option('facebook_user_id')."/posts/".$id;
