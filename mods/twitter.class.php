@@ -179,12 +179,26 @@ class twitter_reclaim_module extends reclaim_module {
     }
 
     private function construct_content($entry) {
+        // lets make this a setting?
+        $unshorten_urls = true;
+
         $post_content = $entry['text'];
         $post_content = html_entity_decode($post_content); // ohne trim?
         //links einsetzen/auflösen
         if (count($entry['entities']['urls'])) {
             foreach ($entry['entities']['urls'] as $url) {
-                $post_content = str_replace( $url['url'], '<a href="'.$url['expanded_url'].'">'.$url['display_url'].'</a>', $post_content);
+                if ($unshorten_urls) {
+                    $resolver = new URLResolver();
+                    $expanded_url = $resolver->resolveURL($url['expanded_url'])->getURL();
+                    $display_url  = parse_url($expanded_url); // minus protocol, no longer that 30 chars
+                    $display_url  = $display_url['host'].$display_url['path'];
+                    if (strlen($display_url) > 30) { $display_url = substr($display_url, 0, 30)."&hellip;"; }
+                }
+                else {
+                    $expanded_url = $url['expanded_url'];
+                    $display_url  = $url['display_url'];
+                }
+                $post_content = str_replace( $url['url'], '<a href="'.$expanded_url.'">'.$display_url.'</a>', $post_content);
             }
         }
         $image_url = "";
