@@ -157,7 +157,8 @@ class facebook_reclaim_module extends reclaim_module {
             if (strlen($lastupdate) > 0 && !$forceResync) {
                 $urlNext .= "&since=" . $lastupdate;
             }
-            $newlastupdate = current_time('timestamp');
+            // get GMT time. thats what we need, not local time
+            $newlastupdate = current_time('timestamp', 1);
 
             $errors = 0;
             while (strlen($urlNext) > 0) {
