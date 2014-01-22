@@ -16,6 +16,10 @@
     	{
         	"type": "vcs",
 	        "url": "https://github.com/Youpie/simple-html-dom"
+	    },
+    	{
+        	"type": "vcs",
+	        "url": "https://github.com/diplix/URLResolver.php"
 	    }
 	],
     "require": {
@@ -23,11 +27,13 @@
         "themattharris/tmhoauth": "0.8.3",
         "simple-html-dom/simple-html-dom": "*",
         "hybridauth/hybridauth": "dev-master",
-        "euskadi31/opengraph": "dev-master"
+        "euskadi31/opengraph": "dev-master",
+        "diplix/URLResolver.php": "dev-master"
     },
 	"autoload": {
     	"classmap": [
 	        "vendor/simple-html-dom/simple-html-dom/",
+	        "vendor/diplix/URLResolver.php/",
             "mod.class.php"
 	    ]
 	}
