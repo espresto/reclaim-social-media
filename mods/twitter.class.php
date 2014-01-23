@@ -102,7 +102,7 @@ class twitter_reclaim_module extends reclaim_module {
                     $data = self::map_data(json_decode($tmhOAuth->response['response'], true));
                     parent::insert_posts($data);
 
-                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i <= $max_import_loops;
+                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i <= self::$max_import_loops;
                     if (!isset($lastid) && $reqOk) {
                         // store the last-seen-id, which is the first message of the first request
                         $lastseenid = $data[0]["ext_guid"];
@@ -185,6 +185,7 @@ class twitter_reclaim_module extends reclaim_module {
         $unshorten_urls = true;
 
         $post_content = $entry['text'];
+        //$post_content = html_entity_decode($post_content); // ohne trim?
         $post_content = $post_content; // ohne trim?
         //links einsetzen/auflösen
         if (count($entry['entities']['urls'])) {
