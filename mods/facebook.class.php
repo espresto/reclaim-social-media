@@ -20,7 +20,9 @@
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
     private static $count = 400;
+    private static $max_import_loops = 1;
     private static $timeout = 60;
+    
 
     public function __construct() {
         $this->shortname = 'facebook';
@@ -177,6 +179,7 @@ class facebook_reclaim_module extends reclaim_module {
             $newlastupdate = current_time('timestamp', 1);
 
             $errors = 0;
+            $i = 0;
             while (strlen($urlNext) > 0) {
                 parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
@@ -193,7 +196,11 @@ class facebook_reclaim_module extends reclaim_module {
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
 
-                    if (!$forceResync && count($data) > 0 && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)) {
+                    if (
+                        !$forceResync && count($data) > 0 
+                        && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)
+                        || $i > $max_import_loops
+                        ) {
                         // abort requests if we've already seen these events
                         $urlNext = "";
                     }
@@ -206,6 +213,7 @@ class facebook_reclaim_module extends reclaim_module {
                     }
                     parent::log(sprintf(__('%s ended with an error. Continue anyway with %s', 'reclaim'), $this->shortname, $urlNext));
                 }
+            $i++;
             }
 
             update_option('reclaim_'.$this->shortname.'_last_update', $newlastupdate);
@@ -250,6 +258,14 @@ class facebook_reclaim_module extends reclaim_module {
                     $title = $entry['name'];
                 }
                 $post_meta["facebook_link_id"] = $entry["id"];
+
+                if (isset($entry['place'])) {
+                    $lat = $entry['place']['location']['latitude'];
+                    $lon = $entry['place']['location']['longitude'];
+
+                    $post_meta["geo_latitude"] = $lat;
+                    $post_meta["geo_longitude"] = $lon;
+                }
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
@@ -300,7 +316,7 @@ class facebook_reclaim_module extends reclaim_module {
 			$ids = explode('_', $entry['id']);
             $id = $ids[1];
 //            $id = substr(strstr($entry['id'], '_'),1);
-            $link = "https://www.facebook.com/".get_option('facebook_user_id')."/posts/".$id;
+            $link = "https://www.facebook.com/".$entry['from']['id']."/posts/".$id;
         }
         return $link;
     }
@@ -342,14 +358,15 @@ class facebook_reclaim_module extends reclaim_module {
     private function construct_content($entry, $link = '', $image  = ''){
         $description = "";
         $post_format = "";
+        $message = htmlentities($entry["message"]);
         if ($image == "http://www.facebook.com/images/devsite/attachment_blank.png") {
             $image ="";
         }
 
         if (isset($entry["story"]) && $entry["story"]) { // story
             $description .= $entry["story"];
-            if (isset($entry["message"]) && $entry["message"]) {
-                $description .= '<blockquote class="fb-story">'.$entry["message"].'</blockquote>';
+            if (isset($message) && $message) {
+                $description .= '<blockquote class="fb-story">'.$message.'</blockquote>';
             }
         }
         elseif (isset($entry['application']) && $entry['application']['name']=='Likes') { // likes?
@@ -365,19 +382,19 @@ class facebook_reclaim_module extends reclaim_module {
         }
         elseif (isset($entry["type"]) && $entry["type"] == 'status') { // status?
             if (!isset($entry["story"]) || $entry["story"] == "") {  // no story?
-                if (isset($entry["message"])) {
-                    $description .= $entry["message"];
+                if (isset($message)) {
+                    $description .= $message;
                 }
             } else { // story?
                 $description = $entry["story"];
-                if (isset($entry["message"])) {
-                    $description = '<blockquote>'.$entry["message"].'</blockquote>';
+                if (isset($message)) {
+                    $description = '<blockquote>'.$message.'</blockquote>';
                 }
             }
         }
         else {
-            if (isset($entry["message"])) {
-                $description = '<div class="fbmessage">'.$entry["message"].'</div>';
+            if (isset($message)) {
+                $description = '<div class="fbmessage">'.$message.'</div>';
             }
         }
 
