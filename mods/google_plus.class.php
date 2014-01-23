@@ -18,7 +18,7 @@
 
 class google_plus_reclaim_module extends reclaim_module {
     private static $apiurl = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
-    private static $count = 20;
+    private static $count = 100; // max = 100
     private static $timeout = 15;
     private static $post_format = 'aside'; // or 'status', 'aside'
 
@@ -60,8 +60,9 @@ class google_plus_reclaim_module extends reclaim_module {
     public function import($forceResync) {
         if (get_option('google_api_key') && get_option('google_plus_user_id')) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count), self::$timeout);
+            //parent::log(print_r($rawData,true));
             $rawData = json_decode($rawData, true);
-            if (is_array($rawData)) {
+            if (is_array($rawData) && !isset($rawdata['code'])) {
                 $data = self::map_data($rawData);
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
@@ -127,8 +128,12 @@ class google_plus_reclaim_module extends reclaim_module {
     }
 
     private function get_title($entry) {
+
         if (preg_match( "/<b>(.*?)<\/b>/", $entry['object']['content'], $matches) && $matches[1]) {
             $title = $matches[1];
+        }
+        elseif ($entry['object']['attachments'][0]['objectType'] == "album" || $entry['object']['attachments'][0]['objectType'] == "photo") {
+            $title = $entry['object']['attachments'][0]['displayName'];
         }
         else {
             $title = $entry['title'];
@@ -144,25 +149,42 @@ class google_plus_reclaim_module extends reclaim_module {
         $post_content = preg_replace( "/\s((http|ftp)+(s)?:\/\/[^<>\s]+)/i", " <a href=\"\\0\" target=\"_blank\">\\0</a>", $post_content);
 
         $story = "";
+        // it's a share
         if ($entry['verb']=="share") {
             $story = isset($entry['annotation']) ? ''.$entry['annotation'].'<br />' : '';
-            $story .= '<p>(Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a> geshared.)</p>';
+            $story .= '<hr /><p>Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <em><a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a></em> geteilt:</p>';
         }
 
         // it's a photo
-        if (isset($entry['object'], $entry['object']['attachments']) && $entry['object']['attachments'][0]['objectType']=="photo") {
+        if (
+            isset($entry['object'], $entry['object']['attachments']) && 
+            ($entry['object']['attachments'][0]['objectType'] == "photo" || $entry['object']['attachments'][0]['objectType'] == "album")
+            ) {
+			//album? count attachments...
+			$columns = 1;
+			if (isset($entry['object']['attachments'][0]['thumbnails'])) {
+                $count_thumbnails = count($entry['object']['attachments'][0]['thumbnails']);
+			    if ($count_thumbnails >= 4) { $columns = 4; } else { $columns = $count_thumbnails; }
+			}
+            $post_content =
+                '<div class="gimage gplus">'
+                .'[gallery size="large" columns="'.$columns.'" link="file"]'
+                .'<div class="gcontent gplus">'.$post_content.'</div>';
+
+/*
             $post_content =
                 '<div class="gimage gplus"><a href="'.$entry['object']['attachments'][0]['url'].'">'
                 .'<img src="'.$entry['object']['attachments'][0]['image']['url'].'" alt="'.$entry['object']['attachments'][0]['content'].'">'
                 .'</a></div>'
                 .'<div class="gcontent gplus">'.$post_content.'</div>';
+*/
             if ($story!="") {
-                $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
+                $post_content = $story . '<div class="clearfix glink">'.$post_content.'</div>';
             }
         }
         else {
             if ($story!="") {
-                $post_content = $story . '<blockquote class="clearfix glink">'.$post_content.'</blockquote>';
+                $post_content = $story . '<div class="clearfix glink">'.$post_content.'</div>';
             }
         }
 
@@ -209,6 +231,23 @@ class google_plus_reclaim_module extends reclaim_module {
             else {
                 $imageUrl = $entry['object']['attachments'][0]['image']['url'];
             }
+        }
+        elseif ($entry['object']['attachments'][0]['objectType'] == "album") {
+            // get real images, 1000px width
+            // https://lh6.googleusercontent.com/-Zinm3m1LeUc/UrVaVE40bzI/AAAAAAAAArE/iym-o-9Lh4Q/w126-h126-p/1-2.jpg
+            // https://lh6.googleusercontent.com/-Zinm3m1LeUc/UrVaVE40bzI/AAAAAAAAArE/iym-o-9Lh4Q/s1000/1-2.jpg
+            $i = 0;
+            foreach($entry['object']['attachments'][0]['thumbnails'] as $attachment) {
+                $images[$i]['link_url'] = $attachment['url'];
+                $image_url = $attachment['image']['url'];
+                $image_url = str_replace("w126-h126-p", "s1000", $image_url);
+                $image_url = str_replace("w379-h379-p", "s1000", $image_url);
+                $images[$i]['image_url'] = $image_url;
+                $images[$i]['title'] = $attachment['description'];
+                $i++;
+            }
+            $imageUrl = $images;
+            //parent::log(print_r($images, true));
         }
         return $imageUrl;
     }
