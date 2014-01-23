@@ -147,8 +147,20 @@ class reclaim_module {
                 }
                 $ext_image = isset($post['ext_image']) ? trim($post['ext_image']) : '';
                 if ($ext_image) {
-                    update_post_meta($inserted_post_id, 'image_url', $post['ext_image']);
-                    self::post_thumbnail($post['ext_image'], $inserted_post_id, $post['post_title']);
+                    if (!is_array($post['ext_image'])) {
+                        update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image']));
+                        self::post_image_to_media_library($post['ext_image'], $inserted_post_id, $post['post_title']);
+                    }
+                    else {
+                        //[$i]['link_url']
+                        //[$i]['image_url']
+                        //[$i]['title']
+                        update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image'][0]['image_url']));
+                        foreach($post['ext_image'] as $post_image) {
+                            self::post_image_to_media_library(trim($post_image['image_url']), $inserted_post_id, $post_image['title']);
+                        }
+                    }
+                    
                 }
                 else {
                     // possible performance hog
@@ -166,7 +178,7 @@ class reclaim_module {
                                 $image_url = isset($image_data['og:image:url']) ? $image_data['og:image:url'] : '';
                                 if ($image_url != "") {
                                     update_post_meta($inserted_post_id, 'image_url', $image_url);
-                                    self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
+                                    self::post_image_to_media_library($image_url, $inserted_post_id, $post['post_title']);
                                 }
                             } catch(RuntimeException $e) {
                                 self::log('Remote opengraph-content not parsable:' . $open_graph_content);
@@ -183,7 +195,7 @@ class reclaim_module {
         }
     }
 
-    public static function post_thumbnail($source, $post_id, $title) {
+    public static function post_image_to_media_library($source, $post_id, $title, $set_post_thumbnail = true ) {
     // source http://digitalmemo.neobie.net/grab-save
         $imageurl = $source;
         $imageurl = stripslashes($imageurl);
@@ -227,7 +239,9 @@ class reclaim_module {
             require_once(ABSPATH . "wp-admin" . '/includes/image.php');
             $attach_data = wp_generate_attachment_metadata( $attach_id, $fullpathfilename );
             wp_update_attachment_metadata( $attach_id,  $attach_data );
-            set_post_thumbnail( $post_id, $attach_id);
+            if ($set_post_thumbnail) {
+                set_post_thumbnail( $post_id, $attach_id);
+            }
 
         } catch (Exception $e) {
             self::log($e->getMessage());
