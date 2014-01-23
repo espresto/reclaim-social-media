@@ -157,13 +157,22 @@ class reclaim_module {
                     // * check if image-url was already saved (in another article) if so, use it instead
                     if ($post['ext_permalink']!="") {
                         $reader = new Opengraph\Reader();
-                        $reader->parse(self::my_get_remote_content($post['ext_permalink']));
-                        $open_graph_data = $reader->getArrayCopy();
-                        $image_data = isset($open_graph_data[$reader::OG_IMAGE]) ? array_pop($open_graph_data[$reader::OG_IMAGE]) : array();
-                        $image_url = isset($image_data['og:image:url']) ? $image_data['og:image:url'] : '';
-                        if ($image_url != "") {
-                            update_post_meta($inserted_post_id, 'image_url', $image_url);
-                            self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
+                        $open_graph_content = self::my_get_remote_content($post['ext_permalink']);
+                        if($open_graph_content) {
+                            try {
+                                $reader->parse($open_graph_content);
+                                $open_graph_data = $reader->getArrayCopy();
+                                $image_data = isset($open_graph_data[$reader::OG_IMAGE]) ? array_pop($open_graph_data[$reader::OG_IMAGE]) : array();
+                                $image_url = isset($image_data['og:image:url']) ? $image_data['og:image:url'] : '';
+                                if ($image_url != "") {
+                                    update_post_meta($inserted_post_id, 'image_url', $image_url);
+                                    self::post_thumbnail($image_url, $inserted_post_id, $post['post_title']);
+                                }
+                            } catch(RuntimeException $e) {
+                                self::log('Remote opengraph-content not parsable:' . $open_graph_content);
+                            }
+                        } else {
+                            self::log('No ext_permalink remote content fetched');
                         }
                     }
                 }
