@@ -199,7 +199,7 @@ class facebook_reclaim_module extends reclaim_module {
                     if (
                         !$forceResync && count($data) > 0 
                         && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)
-                        || $i > $max_import_loops
+                        || $i > self::$max_import_loops
                         ) {
                         // abort requests if we've already seen these events
                         $urlNext = "";
