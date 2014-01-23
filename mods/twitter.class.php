@@ -102,7 +102,7 @@ class twitter_reclaim_module extends reclaim_module {
                     $data = self::map_data(json_decode($tmhOAuth->response['response'], true));
                     parent::insert_posts($data);
 
-                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i <= self::$max_import_loops;
+                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i < self::$max_import_loops;
                     if (!isset($lastid) && $reqOk) {
                         // store the last-seen-id, which is the first message of the first request
                         $lastseenid = $data[0]["ext_guid"];
@@ -187,7 +187,7 @@ class twitter_reclaim_module extends reclaim_module {
         $post_content = $entry['text'];
         //$post_content = html_entity_decode($post_content); // ohne trim?
         $post_content = $post_content; // ohne trim?
-        //links einsetzen/auflösen
+        //replace t.co links
         if (count($entry['entities']['urls'])) {
             foreach ($entry['entities']['urls'] as $url) {
                 if ($unshorten_urls) {
@@ -204,6 +204,7 @@ class twitter_reclaim_module extends reclaim_module {
                 $post_content = str_replace( $url['url'], '<a href="'.$expanded_url.'">'.$display_url.'</a>', $post_content);
             }
         }
+        // any embeded media/images?
         $image_url = "";
         $image_html = "";
         if (isset($entry['entities']['media']) && $entry['entities']['media']) {
@@ -226,10 +227,11 @@ class twitter_reclaim_module extends reclaim_module {
         // Autolink hashtags (wordpress funktion)
         $post_content = preg_replace('/(^|[^0-9A-Z&\/]+)(#|\xef\xbc\x83)([0-9A-Z_]*[A-Z_]+[a-z0-9_\xc0-\xd6\xd8-\xf6\xf8\xff]*)/iu', '${1}<a href="http://twitter.com/search?q=%23${3}" title="#${3}">${2}${3}</a>', $post_content);
 
-        // original twitter embed code (more or less)
-        $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
-        // if these are one's own tweets, there is no point to mark the username. also the date and time is supeficial.
-        $embedcode = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
+        // original twitter embed code (more or less), will be shown as native embed
+        $embedcode_twitter = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
+        // if these are one's *own* tweets, there is no point to mark the username or blockqoue. also the date and time is supeficial.
+        //$embedcode_reclaim = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
+        $embedcode_reclaim = '<div class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></div>';
 
 /*
         setlocale (LC_ALL, get_bloginfo ( 'language' ) );
@@ -248,7 +250,8 @@ class twitter_reclaim_module extends reclaim_module {
 */
         $content = array(
             'original' =>  $post_content,
-            'embedcode' => $embedcode,
+            //'embedcode' => $embedcode_twitter,
+            'embedcode' => $embedcode_reclaim,
             'image' => $image_url
         );
 
