@@ -199,12 +199,6 @@ class reclaim_core {
         }
         return $permalink;
     }
-}
-
-add_action('init', 'reclaim_init');
-function reclaim_init() {
-    $reclaim = reclaim_core::instance();
-}
 
     public function reclaim_content($content = '') {
             global $post;
@@ -251,6 +245,12 @@ function reclaim_init() {
 				in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
 				in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
 		}
+}
+
+add_action('init', 'reclaim_init');
+function reclaim_init() {
+    $reclaim = reclaim_core::instance();
+}
 
 function reclaim_update_schedule($schedules) {
     $reclaim = reclaim_core::instance();
