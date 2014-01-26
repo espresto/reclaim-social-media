@@ -206,7 +206,7 @@ function reclaim_init() {
     $reclaim = reclaim_core::instance();
 }
 
-public function reclaim_update_schedule($schedules) {
+function reclaim_update_schedule($schedules) {
     $schedules['reclaim_interval'] = array( 'interval' => reclaim_core::instance()->get_interval(),
                                             'display' => 'Reclaim custom update interval' );
     return $schedules;
