@@ -146,6 +146,9 @@ class twitter_reclaim_module extends reclaim_module {
             $post_meta["geo_longitude"] = $lon;
             $post_meta['favorite_count'] = $entry['favorite_count'];
 
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
@@ -231,7 +234,7 @@ class twitter_reclaim_module extends reclaim_module {
         $embedcode_twitter = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
         // if these are one's *own* tweets, there is no point to mark the username or blockqoue. also the date and time is supeficial.
         //$embedcode_reclaim = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
-        $embedcode_reclaim = '<div class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></div>';
+        $embedcode_reclaim = '<div class="twitter-tweet imported">'.$post_content.'<div class="twimage">'.$image_html.'</div><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></div>';
 
 /*
         setlocale (LC_ALL, get_bloginfo ( 'language' ) );
