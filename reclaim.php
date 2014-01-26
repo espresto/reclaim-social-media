@@ -67,6 +67,8 @@ class reclaim_core {
 
         add_filter('post_link', array($this, 'original_permalink'), 1, 4);
         add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
+
+        add_action('reclaim_update_hook', 'updateMods');
     }
 
     public static function instance() {
@@ -200,12 +202,12 @@ function reclaim_init() {
 }
 
 function reclaim_createSchedule() {
-    wp_schedule_event( time(), 'hourly', array( reclaim_core::instance(), 'updateMods' ) );
+    wp_schedule_event( time(), 'hourly', 'reclaim_update_hook' );
 }
 
 function reclaim_deleteSchedule() {
-    $time = wp_next_scheduled( array( reclaim_core::instance(), 'updateMods' ) );
-    wp_unschedule_event( $time, array( reclaim_core::instance(), 'updateMods' ) );
+    $time = wp_next_scheduled( 'reclaim_update_hook' );
+    wp_unschedule_event( $time, 'reclaim_update_hook' );
 }
 
 register_activation_hook( __FILE__, 'reclaim_createSchedule' );
