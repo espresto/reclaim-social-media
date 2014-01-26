@@ -67,6 +67,7 @@ class reclaim_core {
 
         add_filter('post_link', array($this, 'original_permalink'), 1, 4);
         add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
+        add_filter('the_content', array($this, 'reclaim_content'), 100);
 
         add_action('reclaim_update_hook', array($this, 'updateMods'));
     }
@@ -109,6 +110,10 @@ class reclaim_core {
     public function prefix_add_reclaim_stylesheet() {
         wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
         wp_enqueue_style('prefix-style');
+        wp_register_style('leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css');
+        wp_enqueue_style('leaflet');
+        wp_enqueue_script( 'leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js' );
+        wp_enqueue_script( 'stamen', 'http://maps.stamen.com/js/tile.stamen.js?v1.2.4' );
 //        wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
 //        wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
 //        wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
@@ -200,6 +205,52 @@ add_action('init', 'reclaim_init');
 function reclaim_init() {
     $reclaim = reclaim_core::instance();
 }
+
+    public function reclaim_content($content = '') {
+            global $post;
+
+            // Do not process feed / excerpt
+            if (is_feed() || self::in_excerpt())
+                return $content;
+            
+                //!is_home() &&
+                //!is_single() &&
+                //!is_page() &&
+                //!is_archive() &&
+                //!is_category()
+
+            if ( 1 ) {
+
+                // Show map, if geo data present
+                if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
+                
+                $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
+                .'<script type="text/javascript">var layer = new L.StamenTileLayer("toner-lite");'
+                .'var map = new L.Map("map-'.$post->ID.'", '
+                // options
+                .'{center: new L.LatLng('.get_post_meta($post->ID, 'geo_latitude', true).', '.get_post_meta($post->ID, 'geo_longitude', true).'), '
+                .'zoom: 14,'
+                .'scrollWheelZoom: false'
+                .'});'
+                .'map.addLayer(layer);'
+                .'var marker = L.marker(['.get_post_meta($post->ID, 'geo_latitude', true).', '.get_post_meta($post->ID, 'geo_longitude', true).']).addTo(map);'
+                .'</script>';
+                //scrollWheelZoom
+                
+                $content = $content . $map;
+                
+                }
+
+                // Show whatever...
+            }
+            return $content;
+        }
+
+		public static function in_excerpt() {
+			return
+				in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
+				in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
+		}
 
 function reclaim_update_schedule($schedules) {
     $reclaim = reclaim_core::instance();
