@@ -68,7 +68,8 @@ class reclaim_core {
         add_filter('post_link', array($this, 'original_permalink'), 1, 4);
         add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
 
-        add_action('reclaim_update_hook', 'updateMods');
+        add_filter('cron_schedules', array($this, 'updateSchedule'));
+        add_action('reclaim_update_hook', array($this, 'updateMods'));
     }
 
     public static function instance() {
@@ -76,6 +77,12 @@ class reclaim_core {
             self::$instance = new reclaim_core();
         }
         return self::$instance;
+    }
+
+    public function updateSchedule($schedules) {
+        $schedules['reclaim_interval'] = array( 'interval' => $this->get_interval(),
+                                                'display' => 'Reclaim custom update interval' );
+        return $schedules;
     }
 
     public function updateMods() {
@@ -202,7 +209,7 @@ function reclaim_init() {
 }
 
 function reclaim_createSchedule() {
-    wp_schedule_event( time(), 'hourly', 'reclaim_update_hook' );
+    wp_schedule_event( time(), 'reclaim_interval', 'reclaim_update_hook' );
 }
 
 function reclaim_deleteSchedule() {
