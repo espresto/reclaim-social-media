@@ -19,9 +19,9 @@
 class flickr_reclaim_module extends reclaim_module {
 /*
     public RSS, gets 20 last images of a user
-*/
-    private static $apiurl = "http://www.flickr.com/services/feeds/photos_public.gne?id=%s&lang=%s&format=json";
-//    http://www.flickr.com/services/feeds/photos_public.gne?id=35591378@N03&lang=de-de&format=json
+*/  
+    private static $feedurl = "http://www.flickr.com/services/feeds/photos_public.gne?id=%s&lang=%s&format=json";
+    private static $apiurl  = "http://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos&user_id=%s&per_page=%s&&page=%s&format=json&api_key=%s&extras=description,license,date_upload,date_taken,owner_name,icon_server,original_format,last_update,geo,tags,machine_tags,o_dims,views,media,url_l,url_o";
 
 /*
     querying the API requires an API-key, but gets more than 20 images. in fact
@@ -75,14 +75,23 @@ class flickr_reclaim_module extends reclaim_module {
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('(optional) flickr api key', 'reclaim'); ?></th>
-            <td><input type="text" name="flickr_api_key" value="<?php echo get_option('flickr_api_key'); ?>" /></td>
+            <td><input type="text" name="flickr_api_key" value="<?php echo get_option('flickr_api_key'); ?>" />
+            <p class="description">Get your Flickr API key <a href="http://www.flickr.com/services/apps/by/me">here</a>.
+            If you don't have a flickr app yet, <a href="http://www.flickr.com/services/apps/create/apply">apply for a noncommercial app key</a>.
+            After successful registration, click on "view app key" and copy it here.
+            This will pull your public photos only.</p>
+            <p class="description">If you don't enter an API key, only up to 50 Flickr will be copied.</p>
+
+            </td>
         </tr>
 <?php
     }
 
     public function import($forceResync) {
-        if (get_option('flickr_user_id') ) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('flickr_user_id'), self::$lang), self::$timeout);
+        $user_id = get_option('flickr_user_id');
+        $app_key = get_option('flickr_api_key');
+        if ( isset($user_id) && !isset($app_key) ) {
+            $rawData = parent::import_via_curl(sprintf(self::$feedurl, get_option('flickr_user_id'), self::$lang), self::$timeout);
             // http://stackoverflow.com/questions/2752439/decode-json-string-returned-from-flickr-api-using-php-curl
             $rawData = str_replace( 'jsonFlickrFeed(', '', $rawData );
             $rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
@@ -94,6 +103,19 @@ class flickr_reclaim_module extends reclaim_module {
             }
             else {
 	            parent::log(sprintf(__('no %s data', 'reclaim'), $this->shortname));
+            }
+        }
+        elseif ( isset($user_id) && isset($app_key) ) {
+            $i = 0;
+            // todo: loop through pages to get all images...
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('flickr_user_id'), self::$count, $i+1, get_option('flickr_api_key')), self::$timeout);
+            $rawData = str_replace( 'jsonFlickrApi(', '', $rawData );
+            $rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
+            $rawData = json_decode($rawData, true);
+            if (is_array($rawData)) {
+                $data = self::map_api_data($rawData);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             }
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
@@ -109,10 +131,11 @@ class flickr_reclaim_module extends reclaim_module {
             //tags
             $title = $entry['title'];
             $id = self::get_id($entry["link"]);
+            $link = $entry["link"];
             $image_url = self::get_image_url($entry["media"]["m"]);
             $description = self::get_flickr_description($entry["description"]);
             $tags = explode(" ",$entry['tags']);
-            $content = self::construct_content($entry,$id,$image_url,$description);
+            $content = self::construct_content($link, $image_url, $title, $description);
 
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
@@ -138,6 +161,58 @@ class flickr_reclaim_module extends reclaim_module {
         return $data;
     }
 
+    private function map_api_data($rawData) {
+        $data = array();
+        foreach($rawData['photos']['photo'] as $entry) {
+            $title = $entry['title'];
+            $link  = 'http://www.flickr.com/photos/'.$entry['owner'].'/'.$entry['id'].'/';
+            $id = $entry['id'];
+            // original
+            $image_url = $entry["url_o"];
+            // large
+            $image_url = $entry["url_l"];
+            $description = $entry["description"]['_content'];
+            $tags = explode(" ",$entry['tags']);
+            $content = self::construct_content($link, $image_url, $title, $description);
+            
+            if ($entry['geo_is_public']) {
+                $post_meta["geo_latitude"] = $entry['latitude'];
+                $post_meta["geo_longitude"] = $entry['longitude'];
+            }
+            else {
+                unset($post_meta["geo_latitude"]);
+                unset($post_meta["geo_longitude"]);
+            }
+            if ($entry['ispublic']) {
+                $post_status = 'publish';
+            }
+            else {
+                $post_status = 'draft';
+            }
+
+            $post_meta["_".$this->shortname."_link_id"] = $id;
+            $post_meta["_post_generator"] = $this->shortname;
+
+            $data[] = array(
+                'post_author' => get_option($this->shortname.'_author'),
+                'post_category' => array(get_option($this->shortname.'_category')),
+                'post_format' => self::$post_format,
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $entry["dateupload"])),
+                'post_content' => $content['constructed'],
+                'post_title' => $title,
+                'post_type' => 'post',
+                'post_status' => $post_status,
+                'ext_permalink' => $link,
+                'ext_image' => $image_url,
+                'tags_input' => $tags,
+                'ext_embed_code' => $content['embed_code'],
+                'ext_guid' => $id,
+                'post_meta' => $post_meta
+            );
+
+        }
+        return $data;
+    }
     private function get_id($link) {
         // http://www.flickr.com/photos/92049783@N06/8763490364/
         // http://stackoverflow.com/questions/15118047/php-url-explode
@@ -171,22 +246,16 @@ class flickr_reclaim_module extends reclaim_module {
         return $url;
     }
 
-    private function construct_content($entry,$id,$image_url,$description) {
-        // flickr embed code:
-        // <iframe src="http://www.flickr.com/photos/92049783@N06/8497830300/player/" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
-        $post_content_original = $entry['description'];
-        $post_content_original = html_entity_decode($post_content); // ohne trim?
-
-        $post_content_constructed_simple = '<a rel="syndication" href="'.$entry['link'].'"><img src="'.$image_url.'" alt="'.$entry['title'].'"></a><br />'.$description;
+    private function construct_content($link, $image_url, $title, $description) {
+        $post_content_constructed_simple = '<a rel="syndication" href="'.$link.'"><img src="'.$image_url.'" alt="'.$title.'"></a><br />'.$description;
         $post_content_constructed = 
             '<div class="flimage">[gallery size="large" columns="1" link="file"]</div>'.'<p>'.$description.'</p>'
-            .'<p class="viewpost-flickr">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Flickr', 'reclaim').'</a>)</p>'
+            .'<p class="viewpost-flickr">(<a rel="syndication" href="'.$link.'">'.__('View on Flickr', 'reclaim').'</a>)</p>'
             .'';
 
-        $embed_code = '<frameset><iframe src="'.$entry['link'].'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
+        $embed_code = '<frameset><iframe src="'.$link.'/player/'.'" width="500" height="375" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe><noframes>'.$post_content_constructed_simple.'</noframes></frameset>';
 
         $content = array(
-            'original' =>  $post_content_original,
             'constructed' =>  $post_content_constructed,
             'embed_code' => $embed_code,
             'image' => $image_url
