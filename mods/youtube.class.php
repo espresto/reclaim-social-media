@@ -18,7 +18,8 @@
 
 class youtube_reclaim_module extends reclaim_module {
     private static $timeout = 20;
-    private static $apiurl = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&prettyprint=true&orderby=published&racy=include&v=2&client=ytapi-youtube-profile";
+    private static $count = 50; // maximum: 50
+    private static $apiurl = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&max-results=%s";
     private static $post_format = 'video'; // or 'status', 'aside'
 
     public function __construct() {
@@ -48,7 +49,7 @@ class youtube_reclaim_module extends reclaim_module {
 
     public function import($forceResync) {
         if (get_option('youtube_username')) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('youtube_username')), self::$timeout);
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('youtube_username'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
 
             if (is_array($rawData)) {
@@ -65,6 +66,9 @@ class youtube_reclaim_module extends reclaim_module {
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry);
 
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),
@@ -77,7 +81,8 @@ class youtube_reclaim_module extends reclaim_module {
                 'post_status' => 'publish',
                 'ext_permalink' => $entry["link"][0]['href'],
                 'ext_image' => $entry['media$group']['media$thumbnail'][2]['url'],
-                'ext_guid' =>  $entry['id']['$t']
+                'ext_guid' =>  $entry['id']['$t'],
+                'post_meta' => $post_meta
             );
 
         }
@@ -91,6 +96,7 @@ class youtube_reclaim_module extends reclaim_module {
             $video_id = $match[1];
         }
         $post_content = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
+        $post_content .= ''.$entry['content']['$t'];
         return $post_content;
     }
 }
