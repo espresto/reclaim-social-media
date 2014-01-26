@@ -51,11 +51,6 @@ class reclaim_core {
                                          'instance' => new $cName);
         }
 
-        if (is_admin()) {
-            reclaim_deleteSchedule();
-            reclaim_createSchedule();
-        }
-
         foreach ($this->mods_loaded as $mod) {
             if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
                 $this->updateMod(&$mod, true);
@@ -207,7 +202,8 @@ function reclaim_init() {
 }
 
 function reclaim_update_schedule($schedules) {
-    $schedules['reclaim_interval'] = array( 'interval' => reclaim_core::instance()->get_interval(),
+    $reclaim = reclaim_core::instance();
+    $schedules['reclaim_interval'] = array( 'interval' => $reclaim->get_interval(),
                                             'display' => 'Reclaim custom update interval' );
     return $schedules;
 }
