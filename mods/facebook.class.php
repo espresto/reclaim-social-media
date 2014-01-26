@@ -22,7 +22,6 @@ class facebook_reclaim_module extends reclaim_module {
     private static $count = 400;
     private static $max_import_loops = 1;
     private static $timeout = 60;
-    
 
     public function __construct() {
         $this->shortname = 'facebook';
@@ -58,18 +57,17 @@ class facebook_reclaim_module extends reclaim_module {
                 }
             }
 
-        if ( $login == 0 ) {
+            if ( $login == 0 ) {
                 update_option('facebook_user_id', '');
                 update_option('facebook_username', '');
                 update_option('facebook_oauth_token', '');
-        } 
+            }
 
 //            print_r($_SESSION);
 //            echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
 //            echo $user_access_token->accessToken;
 //            $user_profile->displayName
-        } 
-
+        }
 
 ?>
         <tr valign="top">
@@ -99,8 +97,6 @@ class facebook_reclaim_module extends reclaim_module {
             <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" />
             <input type="hidden" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" />
             </td>
-        </tr>
-        </tr>
         </tr>
         <tr valign="top">
             <th scope="row"></th>
@@ -197,7 +193,7 @@ class facebook_reclaim_module extends reclaim_module {
                     parent::insert_posts($data);
 
                     if (
-                        !$forceResync && count($data) > 0 
+                        !$forceResync && count($data) > 0
                         && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)
                         || $i > self::$max_import_loops
                         ) {
@@ -313,7 +309,7 @@ class facebook_reclaim_module extends reclaim_module {
         if (isset($entry["link"])) {
             $link = htmlentities($entry["link"]);
         } else {
-			$ids = explode('_', $entry['id']);
+            $ids = explode('_', $entry['id']);
             $id = $ids[1];
 //            $id = substr(strstr($entry['id'], '_'),1);
             $link = "https://www.facebook.com/".$entry['from']['id']."/posts/".$id;
