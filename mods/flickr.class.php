@@ -121,7 +121,7 @@ class flickr_reclaim_module extends reclaim_module {
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),
                 'post_format' => self::$post_format,
-                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["date_taken"]))),
+                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["published"]))),
 //                'post_excerpt' => $description,
                 'post_content' => $content['constructed'],
                 'post_title' => $title,
