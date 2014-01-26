@@ -200,12 +200,12 @@ function reclaim_init() {
 }
 
 function reclaim_createSchedule() {
-    wp_schedule_event( time(), 'hourly', array( &reclaim_core::instance(), 'updateMods' ) );
+    wp_schedule_event( time(), 'hourly', array( reclaim_core::instance(), 'updateMods' ) );
 }
 
 function reclaim_deleteSchedule() {
-    $time = wp_next_scheduled( array( &reclaim_core::instance(), 'updateMods' ) );
-    wp_unschedule_event( $time, array( &reclaim_core::instance(), 'updateMods' ) );
+    $time = wp_next_scheduled( array( reclaim_core::instance(), 'updateMods' ) );
+    wp_unschedule_event( $time, array( reclaim_core::instance(), 'updateMods' ) );
 }
 
 register_activation_hook( __FILE__, 'reclaim_createSchedule' );
