@@ -248,12 +248,11 @@ class facebook_reclaim_module extends reclaim_module {
                 $link = self::get_link($entry);
                 $image = self::get_image_url($entry);
                 $title = self::get_title($entry);
-                $excerpt = self::construct_content($entry, $link, $image);
+                $content = self::construct_content($entry, $link, $image);
                 $post_format = self::get_post_format($entry);
                 if (($post_format=="link") && isset($entry['name'])) {
                     $title = $entry['name'];
                 }
-                $post_meta["facebook_link_id"] = $entry["id"];
 
                 if (isset($entry['place'])) {
                     $lat = $entry['place']['location']['latitude'];
@@ -262,14 +261,16 @@ class facebook_reclaim_module extends reclaim_module {
                     $post_meta["geo_latitude"] = $lat;
                     $post_meta["geo_longitude"] = $lon;
                 }
+                // hidden fields for adding syndication links later
+                $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+                $post_meta["_post_generator"] = $this->shortname;
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
                     'post_category' => array(get_option($this->shortname.'_category')),
                     'post_format' => $post_format,
                     'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_time"]))),
-                    'post_content' => $excerpt,
-//                    'post_excerpt' => $excerpt,
+                    'post_content' => $content,
                     'post_title' => reclaim_text_add_more(reclaim_text_excerpt($title, 50, 0, 1, 0),' …', ''),
                     'post_type' => 'post',
                     'post_status' => 'publish',
