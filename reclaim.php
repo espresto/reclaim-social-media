@@ -51,6 +51,11 @@ class reclaim_core {
                                          'instance' => new $cName);
         }
 
+        if (is_admin()) {
+            reclaim_deleteSchedule();
+            reclaim_createSchedule();
+        }
+
         foreach ($this->mods_loaded as $mod) {
             if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
                 $this->updateMod(&$mod, true);
