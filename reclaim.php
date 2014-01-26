@@ -51,6 +51,12 @@ class reclaim_core {
                                          'instance' => new $cName);
         }
 
+        foreach ($this->mods_loaded as $mod) {
+            if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
+                $this->updateMod(&$mod, true);
+            }
+        }
+
         add_action('admin_menu', array($this, 'admin_menu'));
         add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
 
@@ -72,15 +78,17 @@ class reclaim_core {
 
     public function updateMods() {
         foreach ($this->mods_loaded as $mod) {
-            $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
-
-            if ($mod['active']) {
-                if (get_option('reclaim_auto_update') || $adminResync) {
-                    $mod['instance']->prepareImport($adminResync);
-                    $mod['instance']->import($adminResync);
-                    $mod['instance']->finishImport($adminResync);
-                }
+            if (get_option('reclaim_auto_update')) {
+                $this->updateMod(&$mod, false);
             }
+        }
+    }
+
+    public function updateMod($mod, $adminResync) {
+        if ($mod['active']) {
+            $mod['instance']->prepareImport($adminResync);
+            $mod['instance']->import($adminResync);
+            $mod['instance']->finishImport($adminResync);
         }
     }
 
@@ -92,7 +100,7 @@ class reclaim_core {
 
     public function myEndSession() {
         if (session_id()) {
-            session_destroy ();
+            session_destroy();
         }
     }
 
@@ -196,7 +204,7 @@ function reclaim_createSchedule() {
 }
 
 function reclaim_deleteSchedule() {
-    $time = wp_next_scheduled( array( &reclaim_core::instance(), 'updateMods' ) )
+    $time = wp_next_scheduled( array( &reclaim_core::instance(), 'updateMods' ) );
     wp_unschedule_event( $time, array( &reclaim_core::instance(), 'updateMods' ) );
 }
 

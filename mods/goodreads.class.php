@@ -48,7 +48,6 @@ class goodreads_reclaim_module extends reclaim_module {
 
     public function import($forceResync) {
         if (get_option('goodreads_user_id') ) {
-            update_option('reclaim_'.$this->shortname.'_locked', 1);
             if ( ! class_exists( 'SimplePie' ) )
                 require_once( ABSPATH . WPINC . '/class-feed.php' );
 
