@@ -60,7 +60,6 @@ class reclaim_module {
     */
     public function prepareImport($forceResync) {
         $this->log(sprintf(__('BEGIN %s import %s', 'reclaim'), $this->shortName(), $forceResync));
-        update_option('reclaim_'.$this->shortName().'_locked', 1);
     }
 
     /**
@@ -73,7 +72,6 @@ class reclaim_module {
     * Interface
     */
     public function finishImport($forceResync) {
-        update_option('reclaim_'.$this->shortName().'_locked', 0);
         $this->log(sprintf(__('END %s import %s', 'reclaim'), $this->shortName(), $forceResync));
     }
 
@@ -160,7 +158,7 @@ class reclaim_module {
                             self::post_image_to_media_library(trim($post_image['image_url']), $inserted_post_id, $post_image['title']);
                         }
                     }
-                    
+
                 }
                 else {
                     // possible performance hog
@@ -202,8 +200,8 @@ class reclaim_module {
         $uploads = wp_upload_dir();
         $ext = pathinfo( basename($imageurl) , PATHINFO_EXTENSION);
         $newfilename = basename($imageurl);
-		// sometimes facebook offers very long filename
-		// if so, file_put_contents() throws an error
+        // sometimes facebook offers very long filename
+        // if so, file_put_contents() throws an error
         if (strlen($newfilename) > 70) { $newfilename = uniqid() . $ext; }
 
         $filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
