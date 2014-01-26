@@ -9,6 +9,7 @@ License: GPL
 */
 
 /*  Copyright 2013-2014 diplix
+                   2014 Christian Muehlhaeuser <muesli@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,6 +35,7 @@ define('RECLAIM_PLUGIN_PATH', dirname( __FILE__));
 
 class reclaim_core {
     private $mods_loaded = array();
+    private static $instance = 0;
 
     public function __construct() {
         add_action('init', array($this, 'myStartSession'),1,1);
@@ -50,16 +52,8 @@ class reclaim_core {
         }
 
         foreach ($this->mods_loaded as $mod) {
-            $isStaleMod = $this->is_stale_mod($mod['name']);
-            $adminResync = is_admin() && isset($_REQUEST[$mod['name'].'_resync']);
-            $isLockedMod = $this->is_locked_mod($mod['name']);
-
-            if ($mod['active']) {
-                if ((!$isLockedMod && $isStaleMod && get_option('reclaim_auto_update')) || $adminResync) {
-                    $mod['instance']->prepareImport($adminResync);
-                    $mod['instance']->import($adminResync);
-                    $mod['instance']->finishImport($adminResync);
-                }
+            if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
+                $this->updateMod(&$mod, true);
             }
         }
 
@@ -73,17 +67,42 @@ class reclaim_core {
 
         add_filter('post_link', array($this, 'original_permalink'), 1, 4);
         add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
+
+        add_action('reclaim_update_hook', array($this, 'updateMods'));
+    }
+
+    public static function instance() {
+        if ( self::$instance == 0 ) {
+            self::$instance = new reclaim_core();
+        }
+        return self::$instance;
+    }
+
+    public function updateMods() {
+        foreach ($this->mods_loaded as $mod) {
+            if (get_option('reclaim_auto_update')) {
+                $this->updateMod(&$mod, false);
+            }
+        }
+    }
+
+    public function updateMod($mod, $adminResync) {
+        if ($mod['active']) {
+            $mod['instance']->prepareImport($adminResync);
+            $mod['instance']->import($adminResync);
+            $mod['instance']->finishImport($adminResync);
+        }
     }
 
     public function myStartSession() {
-        if(!session_id()) {
+        if (!session_id()) {
             session_start();
         }
     }
 
     public function myEndSession() {
-        if(session_id()) {
-        session_destroy ();
+        if (session_id()) {
+            session_destroy();
         }
     }
 
@@ -96,7 +115,7 @@ class reclaim_core {
 //
     }
 
-    public function get_interval(){
+    public function get_interval() {
         $interval = get_option('reclaim_update_interval');
         if (false === $interval) {
             $interval = RECLAIM_UPDATE_INTERVAL;
@@ -104,26 +123,7 @@ class reclaim_core {
         return $interval;
     }
 
-    public function is_locked_mod($mod){
-        $locked = get_option('reclaim_'.$mod.'_locked');
-        $message = 'reclaim_'.$mod.'_locked is ' . $locked;
-        file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
-        return $locked == 1;
-    }
-
-    public function is_stale_mod($mod){
-        $last = get_option('reclaim_'.$mod.'_last_update');
-        if (false === $last) {
-            $ret = true;
-        }
-        elseif (is_numeric($last)) {
-            $interval = $this->get_interval();
-            $ret = ( (current_time( 'timestamp' ) - $last) > $interval );
-        }
-        return $ret;
-    }
-
-    public function admin_menu(){
+    public function admin_menu() {
         if(!session_id()) {
             session_start();
         }
@@ -131,7 +131,7 @@ class reclaim_core {
         add_action('admin_init', array($this, 'register_settings'));
     }
 
-    public function register_settings(){
+    public function register_settings() {
         register_setting('reclaim-social-settings', 'reclaim_update_interval');
         register_setting('reclaim-social-settings', 'reclaim_auto_update');
         foreach($this->mods_loaded as $mod) {
@@ -170,7 +170,7 @@ class reclaim_core {
 <?php
     }
 
-    public function original_permalink ($permalink = '', $post = null, $leavename = false, $sample = false) {
+    public function original_permalink($permalink = '', $post = null, $leavename = false, $sample = false) {
         global $id;
 
         if (is_object($post) and isset($post->ID) and !empty($post->ID)) {
@@ -189,7 +189,7 @@ class reclaim_core {
             //  $link .= '#'; // adds hash to the original_permalink
             //  $link .= '?'; // strange: resets original
         }
-        if ($link){
+        if ($link) {
             $permalink = $link;
         }
         return $permalink;
@@ -198,5 +198,26 @@ class reclaim_core {
 
 add_action('init', 'reclaim_init');
 function reclaim_init() {
-    $reclaim = new reclaim_core();
+    $reclaim = reclaim_core::instance();
 }
+
+function reclaim_update_schedule($schedules) {
+    $reclaim = reclaim_core::instance();
+    $schedules['reclaim_interval'] = array( 'interval' => $reclaim->get_interval(),
+                                            'display' => 'Reclaim custom update interval' );
+    return $schedules;
+}
+add_filter('cron_schedules', 'reclaim_update_schedule');
+
+function reclaim_createSchedule() {
+    wp_schedule_event( time(), 'reclaim_interval', 'reclaim_update_hook' );
+}
+
+function reclaim_deleteSchedule() {
+    $time = wp_next_scheduled( 'reclaim_update_hook' );
+    wp_unschedule_event( $time, 'reclaim_update_hook' );
+}
+
+register_activation_hook( __FILE__, 'reclaim_createSchedule' );
+register_deactivation_hook( __FILE__, 'reclaim_deleteSchedule' );
+
