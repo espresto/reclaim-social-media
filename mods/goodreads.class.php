@@ -128,6 +128,9 @@ class goodreads_reclaim_module extends reclaim_module {
             $tags = '';
             $content = self::process_content($item,$id,$image_url,$description);
 
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),
@@ -153,7 +156,7 @@ class goodreads_reclaim_module extends reclaim_module {
         $author_data = $item->get_item_tags('', 'author_name');
         $author_name = $author_data[0]['data'];
         $user_review_data = $item->get_item_tags('', 'user_review');
-        $user_review = $user_review_data[0]['data'];
+        $user_review = htmlentities($user_review_data[0]['data']);
         $book_description_data = $item->get_item_tags('', 'book_description');
         $book_description = $book_description_data[0]['data'];
         if ($image_url!="") {

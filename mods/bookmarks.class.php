@@ -103,7 +103,8 @@ class bookmarks_reclaim_module extends reclaim_module {
             // filter tags, tnx to http://stackoverflow.com/questions/369602/delete-an-element-from-an-array
             $tags = array_diff($tags, array("w", "s"));
 
-//            $content = self::get_content($item,$id,$image_url,$description);
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
 
             $data[] = array(
                 'post_author' => get_option(self::shortName().'_author'),

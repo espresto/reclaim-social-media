@@ -80,6 +80,9 @@ class google_plus_reclaim_module extends reclaim_module {
             $post_format = self::get_post_format($entry);
 //            if ($post_format=="link") {$title = $entry['name'];}
 
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),

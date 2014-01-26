@@ -171,9 +171,10 @@ class foursquare_reclaim_module extends reclaim_module {
                 }
                 $tags = '';
                 $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$id;
-                $content = '<p>'.sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']).'</p>'
-                           .'<blockquote>'.$checkin['shout'].'</blockquote>
-';
+                $content = '<p>'.sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']).'</p>';
+                // added htmlentities() just to be sure
+                if (isset($checkin['shout'])) { $content .= '<blockquote>'.htmlentities($checkin['shout']).'</blockquote>'; }
+                
                 $title = sprintf(__('Checked in to %s', 'reclaim'), $checkin['venue']['name']);
 
                 //$post_meta = $this->construct_post_meta($day);
@@ -185,6 +186,8 @@ class foursquare_reclaim_module extends reclaim_module {
                 $post_meta["venueName"] = $checkin['venue']['name'];
                 $post_meta["foursquareVenueId"] = $checkin['venue']['id'];
 
+                $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+                $post_meta["_post_generator"] = $this->shortname;
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),

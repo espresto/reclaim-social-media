@@ -220,6 +220,9 @@ class instagram_reclaim_module extends reclaim_module {
                 self::$post_format = 'image';
             }
 
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),
@@ -242,15 +245,15 @@ class instagram_reclaim_module extends reclaim_module {
     }
 
     private function construct_content($entry,$id,$image_url,$description) {
-        $post_content_original = $description;
-        $post_content_original = html_entity_decode($post_content); // ohne trim?
-
+        $post_content_original = htmlentities($description);
+        
 /*
         $post_content_constructed = 'ich habe ein vine-video hochgeladen.'
             .'<a href="'.$entry['permalinkUrl'].'"><img src="'.$image_url.'" alt="'.$description.'"></a>';
 */
         if ($entry['type']=='image') {
-            $post_content_constructed = 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+            $post_content_constructed = 
+                 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
 //                .'<a href="'.$entry['link'].'">'
                 .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
 //                .'</a>'

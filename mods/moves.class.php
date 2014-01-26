@@ -178,6 +178,9 @@ class moves_reclaim_module extends reclaim_module {
                 $content = $this->construct_content($day);
                 $post_meta = $this->construct_post_meta($day);
 
+                $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+                $post_meta["_post_generator"] = $this->shortname;
+
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
                     'post_category' => array(get_option($this->shortname.'_category')),

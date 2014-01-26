@@ -113,6 +113,10 @@ class flickr_reclaim_module extends reclaim_module {
             $description = self::get_flickr_description($entry["description"]);
             $tags = explode(" ",$entry['tags']);
             $content = self::construct_content($entry,$id,$image_url,$description);
+
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
+
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
                 'post_category' => array(get_option($this->shortname.'_category')),

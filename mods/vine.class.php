@@ -83,7 +83,7 @@ class vine_reclaim_module extends reclaim_module {
         $data = array();
         //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['records'] as $entry){
-            $description = $entry['description'];
+            $description = htmlentities($entry['description']);
             $venueName = $entry['venueName'];
             if (isset($description) && isset($venueName)) {
             	$title = $description . ' @ ' . $venueName;
@@ -107,6 +107,9 @@ class vine_reclaim_module extends reclaim_module {
             $post_meta["venueName"] = $entry['venueName'];
             $post_meta["foursquareVenueId"] = $entry['foursquareVenueId'];
             $post_meta["venueCategoryId"] = $entry['venueCategoryId'];
+
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
@@ -132,8 +135,7 @@ class vine_reclaim_module extends reclaim_module {
     }
 
     private function construct_content($entry, $id, $image_url, $description) {
-        $post_content_original = $description;
-        $post_content_original = html_entity_decode($post_content); // ohne trim?
+        $post_content_original = htmlentities($description);
 
 /*
         $post_content_constructed = 'ich habe ein vine-video hochgeladen.'
