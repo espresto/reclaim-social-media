@@ -155,7 +155,7 @@ class flickr_reclaim_module extends reclaim_module {
         // get rid of img and a
         foreach($html->find('img') as $e)
             $e->outertext = '';
-        foreach($html->find('a') as $e)
+        foreach($html->find('a[href*="flickr.com"]') as $e)
             $e->outertext = '';
         //find last p, thats the plain description
         $description_plain= $html->find('p', -1)->innertext;
