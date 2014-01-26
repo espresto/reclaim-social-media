@@ -1,3 +1,8 @@
+.leaflet-map {
+height: 200px; 
+display: block; 
+width:100%;
+}
 .list-view .site-content .format-link.category-bookmarks .entry-title
 {
 display: block;
@@ -31,6 +36,9 @@ article.format-video .wp-post-image
 
 @media screen and (max-width: 400px) {
 
+.leaflet-map {
+height: 120px; 
+}
 .list-view .site-content .format-status .entry-title, 
 .list-view .site-content .format-aside .entry-title, 
 .list-view .site-content .format-link .entry-title, 
@@ -47,13 +55,22 @@ display: block;
 
 .entry-content div.fblink,
 .entry-content blockquote.fblink,
-.entry-content div.glink,
+/*.entry-content div.glink,*/
 .entry-content blockquote.glink
 {
-	background-color: #EEE;
-	margin-top: 10px;
-	padding: 5px;
+	background-color: #F2F2F2;
+	margin-top: .5em;
+	padding: .5em;
 	display: block;
+	/*	border-top: 1px #C4C4C4 solid; */
+	/*	border-bottom: 1px #C4C4C4 solid; */
+	-webkit-box-shadow: 0 8px 10px -6px #C4C4C4;
+	   -moz-box-shadow: 0 8px 10px -6px #C4C4C4;
+	        box-shadow: 0 8px 10px -6px #C4C4C4;
+
+	-webkit-box-shadow: 7px 7px 10px -6px #C4C4C4;
+	   -moz-box-shadow: 7px 7px 10px -6px #C4C4C4;
+	        box-shadow: 7px 7px 10px -6px #C4C4C4;
 }
 
 .format-status .entry-content div.fblink div.fbimage img,
