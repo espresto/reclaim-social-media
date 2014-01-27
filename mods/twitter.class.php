@@ -149,6 +149,14 @@ class twitter_reclaim_module extends reclaim_module {
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
 
+            // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
+            // to be able to retrieve twitter replies (if wp-social is installed)
+            $tweet_id = $entry["id_str"];
+            $user_id = $entry['user']['id_str'];  //screen_name / id_str?
+            $broadcasted_ids = array();
+            $broadcasted_ids[$this->shortname][$user_id][$tweet_id] = array('message' => '','urls' => '');
+            $post_meta["_social_broadcasted_ids"] = $broadcasted_ids;
+
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
