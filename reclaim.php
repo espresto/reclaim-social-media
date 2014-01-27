@@ -53,7 +53,7 @@ class reclaim_core {
 
         foreach ($this->mods_loaded as $mod) {
             if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
-                $this->updateMod(&$mod, true);
+                $this->updateMod($mod, true);
             }
         }
 
@@ -82,7 +82,7 @@ class reclaim_core {
     public function updateMods() {
         foreach ($this->mods_loaded as $mod) {
             if (get_option('reclaim_auto_update')) {
-                $this->updateMod(&$mod, false);
+                $this->updateMod($mod, false);
             }
         }
     }
