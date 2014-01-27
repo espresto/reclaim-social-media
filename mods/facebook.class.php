@@ -255,15 +255,24 @@ class facebook_reclaim_module extends reclaim_module {
                 }
 
                 if (isset($entry['place'])) {
-                    $lat = $entry['place']['location']['latitude'];
-                    $lon = $entry['place']['location']['longitude'];
-
-                    $post_meta["geo_latitude"] = $lat;
-                    $post_meta["geo_longitude"] = $lon;
+                    $post_meta["geo_latitude"] = $entry['place']['location']['latitude'];
+                    $post_meta["geo_longitude"] = $entry['place']['location']['longitude'];
+                }
+                else {
+                    unset($post_meta["geo_latitude"]);
+                    unset($post_meta["geo_longitude"]);
                 }
                 // hidden fields for adding syndication links later
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
+                $from = $entry['from']['id'];
+                $id = $entry['id'];
+                // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
+                // to be able to retrieve facebook comments and likes (if social is 
+                // installed)
+                $broadcasted_ids = array();
+                $broadcasted_ids[$this->shortname][$from][$id] = array('message' => '','urls' => '');
+                $post_meta["_social_broadcasted_ids"] = $broadcasted_ids;
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
@@ -355,7 +364,7 @@ class facebook_reclaim_module extends reclaim_module {
     private function construct_content($entry, $link = '', $image  = ''){
         $description = "";
         $post_format = "";
-        $message = htmlentities($entry["message"]);
+        $message = htmlentities($entry["message"], ENT_NOQUOTES, "UTF-8");
         if ($image == "http://www.facebook.com/images/devsite/attachment_blank.png") {
             $image ="";
         }
