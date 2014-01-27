@@ -143,7 +143,7 @@ class reclaim_module {
                 if ($ext_embed_code) {
                     update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
                 }
-                $ext_image = isset($post['ext_image']) ? trim($post['ext_image']) : '';
+                $ext_image = isset($post['ext_image']) && !is_array($post['ext_image']) ? trim($post['ext_image']) : '';
                 if ($ext_image) {
                     if (!is_array($post['ext_image'])) {
                         update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image']));
