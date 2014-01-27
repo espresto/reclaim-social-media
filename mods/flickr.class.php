@@ -168,7 +168,7 @@ class flickr_reclaim_module extends reclaim_module {
             $link  = 'http://www.flickr.com/photos/'.$entry['owner'].'/'.$entry['id'].'/';
             $id = $entry['id'];
             // original
-            $image_url = $entry["url_o"];
+            //$image_url = $entry["url_o"];
             // large
             $image_url = $entry["url_l"];
             $description = $entry["description"]['_content'];
