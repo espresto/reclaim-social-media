@@ -25,7 +25,7 @@ msgstr "Aktiv"
 #: mod.class.php:35
 #, php-format
 msgid "last update %s"
-msgstr "last update %s"
+msgstr "Letzte Aktualisierung %s"
 
 #: mod.class.php:36
 msgid "Re-Sync"
@@ -67,7 +67,7 @@ msgstr "Auto-update"
 
 #: reclaim.php:167
 msgid "Update Interval (in seconds)"
-msgstr "Akrtualisierungsinterval (in Sekunden)"
+msgstr "Aktualisierungsinterval (in Sekunden)"
 
 #: mods/bookmarks.class.php:36
 msgid "Bookmarks"
@@ -83,7 +83,7 @@ msgid ""
 "pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> or <code>http://feeds."
 "delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
 msgstr ""
-"Für delicious.com oder pinboard.in eine Feed URL eingeben (z. B. "
+"Für delicious.com oder pinboard.in eine Feed URL eingeben (z.B. "
 "<code>http://feeds.pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> oder "
 "<code>http://feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</"
 "code>)"
@@ -123,7 +123,7 @@ msgstr "Facebook Benutzername"
 
 #: mods/facebook.class.php:92
 msgid "Facebook app id"
-msgstr "Facebook APP ID"
+msgstr "Facebook App ID"
 
 #: mods/facebook.class.php:96
 msgid "Facebook app secret"
@@ -136,7 +136,7 @@ msgstr "Bei Facebook anmelden"
 #: mods/facebook.class.php:109
 #, php-format
 msgid "<p>Facebook is authorized as %s</p>"
-msgstr "<p>Facebook angemeldet als %s</p>"
+msgstr "<p>Bei Facebook angemeldet als %s</p>"
 
 #: mods/facebook.class.php:110 mods/foursquare.class.php:93
 #: mods/instagram.class.php:109 mods/moves.class.php:95
@@ -177,7 +177,7 @@ msgstr "%s gefiel <a href=\"%s\">%s</a>"
 
 #: mods/facebook.class.php:450
 msgid "View on Facebook"
-msgstr "Auf Facenbook ansehen"
+msgstr "Auf Facebook ansehen"
 
 #: mods/flickr.class.php:67
 msgid "Flickr"
@@ -205,7 +205,7 @@ msgstr "Foursquare Client ID"
 
 #: mods/foursquare.class.php:73
 msgid "foursquare client secret"
-msgstr "Foursquare „Client Secret“"
+msgstr "Foursquare Client Secret"
 
 #: mods/foursquare.class.php:90
 msgid "Authorize with Foursquare"
@@ -214,11 +214,11 @@ msgstr "Bei Foursquare anmelden"
 #: mods/foursquare.class.php:92
 #, php-format
 msgid "<p>Foursquare is authorized as %s</p>"
-msgstr "<p> Bei Foursquare angemeldet als %s</p>"
+msgstr "<p>Bei Foursquare angemeldet als %s</p>"
 
 #: mods/foursquare.class.php:112
 msgid "enter Foursquare app id and secret"
-msgstr "Die Foursquare „App ID“ and „Secret“ eingeben"
+msgstr "Die Foursquare App ID und Secret eingeben"
 
 #: mods/foursquare.class.php:146 mods/instagram.class.php:170
 #: mods/moves.class.php:152
@@ -317,7 +317,7 @@ msgstr "Instagram Client ID"
 
 #: mods/instagram.class.php:89
 msgid "Instagram client secret"
-msgstr "Instagram „Client Secret“"
+msgstr "Instagram Client Secret"
 
 #: mods/instagram.class.php:105
 msgid "Authorize with Instagram"
@@ -326,11 +326,11 @@ msgstr "Bei Instagram anmelden"
 #: mods/instagram.class.php:108
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
-msgstr "<p>Instagram angemeldet als %s</p>"
+msgstr "<p>Bei Instagram angemeldet als %s</p>"
 
 #: mods/instagram.class.php:131
 msgid "enter instagram app id and secret"
-msgstr "Die Instagram „App ID“ and „Secret“ eingeben"
+msgstr "Die Instagram App ID und Secret eingeben"
 
 #: mods/instagram.class.php:168
 #, php-format
@@ -351,7 +351,7 @@ msgstr "Moves Client ID"
 
 #: mods/moves.class.php:75
 msgid "Moves client secret"
-msgstr "Moves „Client Secret“"
+msgstr "Moves Client Secret"
 
 #: mods/moves.class.php:92
 msgid "Authorize with Moves"
@@ -363,7 +363,7 @@ msgstr "<p>Moves ist angemeldet</p>"
 
 #: mods/moves.class.php:114
 msgid "enter moves app id and secret"
-msgstr "Die Moves „App ID“ and „Secret“ eingeben"
+msgstr "Die Moves App ID und Secret eingeben"
 
 #: mods/moves.class.php:176
 #, php-format
@@ -380,19 +380,19 @@ msgstr "Twitter Benutzername"
 
 #: mods/twitter.class.php:55
 msgid "twitter consumer key"
-msgstr "Twitter consumer key"
+msgstr "Twitter Consumer Key"
 
 #: mods/twitter.class.php:59
 msgid "twitter consumer secret"
-msgstr "Twitter consumer secret"
+msgstr "Twitter Consumer Secret"
 
 #: mods/twitter.class.php:63
 msgid "twitter user token"
-msgstr "Twitter user token"
+msgstr "Twitter User Token"
 
 #: mods/twitter.class.php:67
 msgid "twitter user secret"
-msgstr "Twitter user secret"
+msgstr "Twitter User Secret"
 
 #: mods/twitter.class.php:111
 #, php-format
@@ -422,15 +422,15 @@ msgstr "Vine E-Mail"
 
 #: mods/vine.class.php:56
 msgid "vine password"
-msgstr "Vine Password"
+msgstr "Vine Passwort"
 
 #: mods/youtube.class.php:38
 msgid "Youtube"
-msgstr "Youtube"
+msgstr "YouTube"
 
 #: mods/youtube.class.php:44
 msgid "youtube username"
-msgstr "youtube username"
+msgstr "YouTube Benutzername"
 
 #~ msgid "Bewegung am %s"
 #~ msgstr "Bewegung am %s"
