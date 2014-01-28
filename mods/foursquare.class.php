@@ -173,7 +173,8 @@ class foursquare_reclaim_module extends reclaim_module {
                 $link = 'https://foursquare.com/user/'.get_option('foursquare_user_id').'/checkin/'.$id;
                 $content = '<p>'.sprintf(__('Checked in to <a href="%s">%s</a>', 'reclaim'), $link, $checkin['venue']['name']).'</p>';
                 // added htmlentities() just to be sure
-                if (isset($checkin['shout'])) { $content .= '<blockquote>'.htmlentities($checkin['shout']).'</blockquote>'; }
+                if (isset($checkin['shout'])) { $content .= '<blockquote>'.htmlentities($checkin['shout'],ENT_NOQUOTES, "UTF-8").'</blockquote>'; }
+                //if (isset($checkin['shout'])) { $content .= '<blockquote>'.$checkin['shout'].'</blockquote>'; }
                 
                 $title = sprintf(__('Checked in to %s', 'reclaim'), $checkin['venue']['name']);
 
