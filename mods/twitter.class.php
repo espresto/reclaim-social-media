@@ -19,8 +19,9 @@
 
 class twitter_reclaim_module extends reclaim_module {
     private static $apiurl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
+    private static $fav_apiurl = "https://api.twitter.com/1.1/favorites/list.json";
     private static $count = 200;
-    private static $max_import_loops = 1;
+    private static $max_import_loops = 0;
     private static $lang = 'en';
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
@@ -37,6 +38,8 @@ class twitter_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'twitter_consumer_secret');
         register_setting('reclaim-social-settings', 'twitter_user_token');
         register_setting('reclaim-social-settings', 'twitter_user_secret');
+        register_setting('reclaim-social-settings', 'twitter_favs_category');
+        register_setting('reclaim-social-settings', 'import_favs');
     }
 
     public function display_settings() {
@@ -47,6 +50,15 @@ class twitter_reclaim_module extends reclaim_module {
 <?php
         parent::display_settings($this->shortname);
 ?>
+        <tr valign="top">
+            <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
+            <td><input type="checkbox" name="import_favs" value="1" <?php checked(get_option('import_favs')); ?> />
+            </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row"><?php _e('Category for Favs', 'reclaim'); ?></th>
+            <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => 'twitter_favs_category', 'hide_empty' => 0, 'selected' => get_option('twitter_favs_category'))); ?></td>
+        </tr>
         <tr valign="top">
             <th scope="row"><?php _e('twitter username', 'reclaim'); ?></th>
             <td><input type="text" name="twitter_username" value="<?php echo get_option('twitter_username'); ?>" /></td>
@@ -72,7 +84,20 @@ class twitter_reclaim_module extends reclaim_module {
 
     public function import($forceResync) {
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
-            $lastseenid = get_option('reclaim_'.$this->shortname.'_last_seen_id');
+
+            parent::log(sprintf(__('starting %s import', 'reclaim'), $this->shortname));
+            self::import_tweets($forceResync, "tweets");
+            if (get_option('import_favs')) {
+                parent::log(sprintf(__('starting %s-favs import', 'reclaim'), $this->shortname));
+                self::import_tweets($forceResync, "favs");
+            }
+        }
+        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
+    }
+
+    private function import_tweets( $forceResync, $type = "tweets" ) {
+
+            $lastseenid = get_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id');
             $reqOptions = array(
                 'lang' => substr(get_bloginfo('language'), 0, 2),
                 'count' => self::$count,
@@ -96,10 +121,15 @@ class twitter_reclaim_module extends reclaim_module {
                 if (isset($lastid)) {
                     $reqOptions['max_id'] = $lastid;
                 }
-                $tmhOAuth->request('GET', self::$apiurl, $reqOptions, true);
+                if ($type == "tweets") {
+                    $tmhOAuth->request('GET', self::$apiurl, $reqOptions, true);
+                }
+                else {
+                    $tmhOAuth->request('GET', self::$fav_apiurl, $reqOptions, true);
+                }
 
                 if ($tmhOAuth->response['code'] == 200) {
-                    $data = self::map_data(json_decode($tmhOAuth->response['response'], true));
+                    $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
                     parent::insert_posts($data);
 
                     $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i < self::$max_import_loops;
@@ -108,7 +138,7 @@ class twitter_reclaim_module extends reclaim_module {
                         $lastseenid = $data[0]["ext_guid"];
                     }
                     $lastid = $data[count($data)-1]["ext_guid"];
-                    parent::log(sprintf(__('Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: %s, req-ok: %d', 'reclaim'), count($data), $lastseenid, $lastid, $reqOk));
+                    parent::log(sprintf(__('Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in batch: %s, req-ok: %d', 'reclaim'), $type, count($data), $lastseenid, $lastid, $reqOk));
                 }
                 else {
                     $reqOk = false;
@@ -118,33 +148,46 @@ class twitter_reclaim_module extends reclaim_module {
             } while ($reqOk);
 
             update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
-            update_option('reclaim_'.$this->shortname.'_last_seen_id', $lastseenid);
-        }
-        else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
-    }
+            update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $lastseenid);
+            }
 
-    private function map_data($rawData) {
+    private function map_data($rawData, $type = "tweets") {
         $data = array();
         $tags = array();
         foreach($rawData as $entry){
             $content = self::construct_content($entry);
             $tags = self::get_hashtags($entry);
 
-            if ($entry['entities']['media'][0]['type']=="photo") {
+            if ($type == "favs") {
+                $post_format = 'status';
+            } elseif ($entry['entities']['media'][0]['type']=="photo") {
                 $post_format = 'image';
             } else {
                 $post_format = 'status';
             }
+            $link = 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"];
 
-            // save geo coordinates?
-            // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
-            // http://codex.wordpress.org/Geodata
-            $lat = $entry['geo']['coordinates'][0];
-            $lon = $entry['geo']['coordinates'][1];
+            if ($type == "tweets") {
+                // save geo coordinates?
+                // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
+                // http://codex.wordpress.org/Geodata
+                $lat = $entry['geo']['coordinates'][0];
+                $lon = $entry['geo']['coordinates'][1];
 
-            $post_meta["geo_latitude"] = $lat;
-            $post_meta["geo_longitude"] = $lon;
-            $post_meta['favorite_count'] = $entry['favorite_count'];
+                $post_meta["geo_latitude"] = $lat;
+                $post_meta["geo_longitude"] = $lon;
+                $post_meta['favorite_count'] = $entry['favorite_count'];
+                $title = strip_tags($content['original']);
+                $post_content = $content['embedcode'];
+                $image = $content['image'];
+                $category = array(get_option($this->shortname.'_category'));
+            } else {
+                $title = sprintf(__('I favorited a tweet by @%s', 'reclaim'), $entry['user']['screen_name']); 
+                $source = sprintf(__('I favorited a tweet by <a href="%s">@%s</a>', 'reclaim'), $link, $entry['user']['screen_name']); 
+                $post_content = '<p>'. $source . ':</p>' . $content['embedcodetwitter'];
+                $image = "";
+                $category = array(get_option($this->shortname.'_favs_category'));
+            }
 
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
@@ -160,20 +203,16 @@ class twitter_reclaim_module extends reclaim_module {
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
-                'post_category' => array(get_option($this->shortname.'_category')),
+                'post_category' => $category,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => $post_format,
-// new
-                'post_content'   => $content['embedcode'],
-// changed
-//                'post_excerpt' => $content['embedcode'],
-//                'post_excerpt' => $content['original'],
-                'post_title' => strip_tags($content['original']),
+                'post_content'   => $post_content,
+                'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'tags_input' => $tags,
-                'ext_permalink' => 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"],
-                'ext_image' => $content['image'],
+                'ext_permalink' => $link,
+                'ext_image' => $image,
                 'ext_guid' => $entry["id_str"],
                 'post_meta' => $post_meta
             );
@@ -261,7 +300,7 @@ class twitter_reclaim_module extends reclaim_module {
 */
         $content = array(
             'original' =>  $post_content,
-            //'embedcode' => $embedcode_twitter,
+            'embedcodetwitter' => $embedcode_twitter,
             'embedcode' => $embedcode_reclaim,
             'image' => $image_url
         );

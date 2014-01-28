@@ -66,8 +66,17 @@ class youtube_reclaim_module extends reclaim_module {
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry);
 
+            /*
+            *  set post meta galore start
+            */
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
+            // in case someone uses WordPress Post Formats Admin UI
+            // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
+            //$post_meta["_format_video_embed"]  = $entry["link"][0]['href'];
+            /*
+            *  set post meta galore end
+            */
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
