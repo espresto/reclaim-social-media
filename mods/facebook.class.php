@@ -77,23 +77,23 @@ class facebook_reclaim_module extends reclaim_module {
         parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook user ID', 'reclaim'); ?></th>
+            <th scope="row"><?php _e('Facebook user ID', 'reclaim'); ?></th>
             <td><?php echo get_option('facebook_user_id'); ?>
             <input type="hidden" name="facebook_user_id" value="<?php echo get_option('facebook_user_id'); ?>" />
             </td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook user name', 'reclaim'); ?></th>
+            <th scope="row"><?php _e('Facebook user name', 'reclaim'); ?></th>
             <td><?php echo get_option('facebook_username'); ?>
             <input type="hidden" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
             </td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook app id', 'reclaim'); ?></th>
+            <th scope="row"><?php _e('Facebook app id', 'reclaim'); ?></th>
             <td><input type="text" name="facebook_app_id" value="<?php echo get_option('facebook_app_id'); ?>" /></td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('facebook app secret', 'reclaim'); ?></th>
+            <th scope="row"><?php _e('Facebook app secret', 'reclaim'); ?></th>
             <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" />
             <input type="hidden" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" />
             </td>
@@ -103,11 +103,11 @@ class facebook_reclaim_module extends reclaim_module {
             <td>
 <?php
             if ((get_option('facebook_app_id')!="") && (get_option('facebook_app_secret')!="")) {
-                $link_text = 'Authorize with Facebook';
+                $link_text = __('Authorize with Facebook', 'reclaim');
                 // && (get_option('facebook_oauth_token')!="")
                 if ( (get_option('facebook_user_id')!="") && (get_option('facebook_oauth_token')!="") ) {
-                    echo '<p>Facebook authorized as '.get_option('facebook_username').'</p>';
-                    $link_text = 'Authorize again';
+                    echo sprintf(__('<p>Facebook is authorized as %s</p>', 'reclaim'), get_option('facebook_username'));
+                    $link_text = __('Authorize again', 'reclaim');
                 }
 
                 // send to helper script
@@ -400,7 +400,7 @@ class facebook_reclaim_module extends reclaim_module {
         }
         else {
             if (isset($message)) {
-                $description = '<div class="fbmessage">'.$message.'</div>';
+                $description = '<div class="fbmessage"><p>'.$message.'</p></div>';
             }
         }
 

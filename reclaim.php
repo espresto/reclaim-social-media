@@ -41,6 +41,10 @@ class reclaim_core {
         add_action('init', array($this, 'myStartSession'),1,1);
 
         require_once('helper-functions.php');
+
+        self::$plugin_slug = dirname( plugin_basename( __FILE__ ) );
+        load_plugin_textdomain( 'reclaim', false, self::$plugin_slug . '/languages/' );
+
         /* Load modules */
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
             require_once($file);

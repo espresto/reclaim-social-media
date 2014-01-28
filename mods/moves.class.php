@@ -173,7 +173,7 @@ class moves_reclaim_module extends reclaim_module {
                 $image_url = '';
                 $tags = '';
                 $link = '';
-                $title = sprintf(__('Bewegung am %s', 'reclaim'), date('d.m.Y', strtotime($day["date"])));
+                $title = sprintf(__('Activity on %s', 'reclaim'), date(get_option('date_format'), strtotime($day["date"])));
 
                 $content = $this->construct_content($day);
                 $post_meta = $this->construct_post_meta($day);

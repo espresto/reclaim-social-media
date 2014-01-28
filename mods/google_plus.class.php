@@ -155,7 +155,7 @@ class google_plus_reclaim_module extends reclaim_module {
         // it's a share
         if ($entry['verb']=="share") {
             $story = isset($entry['annotation']) ? ''.$entry['annotation'].'<br />' : '';
-            $story .= '<hr /><p>Auf <a href="'.$entry['url'].'">Google+</a> ursprünglich von <em><a href="'.$entry['object']['actor']['url'].'">'.$entry['object']['actor']['displayName'].'</a></em> geteilt:</p>';
+            $story .= sprintf(__('<hr /><p>Shared on <a href="%s">Google+</a> by <em><a href="%s">%s</a></em>:</p>', 'reclaim'), $entry['url'], $entry['object']['actor']['url'], $entry['object']['actor']['displayName']);
         }
 
         // it's a photo
