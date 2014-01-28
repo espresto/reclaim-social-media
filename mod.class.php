@@ -34,6 +34,7 @@ class reclaim_module {
                 <?php if (get_option($modname.'_active')) :?>
                     <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em>
                     <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
+                    <input type="submit" class="button button-primary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
                 <?php endif;?>
             </td>
         </tr>
@@ -80,6 +81,13 @@ class reclaim_module {
     */
     private function map_data($rawData) {
         return $rawData;
+    }
+    
+    /**
+    * Interface
+    */
+    public function reset() {
+    	update_option('reclaim_'.$this->shortName().'_last_update', 0);
     }
 
     /**
