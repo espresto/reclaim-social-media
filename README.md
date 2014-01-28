@@ -18,7 +18,7 @@ The Twitter embed code is being rendered with Twitter's widget.js, which is a li
 The idea is to copy all the relevant data from the services you use and to enable you to keep a copy on your own server.
 
 ## Demo
-http://root.wirres.net/reclaim/
+http://wirres.net/reclaim/
 
 ## Installation
 Download a [release](https://github.com/espresto/reclaim-social-media/releases) and extract it in your WordPress installation under "wp-content/plugins".
@@ -32,3 +32,5 @@ Alternatively you can install the latest version from git. Go to your WordPress 
     php composer.phar install
 
 Always remember, Reclaim Social Media is still under heavy development and the plugin is not considered stable yet.
+
+Reclaim Social Media requires, that you run at least PHP 5.3.2.
