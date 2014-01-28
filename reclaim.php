@@ -87,7 +87,7 @@ class reclaim_core {
         }
     }
 
-    public function updateMod($mod, $adminResync) {
+    public function updateMod(&$mod, $adminResync) {
         if ($mod['active']) {
             $mod['instance']->prepareImport($adminResync);
             $mod['instance']->import($adminResync);
@@ -201,24 +201,22 @@ class reclaim_core {
     }
 
     public function reclaim_content($content = '') {
-            global $post;
+        global $post;
 
-            // Do not process feed / excerpt
-            if (is_feed() || self::in_excerpt())
-                return $content;
-            
-                //!is_home() &&
-                //!is_single() &&
-                //!is_page() &&
-                //!is_archive() &&
-                //!is_category()
+        // Do not process feed / excerpt
+        if (is_feed() || self::in_excerpt())
+            return $content;
 
-            if ( 1 ) {
+            //!is_home() &&
+            //!is_single() &&
+            //!is_page() &&
+            //!is_archive() &&
+            //!is_category()
 
-                // Show map, if geo data present
-                if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
-                
-                $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
+        // Show map, if geo data present
+        if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
+
+            $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
                 .'<script type="text/javascript">var layer = new L.StamenTileLayer("toner-lite");'
                 .'var map = new L.Map("map-'.$post->ID.'", '
                 // options
@@ -229,22 +227,19 @@ class reclaim_core {
                 .'map.addLayer(layer);'
                 .'var marker = L.marker(['.get_post_meta($post->ID, 'geo_latitude', true).', '.get_post_meta($post->ID, 'geo_longitude', true).']).addTo(map);'
                 .'</script>';
-                //scrollWheelZoom
-                
-                $content = $content . $map;
-                
-                }
+            //scrollWheelZoom
 
-                // Show whatever...
-            }
-            return $content;
+            $content .= $map;
         }
 
-		public static function in_excerpt() {
-			return
-				in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
-				in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
-		}
+        return $content;
+    }
+
+    public static function in_excerpt() {
+        return
+            in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
+            in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
+    }
 }
 
 add_action('init', 'reclaim_init');
