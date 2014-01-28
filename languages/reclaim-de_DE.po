@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-01-28 14:39+0100\n"
-"PO-Revision-Date: 2014-01-28 14:47+0100\n"
+"POT-Creation-Date: 2014-01-28 23:11+0100\n"
+"PO-Revision-Date: 2014-01-28 23:20+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -69,6 +69,26 @@ msgstr "Auto-update"
 msgid "Update Interval (in seconds)"
 msgstr "Aktualisierungsinterval (in Sekunden)"
 
+#: helper/social/social-instagram.php:348
+msgid " liked this"
+msgstr " gefiel das"
+
+#: helper/social/social-instagram.php:369
+msgid "Send as a reply"
+msgstr "Antwort senden"
+
+#: helper/social/social-instagram.php:371
+msgid "URL of Tweet (to reply to)"
+msgstr "URL des zu beantwortenden Tweets"
+
+#: helper/social/lib/service/instagram.php:366
+msgid "Retweet Search"
+msgstr "Retweet Suche"
+
+#: helper/social/lib/service/instagram.php:369
+msgid "Existing Comment"
+msgstr "Kommentar bereits vorhanden"
+
 #: mods/bookmarks.class.php:36
 msgid "Bookmarks"
 msgstr "Bookmarks"
@@ -83,10 +103,9 @@ msgid ""
 "pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> or <code>http://feeds."
 "delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
 msgstr ""
-"Für delicious.com oder pinboard.in eine Feed URL eingeben (z.B. "
-"<code>http://feeds.pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> oder "
-"<code>http://feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</"
-"code>)"
+"Für delicious.com oder pinboard.in eine Feed URL eingeben (z.B. <code>http://"
+"feeds.pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> oder <code>http://"
+"feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
 
 #: mods/bookmarks.class.php:78 mods/flickr.class.php:105
 #: mods/goodreads.class.php:73 mods/vine.class.php:75
@@ -98,7 +117,7 @@ msgstr "no %s data"
 #: mods/flickr.class.php:121 mods/foursquare.class.php:148
 #: mods/github.class.php:79 mods/goodreads.class.php:82
 #: mods/google_plus.class.php:71 mods/instagram.class.php:172
-#: mods/moves.class.php:154 mods/twitter.class.php:123 mods/vine.class.php:78
+#: mods/moves.class.php:154 mods/twitter.class.php:95 mods/vine.class.php:78
 #: mods/youtube.class.php:61
 #, php-format
 msgid "%s user data missing. No import was done"
@@ -162,20 +181,20 @@ msgstr "%s ended with an error. Aborted getting %s"
 msgid "%s ended with an error. Continue anyway with %s"
 msgstr "%s ended with an error. Continue anyway with %s"
 
-#: mods/facebook.class.php:359
+#: mods/facebook.class.php:374
 msgid "Facebook activity"
 msgstr "Facebook Aktivität"
 
-#: mods/facebook.class.php:383
+#: mods/facebook.class.php:398
 msgid "multiple items"
 msgstr "multiple items"
 
-#: mods/facebook.class.php:387
+#: mods/facebook.class.php:402
 #, php-format
 msgid "%s liked <a href=\"%s\">%s</a>"
 msgstr "%s gefiel <a href=\"%s\">%s</a>"
 
-#: mods/facebook.class.php:450
+#: mods/facebook.class.php:465
 msgid "View on Facebook"
 msgstr "Auf Facebook ansehen"
 
@@ -231,7 +250,7 @@ msgstr "%s returned no data. No import was done"
 msgid "Checked in to <a href=\"%s\">%s</a>"
 msgstr "Eingecheckt bei <a href=\"%s\">%s</a>"
 
-#: mods/foursquare.class.php:178
+#: mods/foursquare.class.php:179
 #, php-format
 msgid "Checked in to %s"
 msgstr "Eingecheckt bei %s"
@@ -370,45 +389,73 @@ msgstr "Die Moves App ID und Secret eingeben"
 msgid "Activity on %s"
 msgstr "Bewegung am %s"
 
-#: mods/twitter.class.php:45
+#: mods/twitter.class.php:48
 msgid "Twitter"
 msgstr "Twitter"
 
-#: mods/twitter.class.php:51
+#: mods/twitter.class.php:54
+msgid "Get Favs?"
+msgstr "Favs holen?"
+
+#: mods/twitter.class.php:59
+msgid "Category for Favs"
+msgstr "Kategorie für Favs"
+
+#: mods/twitter.class.php:63
 msgid "twitter username"
 msgstr "Twitter Benutzername"
 
-#: mods/twitter.class.php:55
+#: mods/twitter.class.php:67
 msgid "twitter consumer key"
 msgstr "Twitter Consumer Key"
 
-#: mods/twitter.class.php:59
+#: mods/twitter.class.php:71
 msgid "twitter consumer secret"
 msgstr "Twitter Consumer Secret"
 
-#: mods/twitter.class.php:63
+#: mods/twitter.class.php:75
 msgid "twitter user token"
 msgstr "Twitter User Token"
 
-#: mods/twitter.class.php:67
+#: mods/twitter.class.php:79
 msgid "twitter user secret"
 msgstr "Twitter User Secret"
 
-#: mods/twitter.class.php:111
+#: mods/twitter.class.php:88
+#, php-format
+msgid "starting %s import"
+msgstr "Starte %s Import"
+
+#: mods/twitter.class.php:91
+#, php-format
+msgid "starting %s-favs import"
+msgstr "Starte %s-Favs Import"
+
+#: mods/twitter.class.php:141
 #, php-format
 msgid ""
-"Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: "
-"%s, req-ok: %d"
+"Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
+"batch: %s, req-ok: %d"
 msgstr ""
-"Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: "
-"%s, req-ok: %d"
+"Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
+"batch: %s, req-ok: %d"
 
-#: mods/twitter.class.php:115
+#: mods/twitter.class.php:145
 #, php-format
 msgid "GET failed with: %s"
 msgstr "GET failed with: %s"
 
-#: mods/twitter.class.php:245
+#: mods/twitter.class.php:185
+#, php-format
+msgid "I favorited a tweet by @%s"
+msgstr "Ich habe einen Tweet von @%s favorisiert"
+
+#: mods/twitter.class.php:186
+#, php-format
+msgid "I favorited a tweet by <a href=\"%s\">@%s</a>"
+msgstr "Ich habe einen Tweet von <a href=\"%s\">@%s</a> favorisiert"
+
+#: mods/twitter.class.php:284
 msgid "View on Twitter"
 msgstr "Auf Twitter ansehen"
 
