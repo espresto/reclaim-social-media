@@ -425,11 +425,11 @@ msgid "vine password"
 msgstr "Vine Passwort"
 
 #: mods/youtube.class.php:38
-msgid "Youtube"
+msgid "YouTube"
 msgstr "YouTube"
 
 #: mods/youtube.class.php:44
-msgid "youtube username"
+msgid "YouTube username"
 msgstr "YouTube Benutzername"
 
 #~ msgid "Bewegung am %s"
