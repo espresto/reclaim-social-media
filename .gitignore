@@ -4,3 +4,5 @@ composer.lock
 composer.phar
 reclaim-log.txt
 *.mo
+
+languages/reclaim-de_DE.mo
