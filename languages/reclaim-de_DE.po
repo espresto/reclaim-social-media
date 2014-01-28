@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-01-28 13:34+0100\n"
-"PO-Revision-Date: 2014-01-28 13:34+0100\n"
+"POT-Creation-Date: 2014-01-28 14:39+0100\n"
+"PO-Revision-Date: 2014-01-28 14:44+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -51,7 +51,7 @@ msgstr "END %s import %s"
 
 #: reclaim.php:139 reclaim.php:155
 msgid "Reclaim Social Accounts Settings"
-msgstr "Reclaim Social Konten Einstellungen"
+msgstr "Reclaim Konten Einstellungen"
 
 #: reclaim.php:139
 msgid "Reclaim"
