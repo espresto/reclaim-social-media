@@ -35,13 +35,13 @@ class youtube_reclaim_module extends reclaim_module {
     public function display_settings() {
 ?>
         <tr valign="top">
-            <th colspan="2"><h3><?php _e('Youtube', 'reclaim'); ?></h3></th>
+            <th colspan="2"><h3><?php _e('YouTube', 'reclaim'); ?></h3></th>
         </tr>
 <?php
         parent::display_settings($this->shortname);
 ?>
         <tr valign="top">
-            <th scope="row"><?php _e('youtube username', 'reclaim'); ?></th>
+            <th scope="row"><?php _e('YouTube username', 'reclaim'); ?></th>
             <td><input type="text" name="youtube_username" value="<?php echo get_option('youtube_username'); ?>" /></td>
         </tr>
 <?php
