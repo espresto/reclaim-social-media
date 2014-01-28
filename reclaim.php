@@ -56,8 +56,12 @@ class reclaim_core {
         }
 
         foreach ($this->mods_loaded as $mod) {
-            if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
-                $this->updateMod($mod, true);
+            if (is_admin()) {
+            	if (isset($_REQUEST[$mod['name'].'_resync'])) {
+	                $this->updateMod($mod, true);
+            	} else if (isset($_REQUEST[$mod['name'].'_reset'])) {
+            		$this->resetMod($mod);
+            	}
             }
         }
 
@@ -97,6 +101,12 @@ class reclaim_core {
             $mod['instance']->import($adminResync);
             $mod['instance']->finishImport($adminResync);
         }
+    }
+    
+    public function resetMod(&$mod) {
+    	if ($mod['active']) {
+    		$mod['instance']->reset();
+    	}
     }
 
     public function myStartSession() {
