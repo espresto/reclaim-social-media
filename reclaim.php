@@ -41,10 +41,6 @@ class reclaim_core {
         add_action('init', array($this, 'myStartSession'),1,1);
 
         require_once('helper-functions.php');
-
-        $plugin_slug = dirname( plugin_basename( __FILE__ ) );
-        load_plugin_textdomain( 'reclaim', false, $plugin_slug . '/languages/' );
-
         /* Load modules */
         foreach (glob(dirname( __FILE__).'/mods/*.class.php') as $file) {
             require_once($file);
@@ -56,8 +52,12 @@ class reclaim_core {
         }
 
         foreach ($this->mods_loaded as $mod) {
-            if (is_admin() && isset($_REQUEST[$mod['name'].'_resync'])) {
-                $this->updateMod($mod, true);
+            if (is_admin()) {
+            	if (isset($_REQUEST[$mod['name'].'_resync'])) {
+	                $this->updateMod($mod, true);
+            	} else if (isset($_REQUEST[$mod['name'].'_reset'])) {
+            		$this->resetMod($mod);
+            	}
             }
         }
 
@@ -91,12 +91,18 @@ class reclaim_core {
         }
     }
 
-    public function updateMod(&$mod, $adminResync) {
+    public function updateMod($mod, $adminResync) {
         if ($mod['active']) {
             $mod['instance']->prepareImport($adminResync);
             $mod['instance']->import($adminResync);
             $mod['instance']->finishImport($adminResync);
         }
+    }
+    
+    public function resetMod($mod) {
+    	if ($mod['active']) {
+    		$mod['instance']->reset();
+    	}
     }
 
     public function myStartSession() {
@@ -205,22 +211,24 @@ class reclaim_core {
     }
 
     public function reclaim_content($content = '') {
-        global $post;
+            global $post;
 
-        // Do not process feed / excerpt
-        if (is_feed() || self::in_excerpt())
-            return $content;
+            // Do not process feed / excerpt
+            if (is_feed() || self::in_excerpt())
+                return $content;
+            
+                //!is_home() &&
+                //!is_single() &&
+                //!is_page() &&
+                //!is_archive() &&
+                //!is_category()
 
-            //!is_home() &&
-            //!is_single() &&
-            //!is_page() &&
-            //!is_archive() &&
-            //!is_category()
+            if ( 1 ) {
 
-        // Show map, if geo data present
-        if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
-
-            $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
+                // Show map, if geo data present
+                if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
+                
+                $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
                 .'<script type="text/javascript">var layer = new L.StamenTileLayer("toner-lite");'
                 .'var map = new L.Map("map-'.$post->ID.'", '
                 // options
@@ -231,19 +239,22 @@ class reclaim_core {
                 .'map.addLayer(layer);'
                 .'var marker = L.marker(['.get_post_meta($post->ID, 'geo_latitude', true).', '.get_post_meta($post->ID, 'geo_longitude', true).']).addTo(map);'
                 .'</script>';
-            //scrollWheelZoom
+                //scrollWheelZoom
+                
+                $content = $content . $map;
+                
+                }
 
-            $content .= $map;
+                // Show whatever...
+            }
+            return $content;
         }
 
-        return $content;
-    }
-
-    public static function in_excerpt() {
-        return
-            in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
-            in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
-    }
+		public static function in_excerpt() {
+			return
+				in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
+				in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
+		}
 }
 
 add_action('init', 'reclaim_init');
