@@ -132,7 +132,10 @@ class twitter_reclaim_module extends reclaim_module {
                     $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
                     parent::insert_posts($data);
 
-                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid && $i < self::$max_import_loops;
+                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid;
+                    if ( self::$max_import_loops > 0 && $i >= self::$max_import_loops )
+                        $reqOk = false;
+
                     if (!isset($lastid) && $reqOk) {
                         // store the last-seen-id, which is the first message of the first request
                         $lastseenid = $data[0]["ext_guid"];
