@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-01-28 23:45+0100\n"
-"PO-Revision-Date: 2014-01-28 23:45+0100\n"
+"PO-Revision-Date: 2014-01-29 01:08+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -25,7 +25,7 @@ msgstr "Actif"
 #: mod.class.php:35
 #, php-format
 msgid "last update %s"
-msgstr "Dernière mise à jour %s"
+msgstr "Dernières mises à jour %s"
 
 #: mod.class.php:36
 msgid "Re-Sync"
@@ -51,7 +51,7 @@ msgstr "END %s import %s"
 
 #: reclaim.php:139 reclaim.php:155
 msgid "Reclaim Social Accounts Settings"
-msgstr "Reclaim paramètres des comptes"
+msgstr "Reclaim Social - paramètres des comptes"
 
 #: reclaim.php:139
 msgid "Reclaim"
@@ -365,7 +365,7 @@ msgstr ""
 #: mods/github.class.php:109
 #, php-format
 msgid "%s posted new status: %s on %s"
-msgstr "%s posted new status: %s on %s"
+msgstr "%s a publié un nouveau status : %s sur %s"
 
 #: mods/facebook.class.php:74
 msgid "Facebook"
@@ -430,7 +430,7 @@ msgstr "%s a aimé <a href=\"%s\">%s</a>"
 
 #: mods/facebook.class.php:450
 msgid "View on Facebook"
-msgstr "Montre sur Facebook"
+msgstr "Montrer sur Facebook"
 
 #~ msgid "Bewegung am %s"
 #~ msgstr "Bewegung am %s"
