@@ -1,0 +1,436 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Reclaim\n"
+"POT-Creation-Date: 2014-01-28 23:45+0100\n"
+"PO-Revision-Date: 2014-01-28 23:45+0100\n"
+"Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
+"Language-Team: ix <ix@wirres.net>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: mod.class.php:32
+msgid "Active"
+msgstr "Actif"
+
+#: mod.class.php:35
+#, php-format
+msgid "last update %s"
+msgstr "Dernière mise à jour %s"
+
+#: mod.class.php:36
+msgid "Re-Sync"
+msgstr "Resynchronisation"
+
+#: mod.class.php:41
+msgid "Category"
+msgstr "Categorie"
+
+#: mod.class.php:45
+msgid "Author"
+msgstr "Auteur"
+
+#: mod.class.php:62
+#, php-format
+msgid "BEGIN %s import %s"
+msgstr "BEGIN %s import %s"
+
+#: mod.class.php:75
+#, php-format
+msgid "END %s import %s"
+msgstr "END %s import %s"
+
+#: reclaim.php:139 reclaim.php:155
+msgid "Reclaim Social Accounts Settings"
+msgstr "Reclaim paramètres des comptes"
+
+#: reclaim.php:139
+msgid "Reclaim"
+msgstr "Reclaim"
+
+#: reclaim.php:160
+msgid "General Settings"
+msgstr "Options générales"
+
+#: reclaim.php:163
+msgid "Auto-update"
+msgstr "Auto-update"
+
+#: reclaim.php:167
+msgid "Update Interval (in seconds)"
+msgstr "Intervale d'actualisation (en secondes)"
+
+#: mods/google_plus.class.php:39
+msgid "Google+"
+msgstr "Google+"
+
+#: mods/google_plus.class.php:49
+msgid "Google+ User ID"
+msgstr "Google+ User ID"
+
+#: mods/google_plus.class.php:51
+msgid ""
+"Your Google+ profile ID is the long number at the end of your page or "
+"profile URL."
+msgstr ""
+"Votre ID Google+ est le long numéro à la fin de l'url de votre profil ou de "
+"votre page."
+
+#: mods/google_plus.class.php:53
+msgid "Google API Key"
+msgstr "Google API Key"
+
+#: mods/google_plus.class.php:71 mods/flickr.class.php:121
+#: mods/foursquare.class.php:148 mods/vine.class.php:78
+#: mods/bookmarks.class.php:87 mods/instagram.class.php:172
+#: mods/youtube.class.php:61 mods/goodreads.class.php:82
+#: mods/moves.class.php:154 mods/twitter.class.php:123
+#: mods/github.class.php:79 mods/facebook.class.php:217
+#, php-format
+msgid "%s user data missing. No import was done"
+msgstr "données du profil %s manquantes. Aucun import effectué."
+
+#: mods/google_plus.class.php:158
+#, php-format
+msgid ""
+"<hr /><p>Shared on <a href=\"%s\">Google+</a> by <em><a href=\"%s\">%s</a></"
+"em>:</p>"
+msgstr ""
+"<hr /><p>Partagé initialement sur <a href=\"%s\">Google+</a> par <em><a href="
+"\"%s\">%s</a></em> </p>"
+
+#: mods/google_plus.class.php:217
+msgid "View on Google+"
+msgstr "Montrer sur Auf Google+ "
+
+#: mods/flickr.class.php:67
+msgid "Flickr"
+msgstr "Flickr"
+
+#: mods/flickr.class.php:73
+msgid "flickr user id"
+msgstr "flickr user id"
+
+#: mods/flickr.class.php:77
+msgid "(optional) flickr api key"
+msgstr "Flickr API Key (optionnel)"
+
+#: mods/flickr.class.php:105 mods/vine.class.php:75
+#: mods/bookmarks.class.php:78 mods/goodreads.class.php:73
+#, php-format
+msgid "no %s data"
+msgstr "no %s data"
+
+#: mods/flickr.class.php:253
+msgid "View on Flickr"
+msgstr "Montrer sur Flickr"
+
+#: mods/foursquare.class.php:62
+msgid "foursquare"
+msgstr "Foursquare"
+
+#: mods/foursquare.class.php:68
+msgid "foursquare client id"
+msgstr "Foursquare Client ID"
+
+#: mods/foursquare.class.php:73
+msgid "foursquare client secret"
+msgstr "Foursquare Client Secret"
+
+#: mods/foursquare.class.php:90
+msgid "Authorize with Foursquare"
+msgstr "S'identifier avec Foursquare"
+
+#: mods/foursquare.class.php:92
+#, php-format
+msgid "<p>Foursquare is authorized as %s</p>"
+msgstr "<p>Connecté à Foursquare comme %s</p>"
+
+#: mods/foursquare.class.php:93 mods/instagram.class.php:109
+#: mods/moves.class.php:95 mods/facebook.class.php:110
+msgid "Authorize again"
+msgstr "Reconnecter"
+
+#: mods/foursquare.class.php:112
+msgid "enter Foursquare app id and secret"
+msgstr "introduisez l'app ID et secret de Foursquare"
+
+#: mods/foursquare.class.php:146 mods/instagram.class.php:170
+#: mods/moves.class.php:152
+#, php-format
+msgid "%s returned no data. No import was done"
+msgstr "%s ne retourne aucune donnée. Aucun import effectué."
+
+#: mods/foursquare.class.php:174
+#, php-format
+msgid "Checked in to <a href=\"%s\">%s</a>"
+msgstr "Était à <a href=\"%s\">%s</a>"
+
+#: mods/foursquare.class.php:178
+#, php-format
+msgid "Checked in to %s"
+msgstr "Est à %s"
+
+#: mods/vine.class.php:46
+msgid "Vine"
+msgstr "Vine"
+
+#: mods/vine.class.php:52
+msgid "vine email"
+msgstr "Vine email"
+
+#: mods/vine.class.php:56
+msgid "vine password"
+msgstr "Mot de passe Vine"
+
+#: mods/bookmarks.class.php:36
+msgid "Bookmarks"
+msgstr "Bookmarks"
+
+#: mods/bookmarks.class.php:46
+msgid "Bookmarks URL"
+msgstr "Bookmarks URL"
+
+#: mods/bookmarks.class.php:48
+msgid ""
+"Enter a Feed URL for delicious.com or pinboard.in. (i.e. <code>http://feeds."
+"pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> or <code>http://feeds."
+"delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
+msgstr ""
+"Introduisez l'addresse d'un feed rss pour delicious.com ou pinboard.in (par "
+"ex. <code>http://feeds.pinboard.in/rss/u:{username}/t:{tag}/t:{tag}/</code> "
+"ou <code>http://feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</"
+"code>)"
+
+#: mods/bookmarks.class.php:137
+#, php-format
+msgid "View on %s"
+msgstr "Montrer sur %s"
+
+#: mods/instagram.class.php:66
+msgid "instagram"
+msgstr "Instagram"
+
+#: mods/instagram.class.php:72
+msgid "Instagram user id"
+msgstr "Instagram user id"
+
+#: mods/instagram.class.php:78
+msgid "Instagram user name"
+msgstr "Instagram userid"
+
+#: mods/instagram.class.php:84
+msgid "Instagram client id"
+msgstr "Instagram client id"
+
+#: mods/instagram.class.php:89
+msgid "Instagram client secret"
+msgstr "Instagram client secret"
+
+#: mods/instagram.class.php:105
+msgid "Authorize with Instagram"
+msgstr "S'identifier à Instagram"
+
+#: mods/instagram.class.php:108
+#, php-format
+msgid "<p>Instagram authorized as %s</p>"
+msgstr "<p>Connecté à Instagram comme %s</p>"
+
+#: mods/instagram.class.php:131
+msgid "enter instagram app id and secret"
+msgstr "introduire app id et app secret de Instagram"
+
+#: mods/instagram.class.php:168
+#, php-format
+msgid "END %s import"
+msgstr "END %s import"
+
+#: mods/instagram.class.php:266 mods/instagram.class.php:275
+msgid "View on Instagram"
+msgstr "Montrer sur Instagram"
+
+#: mods/youtube.class.php:38
+msgid "YouTube"
+msgstr "YouTube"
+
+#: mods/youtube.class.php:44
+msgid "YouTube username"
+msgstr "identifiant YouTube"
+
+#: mods/goodreads.class.php:37
+msgid "Goodreads"
+msgstr "Goodreads"
+
+#: mods/goodreads.class.php:43
+msgid "Goodreads User ID (6196450)"
+msgstr "Goodreads User ID (6196450)"
+
+#: mods/moves.class.php:64
+msgid "moves"
+msgstr "Moves"
+
+#: mods/moves.class.php:70
+msgid "Moves client id"
+msgstr "Moves Client ID"
+
+#: mods/moves.class.php:75
+msgid "Moves client secret"
+msgstr "Moves Client Secret"
+
+#: mods/moves.class.php:92
+msgid "Authorize with Moves"
+msgstr "S'identifier avec Moves"
+
+#: mods/moves.class.php:94
+msgid "<p>Moves is authorized</p>"
+msgstr "<p>Connecté à Moves <p>"
+
+#: mods/moves.class.php:114
+msgid "enter moves app id and secret"
+msgstr "Introduire les app id et app secret de Moves"
+
+#: mods/moves.class.php:176
+#, php-format
+msgid "Activity on %s"
+msgstr "Activités ce %s"
+
+#: mods/twitter.class.php:45
+msgid "Twitter"
+msgstr "Twitter"
+
+#: mods/twitter.class.php:51
+msgid "twitter username"
+msgstr "Identifiant Twitter"
+
+#: mods/twitter.class.php:55
+msgid "twitter consumer key"
+msgstr "Twitter Consumer Key"
+
+#: mods/twitter.class.php:59
+msgid "twitter consumer secret"
+msgstr "Twitter Consumer Secret"
+
+#: mods/twitter.class.php:63
+msgid "twitter user token"
+msgstr "Twitter User Token"
+
+#: mods/twitter.class.php:67
+msgid "twitter user secret"
+msgstr "Twitter User Secret"
+
+#: mods/twitter.class.php:111
+#, php-format
+msgid ""
+"Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: "
+"%s, req-ok: %d"
+msgstr ""
+"Retrieved set of twitter messages: %d, last seen id: %s, last id in batch: "
+"%s, req-ok: %d"
+
+#: mods/twitter.class.php:115
+#, php-format
+msgid "GET failed with: %s"
+msgstr "GET failed with: %s"
+
+#: mods/twitter.class.php:245
+msgid "View on Twitter"
+msgstr "Montrer sur Twitter"
+
+#: mods/github.class.php:36
+msgid "GitHub"
+msgstr "GitHub"
+
+#: mods/github.class.php:42
+msgid "GitHub username"
+msgstr "Identifiant GitHub"
+
+#: mods/github.class.php:70
+#, php-format
+msgid ""
+"Retrieved set of GitHub events: %d, last seen id: %s, new last seen id: %s, "
+"req-ok: %d"
+msgstr ""
+"Retrieved set of GitHub events: %d, last seen id: %s, new last seen id: %s, "
+"req-ok: %d"
+
+#: mods/github.class.php:109
+#, php-format
+msgid "%s posted new status: %s on %s"
+msgstr "%s posted new status: %s on %s"
+
+#: mods/facebook.class.php:74
+msgid "Facebook"
+msgstr "Facebook"
+
+#: mods/facebook.class.php:80
+msgid "Facebook user ID"
+msgstr "Facebook user ID"
+
+#: mods/facebook.class.php:86
+msgid "Facebook user name"
+msgstr "Facebook nom d'utilisateur"
+
+#: mods/facebook.class.php:92
+msgid "Facebook app id"
+msgstr "Facebook app id"
+
+#: mods/facebook.class.php:96
+msgid "Facebook app secret"
+msgstr "Facebook app secret"
+
+#: mods/facebook.class.php:106
+msgid "Authorize with Facebook"
+msgstr "S'identifier avec Facebook"
+
+#: mods/facebook.class.php:109
+#, php-format
+msgid "<p>Facebook is authorized as %s</p>"
+msgstr "<p>Connecté à Facebook comme %s</p>"
+
+#: mods/facebook.class.php:165
+msgid "getting FB token"
+msgstr "getting FB token"
+
+#: mods/facebook.class.php:180
+#, php-format
+msgid "GETTING for %s from %s"
+msgstr "GETTING for %s from %s"
+
+#: mods/facebook.class.php:207
+#, php-format
+msgid "%s ended with an error. Aborted getting %s"
+msgstr "%s ended with an error. Aborted getting %s"
+
+#: mods/facebook.class.php:210
+#, php-format
+msgid "%s ended with an error. Continue anyway with %s"
+msgstr "%s ended with an error. Continue anyway with %s"
+
+#: mods/facebook.class.php:359
+msgid "Facebook activity"
+msgstr "Activités Facebook"
+
+#: mods/facebook.class.php:383
+msgid "multiple items"
+msgstr "multiple items"
+
+#: mods/facebook.class.php:387
+#, php-format
+msgid "%s liked <a href=\"%s\">%s</a>"
+msgstr "%s a aimé <a href=\"%s\">%s</a>"
+
+#: mods/facebook.class.php:450
+msgid "View on Facebook"
+msgstr "Montre sur Facebook"
+
+#~ msgid "Bewegung am %s"
+#~ msgstr "Bewegung am %s"
