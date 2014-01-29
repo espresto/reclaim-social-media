@@ -39,7 +39,7 @@ class twitter_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'twitter_user_token');
         register_setting('reclaim-social-settings', 'twitter_user_secret');
         register_setting('reclaim-social-settings', 'twitter_favs_category');
-        register_setting('reclaim-social-settings', 'import_favs');
+        register_setting('reclaim-social-settings', 'twitter_import_favs');
     }
 
     public function display_settings() {
@@ -52,7 +52,7 @@ class twitter_reclaim_module extends reclaim_module {
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
-            <td><input type="checkbox" name="import_favs" value="1" <?php checked(get_option('import_favs')); ?> />
+            <td><input type="checkbox" name="twitter_import_favs" value="1" <?php checked(get_option('twitter_import_favs')); ?> />
             </td>
         </tr>
         <tr valign="top">
@@ -87,7 +87,7 @@ class twitter_reclaim_module extends reclaim_module {
 
             parent::log(sprintf(__('starting %s import', 'reclaim'), $this->shortname));
             self::import_tweets($forceResync, "tweets");
-            if (get_option('import_favs')) {
+            if (get_option('twitter_import_favs')) {
                 parent::log(sprintf(__('starting %s-favs import', 'reclaim'), $this->shortname));
                 self::import_tweets($forceResync, "favs");
             }
