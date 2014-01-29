@@ -245,7 +245,7 @@ class facebook_reclaim_module extends reclaim_module {
                 /*
                  * OK, everything is filtered now, lets proceed ...
                  */
-                $link = self::get_link($entry);
+                $link = self::get_link($entry, 0);
                 $image = self::get_image_url($entry);
                 $title = self::get_title($entry);
                 $content = self::construct_content($entry, $link, $image);
@@ -274,8 +274,7 @@ class facebook_reclaim_module extends reclaim_module {
                 // hidden fields for adding syndication links later
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
-                $from = $entry['from']['id'];
-                $id = $entry['id'];
+
                 // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
                 // to be able to retrieve facebook comments and likes (if social is 
                 // installed)
@@ -330,13 +329,12 @@ class facebook_reclaim_module extends reclaim_module {
         return $post_format;
     }
 
-    private function get_link($entry) {
-        if (isset($entry["link"])) {
+    private function get_link($entry, $fb_only = 0) {
+        if (isset($entry["link"]) && !$fb_only) {
             $link = htmlentities($entry["link"]);
         } else {
             $ids = explode('_', $entry['id']);
             $id = $ids[1];
-//            $id = substr(strstr($entry['id'], '_'),1);
             $link = "https://www.facebook.com/".$entry['from']['id']."/posts/".$id;
         }
         return $link;
@@ -461,7 +459,7 @@ class facebook_reclaim_module extends reclaim_module {
             $description .= '<blockquote class="clearfix fbname fblink">'.$fblink_description.'</blockquote>'; // other's content
         }
 
-        $fb_link = "https://www.facebook.com/".$entry['from']['id']."/posts/".substr($entry['id'], 10);
+        $fb_link = self::get_link($entry, 1);
         $description .= '<p class="viewpost-facebook">(<a rel="syndication" href="'.$fb_link.'">'.__('View on Facebook', 'reclaim').'</a>)</p>';
         // add embedcode
         $description = '<div class="fb-post" data-href="'.$fb_link.'" data-width="100%">'
