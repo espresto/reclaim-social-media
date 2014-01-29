@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-01-28 23:11+0100\n"
-"PO-Revision-Date: 2014-01-28 23:20+0100\n"
+"POT-Creation-Date: 2014-01-29 09:06+0100\n"
+"PO-Revision-Date: 2014-01-29 09:07+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -31,41 +31,45 @@ msgstr "Letzte Aktualisierung %s"
 msgid "Re-Sync"
 msgstr "Neu synchronisieren"
 
-#: mod.class.php:41
+#: mod.class.php:37
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: mod.class.php:42
 msgid "Category"
 msgstr "Kategorie"
 
-#: mod.class.php:45
+#: mod.class.php:46
 msgid "Author"
 msgstr "Autor"
 
-#: mod.class.php:62
+#: mod.class.php:63
 #, php-format
 msgid "BEGIN %s import %s"
 msgstr "BEGIN %s import %s"
 
-#: mod.class.php:75
+#: mod.class.php:76
 #, php-format
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: reclaim.php:139 reclaim.php:155
+#: reclaim.php:149 reclaim.php:165
 msgid "Reclaim Social Accounts Settings"
 msgstr "Reclaim Konten Einstellungen"
 
-#: reclaim.php:139
+#: reclaim.php:149
 msgid "Reclaim"
 msgstr "Reclaim"
 
-#: reclaim.php:160
+#: reclaim.php:170
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: reclaim.php:163
+#: reclaim.php:173
 msgid "Auto-update"
 msgstr "Auto-update"
 
-#: reclaim.php:167
+#: reclaim.php:177
 msgid "Update Interval (in seconds)"
 msgstr "Aktualisierungsinterval (in Sekunden)"
 
@@ -118,7 +122,7 @@ msgstr "no %s data"
 #: mods/github.class.php:79 mods/goodreads.class.php:82
 #: mods/google_plus.class.php:71 mods/instagram.class.php:172
 #: mods/moves.class.php:154 mods/twitter.class.php:95 mods/vine.class.php:78
-#: mods/youtube.class.php:61
+#: mods/youtube.class.php:85
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s user data missing. No import was done"
@@ -393,11 +397,11 @@ msgstr "Bewegung am %s"
 msgid "Twitter"
 msgstr "Twitter"
 
-#: mods/twitter.class.php:54
+#: mods/twitter.class.php:54 mods/youtube.class.php:48
 msgid "Get Favs?"
 msgstr "Favs holen?"
 
-#: mods/twitter.class.php:59
+#: mods/twitter.class.php:59 mods/youtube.class.php:53
 msgid "Category for Favs"
 msgstr "Kategorie für Favs"
 
@@ -431,7 +435,7 @@ msgstr "Starte %s Import"
 msgid "starting %s-favs import"
 msgstr "Starte %s-Favs Import"
 
-#: mods/twitter.class.php:141
+#: mods/twitter.class.php:144
 #, php-format
 msgid ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
@@ -440,22 +444,22 @@ msgstr ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
 "batch: %s, req-ok: %d"
 
-#: mods/twitter.class.php:145
+#: mods/twitter.class.php:148
 #, php-format
 msgid "GET failed with: %s"
 msgstr "GET failed with: %s"
 
-#: mods/twitter.class.php:185
+#: mods/twitter.class.php:188
 #, php-format
 msgid "I favorited a tweet by @%s"
 msgstr "Ich habe einen Tweet von @%s favorisiert"
 
-#: mods/twitter.class.php:186
+#: mods/twitter.class.php:189
 #, php-format
 msgid "I favorited a tweet by <a href=\"%s\">@%s</a>"
 msgstr "Ich habe einen Tweet von <a href=\"%s\">@%s</a> favorisiert"
 
-#: mods/twitter.class.php:284
+#: mods/twitter.class.php:287
 msgid "View on Twitter"
 msgstr "Auf Twitter ansehen"
 
@@ -471,13 +475,23 @@ msgstr "Vine E-Mail"
 msgid "vine password"
 msgstr "Vine Passwort"
 
-#: mods/youtube.class.php:38
+#: mods/youtube.class.php:42
 msgid "YouTube"
 msgstr "YouTube"
 
-#: mods/youtube.class.php:44
+#: mods/youtube.class.php:57
 msgid "YouTube username"
 msgstr "YouTube Benutzername"
+
+#: mods/youtube.class.php:102
+#, php-format
+msgid "I added a video from %s to my YouTube favorites"
+msgstr "Ich ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
+
+#: mods/youtube.class.php:140
+#, php-format
+msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
+msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
 
 #~ msgid "Bewegung am %s"
 #~ msgstr "Bewegung am %s"
