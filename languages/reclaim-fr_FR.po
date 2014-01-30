@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-01-29 22:44+0100\n"
-"PO-Revision-Date: 2014-01-29 22:44+0100\n"
+"PO-Revision-Date: 2014-01-30 08:52+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -376,12 +376,12 @@ msgstr "GET failed with: %s"
 #: mods/twitter.class.php:188
 #, php-format
 msgid "I favorited a tweet by @%s"
-msgstr "J'ai aimé un tweet de @%s"
+msgstr "J'ai ajouté un tweet de @%s aux favoris"
 
 #: mods/twitter.class.php:189
 #, php-format
 msgid "I favorited a tweet by <a href=\"%s\">@%s</a>"
-msgstr "J'ai aimé un tweet de <a href=\"%s\">@%s</a>"
+msgstr "J'ai ajouté un tweet de <a href=\"%s\">@%s</a> aux favoris"
 
 #: mods/twitter.class.php:287
 msgid "View on Twitter"
