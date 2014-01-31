@@ -18,6 +18,7 @@
 
 class foursquare_reclaim_module extends reclaim_module {
     private static $apiurl= "https://api.foursquare.com/v2/users/self/checkins?limit=%s&oauth_token=%s&v=20140120";
+	private static $apiurl_count= "https://api.foursquare.com/v2/users/self/checkins?limit=1&oauth_token=%s&v=20140120";
 
     private static $timeout = 15;
     private static $count = 31; // maximum 31 days
@@ -59,7 +60,7 @@ class foursquare_reclaim_module extends reclaim_module {
         }
 ?>
         <tr valign="top">
-            <th colspan="2"><h3><?php _e('foursquare', 'reclaim'); ?></h3></th>
+            <th colspan="2"><h3 id=""><?php _e('foursquare', 'reclaim'); ?></h3></th>
         </tr>
 <?php
         parent::display_settings($this->shortname);
@@ -208,6 +209,18 @@ class foursquare_reclaim_module extends reclaim_module {
                 }
         return $data;
     }
+    
+    public function count_items() {
+    	if (get_option('foursquare_user_id') && get_option('foursquare_access_token') ) {
+    		$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('foursquare_access_token')), self::$timeout);
+    		$rawData = json_decode($rawData, true);
+    		return $rawData['response']['checkins']['count'];
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
 
     private function construct_content(array $checkin) {}
 

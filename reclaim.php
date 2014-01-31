@@ -67,7 +67,10 @@ class reclaim_core {
 
         add_action('admin_menu', array($this, 'admin_menu'));
         add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
-
+        
+        //dashboard widget
+        add_action('wp_dashboard_setup', array($this, 'add_dashboard_widgets') );
+        
         // get those sessions strated, before it's too late
         // don't know if this works properly
         add_action('wp_logout', array($this, 'myEndSession'), 1, 2);
@@ -132,6 +135,48 @@ class reclaim_core {
 //        wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
 //        wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
 //
+    }
+    
+    public function add_dashboard_widgets() {
+    	if (is_admin()) {
+    		wp_add_dashboard_widget('reclaim-dashboardwidget', 'Reclaim Status', array($this, 'status_widget') );
+    	}
+    }
+    
+    public function status_widget() {
+    	$options_page_url='options-general.php?page=reclaim/reclaim.php'
+    	?>
+    	<h4><?php _e('Auto Update', 'reclaim')?>: <?php get_option('reclaim_auto_update') ? _e('On', 'reclaim') : _e('Off', 'reclaim'); ?></h4>
+		<div class="table">
+			<table class="reclaim-status-table">
+				<thead>
+					<tr>
+						<th>Mod</th>
+						<th>Items</th>
+						<th>Posts</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php 
+					foreach ($this->mods_loaded as $mod) {
+					?>
+					<tr>
+						<td><input type="checkbox" disabled="disabled"
+						<?php checked($mod['active']); ?> /> <a href="<?php echo $options_page_url; ?>#<?php echo $mod['instance']->shortName(); ?>"><?php _e($mod['instance']->shortName(), 'reclaim'); ?></a>
+						</td>
+		
+						<td class="count"><?php echo $mod['instance']->count_items() ?>
+						</td>
+						<td class="count"><?php echo $mod['instance']->count_posts() ?>
+						</td>
+					</tr>
+					<?php 
+		    		}
+		    		?>
+				</tbody>
+			</table>
+		</div>
+		<?php 
     }
 
     public function get_interval() {
