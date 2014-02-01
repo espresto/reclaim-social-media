@@ -26,6 +26,10 @@ License: GPL
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+if ( version_compare(PHP_VERSION, '5.3.2', '<') ) {
+    wp_die(__('At least PHP version 5.3.2 is required for Reclaim Social Media.', 'reclaim'));
+};
+
 if (file_exists( __DIR__ . '/vendor/autoload.php')) {
     require __DIR__ . '/vendor/autoload.php';
 }
