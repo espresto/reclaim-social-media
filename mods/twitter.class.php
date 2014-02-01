@@ -187,7 +187,7 @@ class twitter_reclaim_module extends reclaim_module {
             } else {
                 $title = sprintf(__('I favorited a tweet by @%s', 'reclaim'), $entry['user']['screen_name']); 
                 $source = sprintf(__('I favorited a tweet by <a href="%s">@%s</a>', 'reclaim'), $link, $entry['user']['screen_name']); 
-                $post_content = '<p>'. $source . ':</p>' . $content['embedcodetwitter'];
+                $post_content = '<p>'. $source . ':</p>' . $content['embedcode_twitter'];
                 $image = "";
                 $category = array(get_option($this->shortname.'_favs_category'));
             }
@@ -303,7 +303,7 @@ class twitter_reclaim_module extends reclaim_module {
 */
         $content = array(
             'original' =>  $post_content,
-            'embedcodetwitter' => $embedcode_twitter,
+            'embedcode_twitter' => $embedcode_twitter,
             'embedcode' => $embedcode_reclaim,
             'image' => $image_url
         );
