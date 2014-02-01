@@ -95,7 +95,8 @@ class google_plus_reclaim_module extends reclaim_module {
                 'post_status' => 'publish',
                 'ext_permalink' => $entry["url"],
                 'ext_image' => $image,
-                'ext_guid' => $entry["id"]
+                'ext_guid' => $entry["id"],
+                'post_meta' => $post_meta
             );
 
         }
