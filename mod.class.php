@@ -40,7 +40,7 @@ class reclaim_module {
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Category', 'reclaim'); ?></th>
-            <td><?php wp_dropdown_categories(array('name' => $modname.'_category', 'hide_empty' => 0, 'selected' => get_option($modname.'_category'))); ?></td>
+            <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => $modname.'_category', 'hide_empty' => 0, 'selected' => get_option($modname.'_category'))); ?></td>
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Author', 'reclaim'); ?></th>
