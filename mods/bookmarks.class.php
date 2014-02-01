@@ -106,7 +106,7 @@ class bookmarks_reclaim_module extends reclaim_module {
             /*
             *  set post meta galore start
             */
-            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_".$this->shortname."_link_id"] = $id;
             $post_meta["_post_generator"] = $this->shortname;
             // in case someone uses WordPress Post Formats Admin UI
             // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
