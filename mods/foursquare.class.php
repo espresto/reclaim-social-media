@@ -128,6 +128,10 @@ class foursquare_reclaim_module extends reclaim_module {
                 "Foursquare" => array(
                     "enabled" => true,
                     "keys"    => array ( "id" => get_option('foursquare_client_id'), "secret" => get_option('foursquare_client_secret') ),
+                    "wrapper" => array(
+                        "path"  => dirname( __FILE__ ) . '/../helper/hybridauth/provider/Foursquare.php',
+                        "class" => "Hybrid_Providers_Foursquare",
+                    ),
                 ),
             ),
         );
