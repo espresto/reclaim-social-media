@@ -18,6 +18,7 @@
 
 class instagram_reclaim_module extends reclaim_module {
     private static $apiurl= "https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%s";
+    private static $apiurl_count = "https://api.instagram.com/v1/users/%s/?access_token=%s";
     private static $timeout = 15;
     private static $count = 40;
     private static $post_format = 'image'; // or 'status', 'aside'
@@ -63,7 +64,7 @@ class instagram_reclaim_module extends reclaim_module {
         }
 ?>
         <tr valign="top">
-            <th colspan="2"><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
+            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
         </tr>
 <?php
         parent::display_settings($this->shortname);
@@ -243,7 +244,18 @@ class instagram_reclaim_module extends reclaim_module {
         }
         return $data;
     }
-
+    
+    public function count_items() {
+		if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
+    		$rawData = json_decode($rawData, true);
+    		return $rawData['data']['counts']['media'];
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
     private function construct_content($entry,$id,$image_url,$description) {
         $post_content_original = htmlentities($description);
         

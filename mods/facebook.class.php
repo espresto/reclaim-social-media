@@ -71,7 +71,7 @@ class facebook_reclaim_module extends reclaim_module {
 
 ?>
         <tr valign="top">
-            <th colspan="2"><h3><?php _e('Facebook', 'reclaim'); ?></h3></th>
+            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('Facebook', 'reclaim'); ?></h3></th>
         </tr>
 <?php
         parent::display_settings($this->shortname);

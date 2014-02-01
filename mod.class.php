@@ -89,7 +89,33 @@ class reclaim_module {
     public function reset() {
     	update_option('reclaim_'.$this->shortName().'_last_update', 0);
     }
-
+    
+    /**
+     * Interface
+     */
+    public function count_items() {
+    	return false;
+    }
+    
+	
+    /**
+     * 
+     */
+    public function count_posts() {
+    	$posts = new WP_Query(array(
+    			'post_type' => 'post',
+    			'meta_query' => array(
+    					array(
+    							'key' => '_post_generator',
+    							'value' => $this->shortName(),
+    							'compare' => 'like'
+    					)
+    			)
+    	));
+    
+    	return $posts ? count($posts->get_posts()) : false;
+    }
+    
     /**
     *
     */
