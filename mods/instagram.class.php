@@ -202,8 +202,15 @@ class instagram_reclaim_module extends reclaim_module {
 
     private function map_data($rawData, $type = "instagrams") {
         $data = array();
-        //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['data'] as $entry){
+            $id = $entry["link"];
+            $link = $entry["link"];
+            $tags = $entry['tags']; // not sure if that works
+            $filter = $entry['filter'];
+            $tags[] = 'filter:'.$filter;
+
+            $content = self::construct_content($entry,$id,$image_url,$title); // !
+
             if ($type == "instagrams") {
                 $description = $entry['caption']['text'];
                 $venueName = $entry['location']['name'];
@@ -221,30 +228,18 @@ class instagram_reclaim_module extends reclaim_module {
                 // http://codex.wordpress.org/Geodata
                 $lat = $entry['location']['latitude'];
                 $lon = $entry['location']['longitude'];
-
-                // save meta like this?
-
                 $post_meta["geo_latitude"] = $lat;
                 $post_meta["geo_longitude"] = $lon;
                 $category = array(get_option($this->shortname.'_category'));
+                $post_content = $content['constructed'];
                 $image_url = $entry['images']['standard_resolution']['url'];
             } else {
                 $title = sprintf(__('I faved an Instagram from %s', 'reclaim'), '@'.$entry['user']['username']);
                 $category = array(get_option($this->shortname.'_favs_category'));
+                $post_content = $content['fav_embed_code'];
+                $image_url = '';
             }
 
-            $id = $entry["link"];
-            $link = $entry["link"];
-            $tags = $entry['tags']; // not sure if that works
-            $filter = $entry['filter'];
-            $tags[] = 'filter:'.$filter;
-
-            $content = self::construct_content($entry,$id,$image_url,$title); // !
-            if ($type == "favs") {
-                $content_type = "embed_code"; // use instagram embed code?
-            } else {
-                $content_type = "constructed";
-            }
             if ($entry['type']=='video') {
                 // what to do with videos?
                 // post format, show embed code instead of pure image
@@ -264,7 +259,7 @@ class instagram_reclaim_module extends reclaim_module {
                 'post_category' => $category,
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $entry["created_time"])),
-                'post_content' => $content[$content_type],
+                'post_content' => $post_content,
                 'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',
@@ -294,20 +289,12 @@ class instagram_reclaim_module extends reclaim_module {
     private function construct_content($entry,$id,$image_url,$description) {
         $post_content_original = htmlentities($description);
         
-/*
-        $post_content_constructed = 'ich habe ein vine-video hochgeladen.'
-            .'<a href="'.$entry['permalinkUrl'].'"><img src="'.$image_url.'" alt="'.$description.'"></a>';
-*/
         if ($entry['type']=='image') {
             $post_content_constructed = 
                  'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-//                .'<a href="'.$entry['link'].'">'
-                .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
-//                .'</a>'
-            ;
+                .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>';
         } else {
             $post_content_constructed = 
-                //'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
                 '[video src="'.$entry['videos']['standard_resolution']['url'].'" poster="'.$image_url.'"]';
         }
         $post_content_constructed .= '<p class="viewpost-instagram">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Instagram', 'reclaim').'</a>)</p>';
@@ -316,20 +303,34 @@ class instagram_reclaim_module extends reclaim_module {
         // <iframe src="//instagram.com/p/jD91oVoLab/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
         $embed_code = '<frameset><iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>'
             .'<noframes>'
-            //.'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
-            //.'<a href="'.$entry['link'].'">'
             .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
             .'<p class="viewpost-instagram">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Instagram', 'reclaim').'</a>)</p>'
-            //.'</a>'
             .'</noframes></frameset>';
+        //$fav_embed_code = '<iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
+        $fav_embed_code = '[instagram url="'.$entry['link'].'"]';
 
         $content = array(
             'original' =>  $post_content_original,
             'constructed' =>  $post_content_constructed,
             'embed_code' => $embed_code,
+            'fav_embed_code' => $fav_embed_code,
             'image' => $image_url
         );
 
         return $content;
+    }
+}
+
+// workaround: using wp_cron won't save post data containing an <iframe>.
+// this lets us save the instagram embed code, that uses an iframe, with wp_cron.
+// http://wordpress.stackexchange.com/questions/100588/wp-cron-doesnt-save-iframe-or-object-in-post-body
+add_shortcode('instagram', array('instagram_shortcode', 'shortcode'));
+class instagram_shortcode {
+    function shortcode($atts, $content=null) {
+          extract(shortcode_atts(array(
+               'url'                => '',
+          ), $atts));
+          if (empty($url)) return '<!-- instagram: You did not enter a valid URL -->';
+     return '<iframe src="'.$url.'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
     }
 }
