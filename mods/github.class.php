@@ -91,6 +91,9 @@ class github_reclaim_module extends reclaim_module {
             $post_format = 'status';
             $content = self::construct_content($entry);
             $tags = self::get_hashtags($entry);
+            
+            $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
+            $post_meta["_post_generator"] = $this->shortname;
 
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(
@@ -104,7 +107,8 @@ class github_reclaim_module extends reclaim_module {
                 'post_status' => 'publish',
                 'tags_input' => $tags,
                 'ext_permalink' => $content['url'],
-                'ext_guid' => $entry["id"]
+                'ext_guid' => $entry["id"],
+            	'post_meta' => $post_meta
             );
             parent::log(sprintf(__('%s posted new status: %s on %s', 'reclaim'), $this->shortname, $content["title"], $data[count($data)-1]["post_date"]));
         }

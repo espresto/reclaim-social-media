@@ -154,7 +154,8 @@ class flickr_reclaim_module extends reclaim_module {
                 'ext_image' => $image_url,
                 'tags_input' => $tags,
                 'ext_embed_code' => $content['embed_code'],
-                'ext_guid' => $id
+                'ext_guid' => $id,
+                'post_meta' => $post_meta
             );
 
         }
