@@ -18,6 +18,7 @@
 
 class instagram_reclaim_module extends reclaim_module {
     private static $apiurl= "https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%s";
+	private static $fav_apiurl = "https://api.instagram.com/v1/users/self/media/liked/?access_token=%s&count=%s";
     private static $apiurl_count = "https://api.instagram.com/v1/users/%s/?access_token=%s";
     private static $timeout = 15;
     private static $count = 40;
@@ -38,6 +39,8 @@ class instagram_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'instagram_client_id');
         register_setting('reclaim-social-settings', 'instagram_client_secret');
         register_setting('reclaim-social-settings', 'instagram_access_token');
+        register_setting('reclaim-social-settings', 'instagram_favs_category');
+        register_setting('reclaim-social-settings', 'instagram_import_favs');
     }
 
     public function display_settings() {
@@ -69,6 +72,15 @@ class instagram_reclaim_module extends reclaim_module {
 <?php
         parent::display_settings($this->shortname);
 ?>
+        <tr valign="top">
+            <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
+            <td><input type="checkbox" name="instagram_import_favs" value="1" <?php checked(get_option('instagram_import_favs')); ?> />
+            </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row"><?php _e('Category for Favs', 'reclaim'); ?></th>
+            <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => 'instagram_favs_category', 'hide_empty' => 0, 'selected' => get_option('instagram_favs_category'))); ?></td>
+        </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Instagram user id', 'reclaim'); ?></th>
             <td><p><?php echo get_option('instagram_user_id'); ?></p>
@@ -159,63 +171,86 @@ class instagram_reclaim_module extends reclaim_module {
 
     public function import($forceResync) {
         if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+            //get instagrams
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
 
             if ($rawData) {
-            	$data = self::map_data($rawData);
+            	$data = self::map_data($rawData, 'instagrams');
             	parent::insert_posts($data);
-            	update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+            	update_option('reclaim_'.$this->shortname.'_instagrams_last_update', current_time('timestamp'));
             	parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
             }
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
+
+            if (get_option('instagram_import_favs')) {
+            //get favs
+            $rawData = parent::import_via_curl(sprintf(self::$fav_apiurl, get_option('instagram_access_token'), self::$count), self::$timeout);
+            $rawData = json_decode($rawData, true);
+
+            if ($rawData) {
+                    $data = self::map_data($rawData, 'favs');
+                    parent::insert_posts($data);
+            	    update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
+                    parent::log(sprintf(__('END %s favs import', 'reclaim'), $this->shortname));
+                }
+                else parent::log(sprintf(__('%s favs returned no data. No import was done', 'reclaim'), $this->shortname));
+            }
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function map_data($rawData) {
+    private function map_data($rawData, $type = "instagrams") {
         $data = array();
         //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['data'] as $entry){
-            $description = $entry['caption']['text'];
-            $venueName = $entry['location']['name'];
-            if (isset($description) && isset($venueName)) {
-            	$title = $description . ' @ ' . $venueName;
-            }
-            elseif ( isset($description) && !isset($venueName)) {
-            	$title = $description;
-            }
-            else {
-            	$title = ' @ ' . $venueName;
-            }
-            // save geo coordinates?
-            // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
-            // http://codex.wordpress.org/Geodata
-            $lat = $entry['location']['latitude'];
-            $lon = $entry['location']['longitude'];
+            if ($type == "instagrams") {
+                $description = $entry['caption']['text'];
+                $venueName = $entry['location']['name'];
+                if (isset($description) && isset($venueName)) {
+                	$title = $description . ' @ ' . $venueName;
+                }
+                elseif ( isset($description) && !isset($venueName)) {
+                	$title = $description;
+                }
+                else {
+                	$title = ' @ ' . $venueName;
+                }
+                // save geo coordinates?
+                // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
+                // http://codex.wordpress.org/Geodata
+                $lat = $entry['location']['latitude'];
+                $lon = $entry['location']['longitude'];
 
-            // save meta like this?
+                // save meta like this?
 
-            $post_meta["geo_latitude"] = $lat;
-            $post_meta["geo_longitude"] = $lon;
+                $post_meta["geo_latitude"] = $lat;
+                $post_meta["geo_longitude"] = $lon;
+                $category = array(get_option($this->shortname.'_category'));
+                $image_url = $entry['images']['standard_resolution']['url'];
+            } else {
+                $title = sprintf(__('I faved an Instagram from %s', 'reclaim'), '@'.$entry['user']['username']);
+                $category = array(get_option($this->shortname.'_favs_category'));
+            }
 
             $id = $entry["link"];
             $link = $entry["link"];
-            $image_url = $entry['images']['standard_resolution']['url'];
             $tags = $entry['tags']; // not sure if that works
             $filter = $entry['filter'];
             $tags[] = 'filter:'.$filter;
 
-            $content = self::construct_content($entry,$id,$image_url,$title);
-            $content_type = "constructed";
+            $content = self::construct_content($entry,$id,$image_url,$title); // !
+            if ($type == "favs") {
+                $content_type = "embed_code"; // use instagram embed code?
+            } else {
+                $content_type = "constructed";
+            }
             if ($entry['type']=='video') {
                 // what to do with videos?
                 // post format, show embed code instead of pure image
                 // todo: get that video file and show it nativly in wp
                 // $entry['videos']['standard_resolution']['url']
                 self::$post_format = 'video';
-                $content_type = "embed_code"; // use instagram embed code?
-                $content_type = "constructed";
             }
             else {
                 self::$post_format = 'image';
@@ -226,7 +261,7 @@ class instagram_reclaim_module extends reclaim_module {
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
-                'post_category' => array(get_option($this->shortname.'_category')),
+                'post_category' => $category,
                 'post_format' => self::$post_format,
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $entry["created_time"])),
                 'post_content' => $content[$content_type],
