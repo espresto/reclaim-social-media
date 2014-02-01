@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-01-29 09:06+0100\n"
-"PO-Revision-Date: 2014-01-29 09:07+0100\n"
+"POT-Creation-Date: 2014-02-01 09:18+0100\n"
+"PO-Revision-Date: 2014-02-01 09:20+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -53,23 +53,39 @@ msgstr "BEGIN %s import %s"
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: reclaim.php:149 reclaim.php:165
+#: reclaim.php:30
+msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
+msgstr "Für Reclaim Social Media wird mindestens PHP version 5.3.2 benötigt."
+
+#: reclaim.php:153
+msgid "Auto Update"
+msgstr "Auto-Update"
+
+#: reclaim.php:153
+msgid "On"
+msgstr "An"
+
+#: reclaim.php:153
+msgid "Off"
+msgstr "Aus"
+
+#: reclaim.php:198 reclaim.php:214
 msgid "Reclaim Social Accounts Settings"
 msgstr "Reclaim Konten Einstellungen"
 
-#: reclaim.php:149
+#: reclaim.php:198
 msgid "Reclaim"
 msgstr "Reclaim"
 
-#: reclaim.php:170
+#: reclaim.php:219
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: reclaim.php:173
+#: reclaim.php:222
 msgid "Auto-update"
 msgstr "Auto-update"
 
-#: reclaim.php:177
+#: reclaim.php:226
 msgid "Update Interval (in seconds)"
 msgstr "Aktualisierungsinterval (in Sekunden)"
 
@@ -118,16 +134,16 @@ msgid "no %s data"
 msgstr "no %s data"
 
 #: mods/bookmarks.class.php:87 mods/facebook.class.php:217
-#: mods/flickr.class.php:121 mods/foursquare.class.php:148
+#: mods/flickr.class.php:121 mods/foursquare.class.php:153
 #: mods/github.class.php:79 mods/goodreads.class.php:82
-#: mods/google_plus.class.php:71 mods/instagram.class.php:172
+#: mods/google_plus.class.php:71 mods/instagram.class.php:200
 #: mods/moves.class.php:154 mods/twitter.class.php:95 mods/vine.class.php:78
-#: mods/youtube.class.php:85
+#: mods/youtube.class.php:87
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s user data missing. No import was done"
 
-#: mods/bookmarks.class.php:137
+#: mods/bookmarks.class.php:148
 #, php-format
 msgid "View on %s"
 msgstr "Auf %s ansehen"
@@ -161,8 +177,8 @@ msgstr "Bei Facebook anmelden"
 msgid "<p>Facebook is authorized as %s</p>"
 msgstr "<p>Bei Facebook angemeldet als %s</p>"
 
-#: mods/facebook.class.php:110 mods/foursquare.class.php:93
-#: mods/instagram.class.php:109 mods/moves.class.php:95
+#: mods/facebook.class.php:110 mods/foursquare.class.php:94
+#: mods/instagram.class.php:122 mods/moves.class.php:95
 msgid "Authorize again"
 msgstr "Nochmal anmelden"
 
@@ -185,20 +201,20 @@ msgstr "%s ended with an error. Aborted getting %s"
 msgid "%s ended with an error. Continue anyway with %s"
 msgstr "%s ended with an error. Continue anyway with %s"
 
-#: mods/facebook.class.php:374
+#: mods/facebook.class.php:372
 msgid "Facebook activity"
 msgstr "Facebook Aktivität"
 
-#: mods/facebook.class.php:398
+#: mods/facebook.class.php:396
 msgid "multiple items"
 msgstr "multiple items"
 
-#: mods/facebook.class.php:402
+#: mods/facebook.class.php:400
 #, php-format
 msgid "%s liked <a href=\"%s\">%s</a>"
 msgstr "%s gefiel <a href=\"%s\">%s</a>"
 
-#: mods/facebook.class.php:465
+#: mods/facebook.class.php:463
 msgid "View on Facebook"
 msgstr "Auf Facebook ansehen"
 
@@ -218,43 +234,44 @@ msgstr "Flickr API Key (optional)"
 msgid "View on Flickr"
 msgstr "Auf Flickr ansehen"
 
-#: mods/foursquare.class.php:62
+#: mods/foursquare.class.php:63
 msgid "foursquare"
 msgstr "Foursquare"
 
-#: mods/foursquare.class.php:68
+#: mods/foursquare.class.php:69
 msgid "foursquare client id"
 msgstr "Foursquare Client ID"
 
-#: mods/foursquare.class.php:73
+#: mods/foursquare.class.php:74
 msgid "foursquare client secret"
 msgstr "Foursquare Client Secret"
 
-#: mods/foursquare.class.php:90
+#: mods/foursquare.class.php:91
 msgid "Authorize with Foursquare"
 msgstr "Bei Foursquare anmelden"
 
-#: mods/foursquare.class.php:92
+#: mods/foursquare.class.php:93
 #, php-format
 msgid "<p>Foursquare is authorized as %s</p>"
 msgstr "<p>Bei Foursquare angemeldet als %s</p>"
 
-#: mods/foursquare.class.php:112
+#: mods/foursquare.class.php:113
 msgid "enter Foursquare app id and secret"
 msgstr "Die Foursquare App ID und Secret eingeben"
 
-#: mods/foursquare.class.php:146 mods/instagram.class.php:170
-#: mods/moves.class.php:152
+#: mods/foursquare.class.php:151 mods/instagram.class.php:184
+#: mods/moves.class.php:152 mods/youtube.class.php:73
+#: mods/youtube.class.php:83
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s returned no data. No import was done"
 
-#: mods/foursquare.class.php:174
+#: mods/foursquare.class.php:179
 #, php-format
 msgid "Checked in to <a href=\"%s\">%s</a>"
 msgstr "Eingecheckt bei <a href=\"%s\">%s</a>"
 
-#: mods/foursquare.class.php:179
+#: mods/foursquare.class.php:184
 #, php-format
 msgid "Checked in to %s"
 msgstr "Eingecheckt bei %s"
@@ -322,45 +339,70 @@ msgstr ""
 msgid "View on Google+"
 msgstr "Auf Google+ ansehen"
 
-#: mods/instagram.class.php:66
+#: mods/instagram.class.php:70
 msgid "instagram"
 msgstr "Instagram"
 
-#: mods/instagram.class.php:72
+#: mods/instagram.class.php:76 mods/twitter.class.php:54
+#: mods/youtube.class.php:48
+msgid "Get Favs?"
+msgstr "Favs holen?"
+
+#: mods/instagram.class.php:81 mods/twitter.class.php:59
+#: mods/youtube.class.php:53
+msgid "Category for Favs"
+msgstr "Kategorie für Favs"
+
+#: mods/instagram.class.php:85
 msgid "Instagram user id"
 msgstr "Instagram User ID"
 
-#: mods/instagram.class.php:78
+#: mods/instagram.class.php:91
 msgid "Instagram user name"
 msgstr "Instagram Benutzername"
 
-#: mods/instagram.class.php:84
+#: mods/instagram.class.php:97
 msgid "Instagram client id"
 msgstr "Instagram Client ID"
 
-#: mods/instagram.class.php:89
+#: mods/instagram.class.php:102
 msgid "Instagram client secret"
 msgstr "Instagram Client Secret"
 
-#: mods/instagram.class.php:105
+#: mods/instagram.class.php:118
 msgid "Authorize with Instagram"
 msgstr "Bei Instagram anmelden"
 
-#: mods/instagram.class.php:108
+#: mods/instagram.class.php:121
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
 msgstr "<p>Bei Instagram angemeldet als %s</p>"
 
-#: mods/instagram.class.php:131
+#: mods/instagram.class.php:144
 msgid "enter instagram app id and secret"
 msgstr "Die Instagram App ID und Secret eingeben"
 
-#: mods/instagram.class.php:168
+#: mods/instagram.class.php:182
 #, php-format
 msgid "END %s import"
 msgstr "END %s import"
 
-#: mods/instagram.class.php:266 mods/instagram.class.php:275
+#: mods/instagram.class.php:195
+#, php-format
+msgid "END %s favs import"
+msgstr "END %s favs import"
+
+#: mods/instagram.class.php:197
+#, php-format
+msgid "%s favs returned no data. No import was done"
+msgstr "%s favs returned no data. No import was done"
+
+#: mods/instagram.class.php:232
+#, php-format
+msgid "I faved an Instagram from %s"
+msgstr "Ich habe ein Instagram von %s gefavt"
+
+#: mods/instagram.class.php:313 mods/instagram.class.php:322
 msgid "View on Instagram"
 msgstr "Auf Instagram ansehen"
 
@@ -396,14 +438,6 @@ msgstr "Bewegung am %s"
 #: mods/twitter.class.php:48
 msgid "Twitter"
 msgstr "Twitter"
-
-#: mods/twitter.class.php:54 mods/youtube.class.php:48
-msgid "Get Favs?"
-msgstr "Favs holen?"
-
-#: mods/twitter.class.php:59 mods/youtube.class.php:53
-msgid "Category for Favs"
-msgstr "Kategorie für Favs"
 
 #: mods/twitter.class.php:63
 msgid "twitter username"
@@ -483,12 +517,12 @@ msgstr "YouTube"
 msgid "YouTube username"
 msgstr "YouTube Benutzername"
 
-#: mods/youtube.class.php:102
+#: mods/youtube.class.php:104
 #, php-format
 msgid "I added a video from %s to my YouTube favorites"
 msgstr "Ich ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
 
-#: mods/youtube.class.php:140
+#: mods/youtube.class.php:142
 #, php-format
 msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
 msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
