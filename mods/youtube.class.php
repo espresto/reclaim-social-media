@@ -21,6 +21,7 @@ class youtube_reclaim_module extends reclaim_module {
     private static $count = 50; // maximum: 50
     private static $apiurl     = "https://gdata.youtube.com/feeds/api/users/%s/uploads?alt=json&max-results=%s";
 	private static $fav_apiurl = "https://gdata.youtube.com/feeds/api/users/%s/favorites?alt=json&max-results=%s";
+	private static $activity_apiurl = "https://gdata.youtube.com/feeds/api/events?author=%s&v=2&key=%s&alt=json&max-results=%s";
 
     private static $post_format = 'video'; // or 'status', 'aside'
 
@@ -80,7 +81,19 @@ class youtube_reclaim_module extends reclaim_module {
                     parent::insert_posts($data);
                     update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
                 }
-                else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
+                else parent::log(sprintf(__('%s favs returned no data. No import was done', 'reclaim'), $this->shortname));
+            }
+            if (get_option('youtube_import_favs') && get_option('google_api_key')) {
+                $rawData = parent::import_via_curl(sprintf(self::$activity_apiurl, get_option('youtube_username'), get_option('google_api_key'), self::$count), self::$timeout);
+                $rawData = json_decode($rawData, true);
+
+                if (is_array($rawData)) {
+                    parent::log(sprintf(__('%s activity returned data. Import will be done', 'reclaim'), $this->shortname));
+                    $data = self::map_data($rawData, 'activity');
+                    parent::insert_posts($data);
+                    update_option('reclaim_'.$this->shortname.'_activity_last_update', current_time('timestamp'));
+                }
+                else parent::log(sprintf(__('%s activity returned no data. No import was done', 'reclaim'), $this->shortname));
             }
 
         }
@@ -91,41 +104,56 @@ class youtube_reclaim_module extends reclaim_module {
         $data = array();
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry, $type);
+            $link = $entry["link"][0]['href'];
+            $id = $entry['id']['$t'];
+            $image = $entry['media$group']['media$thumbnail'][2]['url'];
+            $date = get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry['published']['$t'])));
+            $title = "";
 
             /*
             *  set post meta galore start
             */
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
-            if ($type == "videos") {
-                $title = $entry['title']['$t'];
-                $category = array(get_option($this->shortname.'_category'));
-            } else {
-                $title = sprintf(__('I added a video from %s to my YouTube favorites', 'reclaim'), $entry['author'][0]['name']['$t']);
-                $category = array(get_option($this->shortname.'_favs_category'));
-            }
-
             // in case someone uses WordPress Post Formats Admin UI
             // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
             //$post_meta["_format_video_embed"]  = $entry["link"][0]['href'];
             /*
             *  set post meta galore end
             */
+            if ($type == "videos") {
+                $title = $entry['title']['$t'];
+                $category = array(get_option($this->shortname.'_category'));
+            } elseif ($type == "favs") {
+                $title = sprintf(__('I added a video from %s to my YouTube favorites', 'reclaim'), $entry['author'][0]['name']['$t']);
+                $category = array(get_option($this->shortname.'_favs_category'));
+            } elseif ($type == "activity" && $entry['category'][1]['term'] == "video_rated") {
+                $video_id = $entry['yt$videoid']['$t'];
+                $id = 'http://gdata.youtube.com/feeds/api/videos/'.$video_id;
+                $title = sprintf(__('I rated a video on YouTube', 'reclaim'));
+                $category = array(get_option($this->shortname.'_favs_category'));
+                $content = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
+                $link = 'https://www.youtube.com/watch?v='.$video_id;
+                $image = "";
+                $date = $entry['updated']['$t'];
+            } 
 
-            $data[] = array(
-                'post_author' => get_option($this->shortname.'_author'),
-                'post_category' => $category,
-                'post_format' => self::$post_format,
-                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry['published']['$t']))),
-                'post_content' => $content,
-                'post_title' => $title,
-                'post_type' => 'post',
-                'post_status' => 'publish',
-                'ext_permalink' => $entry["link"][0]['href'],
-                'ext_image' => $entry['media$group']['media$thumbnail'][2]['url'],
-                'ext_guid' =>  $entry['id']['$t'],
-                'post_meta' => $post_meta
-            );
+            if ($title != "") {
+                $data[] = array(
+                    'post_author' => get_option($this->shortname.'_author'),
+                    'post_category' => $category,
+                    'post_format' => self::$post_format,
+                    'post_date' => $date,
+                    'post_content' => $content,
+                    'post_title' => $title,
+                    'post_type' => 'post',
+                    'post_status' => 'publish',
+                    'ext_permalink' => $link,
+                    'ext_image' => $image,
+                    'ext_guid' =>  $id,
+                    'post_meta' => $post_meta
+                );
+            }
 
         }
         return $data;
