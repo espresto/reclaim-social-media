@@ -70,7 +70,8 @@ class youtube_reclaim_module extends reclaim_module {
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_videos_last_update', current_time('timestamp'));
             }
-            if (get_option('youtube_import_favs', 'videos')) {
+            else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
+            if (get_option('youtube_import_favs')) {
                 $rawData = parent::import_via_curl(sprintf(self::$fav_apiurl, get_option('youtube_username'), self::$count), self::$timeout);
                 $rawData = json_decode($rawData, true);
 
@@ -79,6 +80,7 @@ class youtube_reclaim_module extends reclaim_module {
                     parent::insert_posts($data);
                     update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
                 }
+                else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
             }
 
         }
