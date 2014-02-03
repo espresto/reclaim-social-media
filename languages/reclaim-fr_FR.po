@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-01-29 22:44+0100\n"
-"PO-Revision-Date: 2014-01-30 08:52+0100\n"
+"POT-Creation-Date: 2014-02-03 21:39+0100\n"
+"PO-Revision-Date: 2014-02-03 21:45+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -53,23 +53,39 @@ msgstr "BEGIN %s import %s"
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: reclaim.php:149 reclaim.php:165
+#: reclaim.php:30
+msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
+msgstr ""
+
+#: reclaim.php:153
+msgid "Auto Update"
+msgstr "Mise à jour automatique"
+
+#: reclaim.php:153
+msgid "On"
+msgstr "On"
+
+#: reclaim.php:153
+msgid "Off"
+msgstr "Off"
+
+#: reclaim.php:198 reclaim.php:214
 msgid "Reclaim Social Accounts Settings"
 msgstr "Reclaim Social - paramètres des comptes"
 
-#: reclaim.php:149
+#: reclaim.php:198
 msgid "Reclaim"
 msgstr "Reclaim"
 
-#: reclaim.php:170
+#: reclaim.php:219
 msgid "General Settings"
 msgstr "Options générales"
 
-#: reclaim.php:173
+#: reclaim.php:222
 msgid "Auto-update"
 msgstr "Auto-update"
 
-#: reclaim.php:177
+#: reclaim.php:226
 msgid "Update Interval (in seconds)"
 msgstr "Intervale d'actualisation (en secondes)"
 
@@ -94,16 +110,16 @@ msgid "Google API Key"
 msgstr "Google API Key"
 
 #: mods/google_plus.class.php:71 mods/flickr.class.php:121
-#: mods/foursquare.class.php:148 mods/vine.class.php:78
-#: mods/bookmarks.class.php:87 mods/instagram.class.php:172
-#: mods/youtube.class.php:85 mods/goodreads.class.php:82
+#: mods/foursquare.class.php:153 mods/vine.class.php:78
+#: mods/bookmarks.class.php:87 mods/instagram.class.php:200
+#: mods/youtube.class.php:100 mods/goodreads.class.php:82
 #: mods/moves.class.php:154 mods/twitter.class.php:95 mods/github.class.php:79
 #: mods/facebook.class.php:217
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "données du profil %s manquantes. Aucun import effectué."
 
-#: mods/google_plus.class.php:158
+#: mods/google_plus.class.php:159
 #, php-format
 msgid ""
 "<hr /><p>Shared on <a href=\"%s\">Google+</a> by <em><a href=\"%s\">%s</a></"
@@ -112,7 +128,7 @@ msgstr ""
 "<hr /><p>Partagé initialement sur <a href=\"%s\">Google+</a> par <em><a href="
 "\"%s\">%s</a></em> </p>"
 
-#: mods/google_plus.class.php:217
+#: mods/google_plus.class.php:218
 msgid "View on Google+"
 msgstr "Montrer sur Auf Google+ "
 
@@ -134,52 +150,52 @@ msgstr "Flickr API Key (optionnel)"
 msgid "no %s data"
 msgstr "no %s data"
 
-#: mods/flickr.class.php:253
+#: mods/flickr.class.php:254
 msgid "View on Flickr"
 msgstr "Montrer sur Flickr"
 
-#: mods/foursquare.class.php:62
+#: mods/foursquare.class.php:63
 msgid "foursquare"
 msgstr "Foursquare"
 
-#: mods/foursquare.class.php:68
+#: mods/foursquare.class.php:69
 msgid "foursquare client id"
 msgstr "Foursquare Client ID"
 
-#: mods/foursquare.class.php:73
+#: mods/foursquare.class.php:74
 msgid "foursquare client secret"
 msgstr "Foursquare Client Secret"
 
-#: mods/foursquare.class.php:90
+#: mods/foursquare.class.php:91
 msgid "Authorize with Foursquare"
 msgstr "S'identifier avec Foursquare"
 
-#: mods/foursquare.class.php:92
+#: mods/foursquare.class.php:93
 #, php-format
 msgid "<p>Foursquare is authorized as %s</p>"
 msgstr "<p>Connecté à Foursquare comme %s</p>"
 
-#: mods/foursquare.class.php:93 mods/instagram.class.php:109
+#: mods/foursquare.class.php:94 mods/instagram.class.php:122
 #: mods/moves.class.php:95 mods/facebook.class.php:110
 msgid "Authorize again"
 msgstr "Reconnecter"
 
-#: mods/foursquare.class.php:112
+#: mods/foursquare.class.php:113
 msgid "enter Foursquare app id and secret"
 msgstr "introduisez l'app ID et secret de Foursquare"
 
-#: mods/foursquare.class.php:146 mods/instagram.class.php:170
-#: mods/moves.class.php:152
+#: mods/foursquare.class.php:151 mods/instagram.class.php:184
+#: mods/youtube.class.php:74 mods/moves.class.php:152
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s ne retourne aucune donnée. Aucun import effectué."
 
-#: mods/foursquare.class.php:174
+#: mods/foursquare.class.php:179
 #, php-format
 msgid "Checked in to <a href=\"%s\">%s</a>"
 msgstr "Était à <a href=\"%s\">%s</a>"
 
-#: mods/foursquare.class.php:179
+#: mods/foursquare.class.php:184
 #, php-format
 msgid "Checked in to %s"
 msgstr "Est à %s"
@@ -215,75 +231,106 @@ msgstr ""
 "ou <code>http://feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</"
 "code>)"
 
-#: mods/bookmarks.class.php:137
+#: mods/bookmarks.class.php:148
 #, php-format
 msgid "View on %s"
 msgstr "Montrer sur %s"
 
-#: mods/instagram.class.php:66
+#: mods/instagram.class.php:70
 msgid "instagram"
 msgstr "Instagram"
 
-#: mods/instagram.class.php:72
+#: mods/instagram.class.php:76 mods/youtube.class.php:49
+#: mods/twitter.class.php:54
+msgid "Get Favs?"
+msgstr "Importer favorits?"
+
+#: mods/instagram.class.php:81 mods/youtube.class.php:54
+#: mods/twitter.class.php:59
+msgid "Category for Favs"
+msgstr "Catégorie pour favorits"
+
+#: mods/instagram.class.php:85
 msgid "Instagram user id"
 msgstr "Instagram user id"
 
-#: mods/instagram.class.php:78
+#: mods/instagram.class.php:91
 msgid "Instagram user name"
 msgstr "Instagram userid"
 
-#: mods/instagram.class.php:84
+#: mods/instagram.class.php:97
 msgid "Instagram client id"
 msgstr "Instagram client id"
 
-#: mods/instagram.class.php:89
+#: mods/instagram.class.php:102
 msgid "Instagram client secret"
 msgstr "Instagram client secret"
 
-#: mods/instagram.class.php:105
+#: mods/instagram.class.php:118
 msgid "Authorize with Instagram"
 msgstr "S'identifier à Instagram"
 
-#: mods/instagram.class.php:108
+#: mods/instagram.class.php:121
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
 msgstr "<p>Connecté à Instagram comme %s</p>"
 
-#: mods/instagram.class.php:131
+#: mods/instagram.class.php:144
 msgid "enter instagram app id and secret"
 msgstr "introduire app id et app secret de Instagram"
 
-#: mods/instagram.class.php:168
+#: mods/instagram.class.php:182
 #, php-format
 msgid "END %s import"
 msgstr "END %s import"
 
-#: mods/instagram.class.php:266 mods/instagram.class.php:275
+#: mods/instagram.class.php:195
+#, php-format
+msgid "END %s favs import"
+msgstr "END %s favs import"
+
+#: mods/instagram.class.php:197 mods/youtube.class.php:84
+#, php-format
+msgid "%s favs returned no data. No import was done"
+msgstr "%s données du profil manquantes. Aucun import effectué."
+
+#: mods/instagram.class.php:237
+#, php-format
+msgid "I faved an Instagram from %s"
+msgstr "J'ai favorisé un Instragram de %s"
+
+#: mods/instagram.class.php:300 mods/instagram.class.php:307
 msgid "View on Instagram"
 msgstr "Montrer sur Instagram"
 
-#: mods/youtube.class.php:42
+#: mods/youtube.class.php:43
 msgid "YouTube"
 msgstr "YouTube"
 
-#: mods/youtube.class.php:48 mods/twitter.class.php:54
-msgid "Get Favs?"
-msgstr "Importer favorits?"
-
-#: mods/youtube.class.php:53 mods/twitter.class.php:59
-msgid "Category for Favs"
-msgstr "Catégorie pour favorits"
-
-#: mods/youtube.class.php:57
+#: mods/youtube.class.php:58
 msgid "YouTube username"
 msgstr "identifiant YouTube"
 
-#: mods/youtube.class.php:102
+#: mods/youtube.class.php:91
+#, php-format
+msgid "%s activity returned data. Import will be done"
+msgstr "%s a retourné des données. Import va s'effectuer."
+
+#: mods/youtube.class.php:96
+#, php-format
+msgid "%s activity returned no data. No import was done"
+msgstr "%s n'a pas retourné de données. Aucun import effectué."
+
+#: mods/youtube.class.php:128
 #, php-format
 msgid "I added a video from %s to my YouTube favorites"
 msgstr "J'ai ajouté une vidéo de %s à mes favorits"
 
-#: mods/youtube.class.php:140
+#: mods/youtube.class.php:133
+msgid "I rated a video on YouTube"
+msgstr "J'ai aimé une vidéo sur YouTube"
+
+#: mods/youtube.class.php:170
 #, php-format
 msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
 msgstr "<a href=\"%s\">%s</a> depuis <a href=\"%s\">%s</a>:"
@@ -404,7 +451,7 @@ msgstr ""
 "Retrieved set of GitHub events: %d, last seen id: %s, new last seen id: %s, "
 "req-ok: %d"
 
-#: mods/github.class.php:109
+#: mods/github.class.php:113
 #, php-format
 msgid "%s posted new status: %s on %s"
 msgstr "%s a publié un nouveau status : %s sur %s"
