@@ -260,6 +260,7 @@ class reclaim_module {
             $fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
             if ( !$fileSaved ) {
                 self::log("The file cannot be saved.");
+                return;
             }
 
             $attachment = array(
