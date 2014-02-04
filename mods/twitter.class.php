@@ -169,6 +169,8 @@ class twitter_reclaim_module extends reclaim_module {
                 $post_format = 'status';
             }
             $link = 'http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"];
+            unset($post_meta["geo_latitude"]);
+            unset($post_meta["geo_longitude"]);
 
             if ($type == "tweets") {
                 // save geo coordinates?
@@ -181,13 +183,13 @@ class twitter_reclaim_module extends reclaim_module {
                 $post_meta["geo_longitude"] = $lon;
                 $post_meta['favorite_count'] = $entry['favorite_count'];
                 $title = strip_tags($content['original']);
-                $post_content = $content['embedcode'];
+                $post_content = $content['embed_code'];
                 $image = $content['image'];
                 $category = array(get_option($this->shortname.'_category'));
             } else {
                 $title = sprintf(__('I favorited a tweet by @%s', 'reclaim'), $entry['user']['screen_name']); 
                 $source = sprintf(__('I favorited a tweet by <a href="%s">@%s</a>', 'reclaim'), $link, $entry['user']['screen_name']); 
-                $post_content = '<p>'. $source . ':</p>' . $content['embedcode_twitter'];
+                $post_content = '<p>'. $source . ':</p> [embed_code]';
                 $image = "";
                 $category = array(get_option($this->shortname.'_favs_category'));
             }
@@ -215,6 +217,7 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_status' => 'publish',
                 'tags_input' => $tags,
                 'ext_permalink' => $link,
+                'ext_embed_code' => $content['embed_code_twitter'],
                 'ext_image' => $image,
                 'ext_guid' => $entry["id_str"],
                 'post_meta' => $post_meta
@@ -281,10 +284,10 @@ class twitter_reclaim_module extends reclaim_module {
         $post_content = preg_replace('/(^|[^0-9A-Z&\/]+)(#|\xef\xbc\x83)([0-9A-Z_]*[A-Z_]+[a-z0-9_\xc0-\xd6\xd8-\xf6\xf8\xff]*)/iu', '${1}<a href="http://twitter.com/search?q=%23${3}" title="#${3}">${2}${3}</a>', $post_content);
 
         // original twitter embed code (more or less), will be shown as native embed
-        $embedcode_twitter = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
+        $embed_code_twitter = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p>'.$image_html.'&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
         // if these are one's *own* tweets, there is no point to mark the username or blockqoue. also the date and time is supeficial.
         //$embedcode_reclaim = '<blockquote class="twitter-tweet imported"><p>'.$post_content.'</p><div class="twimage">'.$image_html.'</div><span style="display: none;">&mdash; '.$entry['user']['name'].' (<a href="https://twitter.com/'.$entry['user']['screen_name'].'/">@'.$entry['user']['screen_name'].'</a>) <a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.date('d.m.Y H:i', strtotime($entry["created_at"])).'</a></span><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></blockquote>';
-        $embedcode_reclaim = '<div class="twitter-tweet imported">'.$post_content.'<div class="twimage">'.$image_html.'</div><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></div>';
+        $embed_code_reclaim = '<div class="twitter-tweet imported">'.$post_content.'<div class="twimage">'.$image_html.'</div><p class="twviewpost-twitter">(<a href="http://twitter.com/'.get_option('twitter_username').'/status/'.$entry["id_str"].'">'.__('View on Twitter', 'reclaim').'</a>)</p></div>';
 
 /*
         setlocale (LC_ALL, get_bloginfo ( 'language' ) );
@@ -303,8 +306,8 @@ class twitter_reclaim_module extends reclaim_module {
 */
         $content = array(
             'original' =>  $post_content,
-            'embedcode_twitter' => $embedcode_twitter,
-            'embedcode' => $embedcode_reclaim,
+            'embed_code_twitter' => $embed_code_twitter,
+            'embed_code' => $embed_code_reclaim,
             'image' => $image_url
         );
 

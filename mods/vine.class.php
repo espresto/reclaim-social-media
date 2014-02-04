@@ -118,7 +118,7 @@ class vine_reclaim_module extends reclaim_module {
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created"]))),
 //                'post_excerpt' => $description,
 //                'post_content' => $content['constructed'],
-                'post_content' => $content['embed_code'],
+                'post_content' => '[embed_code]',
                 'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',

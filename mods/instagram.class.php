@@ -236,7 +236,7 @@ class instagram_reclaim_module extends reclaim_module {
             } else {
                 $title = sprintf(__('I faved an Instagram from %s', 'reclaim'), '@'.$entry['user']['username']);
                 $category = array(get_option($this->shortname.'_favs_category'));
-                $post_content = $content['fav_embed_code'];
+                $post_content = "[embed_code]";
                 $image_url = '';
             }
 
@@ -306,31 +306,14 @@ class instagram_reclaim_module extends reclaim_module {
             .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>'
             .'<p class="viewpost-instagram">(<a rel="syndication" href="'.$entry['link'].'">'.__('View on Instagram', 'reclaim').'</a>)</p>'
             .'</noframes></frameset>';
-        //$fav_embed_code = '<iframe class="instagram-embed" src="'.$entry['link'].'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
-        $fav_embed_code = '[instagram url="'.$entry['link'].'"]';
 
         $content = array(
             'original' =>  $post_content_original,
             'constructed' =>  $post_content_constructed,
             'embed_code' => $embed_code,
-            'fav_embed_code' => $fav_embed_code,
             'image' => $image_url
         );
 
         return $content;
-    }
-}
-
-// workaround: using wp_cron won't save post data containing an <iframe>.
-// this lets us save the instagram embed code, that uses an iframe, with wp_cron.
-// http://wordpress.stackexchange.com/questions/100588/wp-cron-doesnt-save-iframe-or-object-in-post-body
-add_shortcode('instagram', array('instagram_shortcode', 'shortcode'));
-class instagram_shortcode {
-    function shortcode($atts, $content=null) {
-          extract(shortcode_atts(array(
-               'url'                => '',
-          ), $atts));
-          if (empty($url)) return '<!-- instagram: You did not enter a valid URL -->';
-     return '<iframe src="'.$url.'embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>';
     }
 }

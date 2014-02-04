@@ -104,6 +104,7 @@ class youtube_reclaim_module extends reclaim_module {
         $data = array();
         foreach($rawData['feed']['entry'] as $entry) {
             $content = self::get_content($entry, $type);
+            $post_content = $content['post_content'];
             $link = $entry["link"][0]['href'];
             $id = $entry['id']['$t'];
             $image = $entry['media$group']['media$thumbnail'][2]['url'];
@@ -132,7 +133,8 @@ class youtube_reclaim_module extends reclaim_module {
                 $id = 'http://gdata.youtube.com/feeds/api/videos/'.$video_id;
                 $title = sprintf(__('I rated a video on YouTube', 'reclaim'));
                 $category = array(get_option($this->shortname.'_favs_category'));
-                $content = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
+                $content['embed_code'] = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
+                $post_content = "[embed_code]";
                 $link = 'https://www.youtube.com/watch?v='.$video_id;
                 $image = "";
                 $date = $entry['updated']['$t'];
@@ -144,11 +146,12 @@ class youtube_reclaim_module extends reclaim_module {
                     'post_category' => $category,
                     'post_format' => self::$post_format,
                     'post_date' => $date,
-                    'post_content' => $content,
+                    'post_content' => $post_content,
                     'post_title' => $title,
                     'post_type' => 'post',
                     'post_status' => 'publish',
                     'ext_permalink' => $link,
+                    'ext_embed_code' => $content['embed_code'],
                     'ext_image' => $image,
                     'ext_guid' =>  $id,
                     'post_meta' => $post_meta
@@ -165,18 +168,25 @@ class youtube_reclaim_module extends reclaim_module {
         if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $entry["link"][0]['href'], $match)) {
             $video_id = $match[1];
         }
-        $embedcode = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
+        $embed_code = '<div class="ytembed yt"><iframe width="625" height="352" src="http://www.youtube.com/embed/'.$video_id.'" frameborder="0" allowfullscreen></iframe></div>';
         if ($type == "favs") {
             $post_content =  sprintf(__('<a href="%s">%s</a> from <a href="%s">%s</a>:'), $entry["link"][0]['href'], $entry['title']['$t'], $entry['author'][0]['uri']['$t'], $entry['author'][0]['name']['$t']);
-            $post_content .= $embedcode;
+            //$post_content .= $embed_code;
+            $post_content .= "[embed_code] ";
             if ($entry['content']['$t'] != "") {
                 $post_content .= '<blockquote>'.make_clickable($entry['content']['$t']).'</blockquote>';
             }
         } else {
-            $post_content = $embedcode;
+            //$post_content = $embed_code;
+            $post_content = "[embed_code] ";
             $post_content .= make_clickable($entry['content']['$t']);
         }
-        return $post_content;
+        $content = array(
+            'post_content' => $post_content,
+            'embed_code' => $embed_code
+        );
+
+        return $content;
     }
 }
 ?>
