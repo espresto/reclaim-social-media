@@ -103,6 +103,7 @@ class reclaim_module {
      */
     public function count_posts() {
     	$posts = new WP_Query(array(
+    			'posts_per_page' => -1,
     			'post_type' => 'post',
     			'meta_query' => array(
     					array(
@@ -113,7 +114,7 @@ class reclaim_module {
     			)
     	));
 
-    	return $posts ? count($posts->get_posts()) : false;
+    	return $posts ? $posts->found_posts : false;
     }
 
     /**
