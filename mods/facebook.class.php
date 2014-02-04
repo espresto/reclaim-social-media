@@ -20,7 +20,6 @@
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
     private static $count = 400;
-    private static $max_import_loops = 1;
     private static $timeout = 60;
 
     public function __construct() {
@@ -192,11 +191,8 @@ class facebook_reclaim_module extends reclaim_module {
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
 
-                    if (
-                        !$forceResync && count($data) > 0
-                        && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)
-                        || $i > self::$max_import_loops
-                        ) {
+                    if ( !$forceResync && count($data) > 0 &&
+                         intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate) ) {
                         // abort requests if we've already seen these events
                         $urlNext = "";
                     }
@@ -259,7 +255,7 @@ class facebook_reclaim_module extends reclaim_module {
                 else {
                     unset($post_meta["_format_link_url"]);
                 }
-                
+
                 /*
                 *  set post meta galore start
                 */
@@ -276,7 +272,7 @@ class facebook_reclaim_module extends reclaim_module {
                 $post_meta["_post_generator"] = $this->shortname;
 
                 // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
-                // to be able to retrieve facebook comments and likes (if social is 
+                // to be able to retrieve facebook comments and likes (if social is
                 // installed)
                 $from = $entry['from']['id'];
                 $id = $entry['id'];

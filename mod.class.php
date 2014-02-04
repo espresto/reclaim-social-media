@@ -82,24 +82,24 @@ class reclaim_module {
     private function map_data($rawData) {
         return $rawData;
     }
-    
+
     /**
     * Interface
     */
     public function reset() {
     	update_option('reclaim_'.$this->shortName().'_last_update', 0);
     }
-    
+
     /**
      * Interface
      */
     public function count_items() {
     	return false;
     }
-    
-	
+
+
     /**
-     * 
+     *
      */
     public function count_posts() {
     	$posts = new WP_Query(array(
@@ -112,10 +112,10 @@ class reclaim_module {
     					)
     			)
     	));
-    
+
     	return $posts ? count($posts->get_posts()) : false;
     }
-    
+
     /**
     *
     */
@@ -232,11 +232,14 @@ class reclaim_module {
         $imageurl = $source;
         $imageurl = stripslashes($imageurl);
         $uploads = wp_upload_dir();
-        $ext = pathinfo( basename($imageurl) , PATHINFO_EXTENSION);
+        $ext = pathinfo(basename($imageurl), PATHINFO_EXTENSION);
         $newfilename = basename($imageurl);
+
         // sometimes facebook offers very long filename
         // if so, file_put_contents() throws an error
-        if (strlen($newfilename) > 70) { $newfilename = uniqid() . $ext; }
+        if (strlen($newfilename) > 70) {
+            $newfilename = uniqid() . $ext;
+        }
 
         $filename = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
         $wp_filetype = wp_check_filetype($filename, null );
@@ -247,14 +250,17 @@ class reclaim_module {
         }
 
         try {
-            if ( !substr_count($wp_filetype['type'], "image") ) {
-                self::log( basename($imageurl) . ' is not a valid image. ' . $wp_filetype['type']  . '' );
+            $headers = get_headers($imageurl, 1);
+            if ( !substr_count($headers["Content-Type"], "image") &&
+                 !substr_count($wp_filetype['type'], "image") ) {
+                self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["Content-Type"] );
             }
 
             $image_string = self::my_get_remote_content($imageurl);
             $fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
             if ( !$fileSaved ) {
                 self::log("The file cannot be saved.");
+                return;
             }
 
             $attachment = array(
@@ -264,6 +270,10 @@ class reclaim_module {
                 'post_status' => 'inherit',
                 'guid' => $uploads['url'] . "/" . $filename
             );
+            if (!is_array($headers["Content-Type"])) {
+                $attachment['post_mime_type'] = $headers["Content-Type"];
+            }
+
             $attach_id = wp_insert_attachment( $attachment, $fullpathfilename, $post_id );
             if ( !$attach_id ) {
                 self::log("Failed to save record into database.");
