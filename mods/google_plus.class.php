@@ -18,6 +18,8 @@
 
 class google_plus_reclaim_module extends reclaim_module {
     private static $apiurl = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
+    private static $apiurl_count = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
+    
     private static $count = 100; // max = 100
     private static $timeout = 15;
     private static $post_format = 'aside'; // or 'status', 'aside'
@@ -101,6 +103,20 @@ class google_plus_reclaim_module extends reclaim_module {
 
         }
         return $data;
+    }
+    
+    public function count_items() {
+        if (get_option('google_api_key') && get_option('google_plus_user_id')) {
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count), self::$timeout);
+            
+            $rawData = json_decode($rawData, true);
+            if (is_array($rawData) && !isset($rawdata['code'])) {
+    	    	return sizeof($rawData['items']);
+            }
+    	}
+    	else {
+    		return false;
+    	}
     }
 
     private function get_post_format($entry) {

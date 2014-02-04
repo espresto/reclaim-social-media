@@ -18,6 +18,7 @@
 
 class moves_reclaim_module extends reclaim_module {
     private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?pastDays=%s&access_token=%s";
+    private static $apiurl_count= "https://api.moves-app.com/api/v1/user/summary/daily?pastDays=%s&access_token=%s";
     // change for one-time import
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=yyyymmdd&to=yyyymmdd&&foo=%s&access_token=%s";
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=20130304&to=20130331&&foo=%s&access_token=%s";
@@ -162,13 +163,7 @@ class moves_reclaim_module extends reclaim_module {
     private function map_data(array $rawData) {
         $data = array();
         foreach($rawData as $day){
-
-            // today?
-            if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
-                // no entry, if it's from today
-            } else {
-            // post activity after 02:00 (no import between midnight and 2:00)
-            if (intval(date("H"))>2) {
+			if ($this->check_for_import($day) && intval(date("H")) > 2) {
                 $id = 'moves-'.$day["date"];
                 $image_url = '';
                 $tags = '';
@@ -196,12 +191,43 @@ class moves_reclaim_module extends reclaim_module {
                     'ext_guid' => $id,
                     'post_meta' => $post_meta
                 );
-                }
             }
         }
         return $data;
     }
+    
+    public function count_items() {
+		if (get_option('moves_user_id') && get_option('moves_access_token') ) {
+			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, self::$count, get_option('moves_access_token')), self::$timeout);
+			$rawData = json_decode($rawData, true);
+			
+    		if (is_array($rawData)) {
+				$count = 0; 
+				foreach($rawData as $day) {
+					if ($this->check_for_import($day)) {
+						$count++;
+					}
+				}
 
+    			return $count;
+    		}
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
+    private function check_for_import(&$day) {
+		$check = true;
+		
+		// no entry, if it's from today
+		if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
+			$check = false;
+		}
+		
+		return $check;
+	}
+    
     private function construct_content($day) {
         if (isset($day['summary'])) {
             $distance = 0;
