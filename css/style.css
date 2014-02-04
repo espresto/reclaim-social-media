@@ -145,13 +145,3 @@ div.entry-content div.fblink-title.props
 font-size: 12px;
 margin: 0;
 }
-
-table.reclaim-status-table
-{
-width: 100%;
-}
-
-table.reclaim-status-table .count
-{
-text-align: right;
-}

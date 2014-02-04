@@ -1,0 +1,9 @@
+table.reclaim-status-table
+{
+width: 100%;
+}
+
+table.reclaim-status-table .count
+{
+text-align: right;
+}

@@ -77,6 +77,7 @@ class reclaim_core {
         }
 
         add_action('admin_menu', array($this, 'admin_menu'));
+        add_action('admin_enqueue_scripts', array($this, 'admin_stylesheets'));
         add_action('wp_enqueue_scripts', array($this, 'prefix_add_reclaim_stylesheet'));
         
         //dashboard widget
@@ -146,6 +147,11 @@ class reclaim_core {
 //        wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
 //        wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
 //
+    }
+    
+    public function admin_stylesheets() {
+    	wp_register_style('admin-reclaim-style', plugins_url('css/style_admin.css', __FILE__));
+    	wp_enqueue_style('admin-reclaim-style');
     }
     
     public function add_dashboard_widgets() {
