@@ -162,13 +162,7 @@ class moves_reclaim_module extends reclaim_module {
     private function map_data(array $rawData) {
         $data = array();
         foreach($rawData as $day){
-
-            // today?
-            if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
-                // no entry, if it's from today
-            } else {
-            // post activity after 02:00 (no import between midnight and 2:00)
-            if (intval(date("H"))>2) {
+			if ($this->check_for_import($day) && intval(date("H")) > 2) {
                 $id = 'moves-'.$day["date"];
                 $image_url = '';
                 $tags = '';
@@ -196,12 +190,22 @@ class moves_reclaim_module extends reclaim_module {
                     'ext_guid' => $id,
                     'post_meta' => $post_meta
                 );
-                }
             }
         }
         return $data;
     }
-
+    
+    private function check_for_import(&$day) {
+		$check = true;
+		
+		// no entry, if it's from today
+		if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
+			$check = false;
+		}
+		
+		return $check;
+	}
+    
     private function construct_content($day) {
         if (isset($day['summary'])) {
             $distance = 0;
