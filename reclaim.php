@@ -330,3 +330,15 @@ function reclaim_deleteSchedule() {
 register_activation_hook( __FILE__, 'reclaim_createSchedule' );
 register_deactivation_hook( __FILE__, 'reclaim_deleteSchedule' );
 
+
+// workaround: using wp_cron won't save post data containing an <iframe>.
+// this lets us save the instagram embed code, that uses an iframe, with wp_cron.
+// http://wordpress.stackexchange.com/questions/100588/wp-cron-doesnt-save-iframe-or-object-in-post-body
+add_shortcode('embed_code', array('embed_code_shortcode', 'shortcode'));
+class embed_code_shortcode {
+    function shortcode($atts, $content=null) {
+          $post_id = get_the_ID();
+          $content = do_shortcode(get_post_meta($post_id, 'embed_code', true));
+     return $content;
+    }
+}
