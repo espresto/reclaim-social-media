@@ -40,6 +40,7 @@ define('RECLAIM_PLUGIN_PATH', dirname( __FILE__));
 class reclaim_core {
     private $mods_loaded = array();
     private static $instance = 0;
+    private static $options_page_url = 'options-general.php?page=reclaim/reclaim.php';
 
     public function __construct() {
         add_action('init', array($this, 'myStartSession'),1,1);
@@ -63,8 +64,14 @@ class reclaim_core {
             if (is_admin()) {
             	if (isset($_REQUEST[$mod['name'].'_resync'])) {
 	                $this->updateMod($mod, true);
+	                if (wp_redirect(self::$options_page_url.'#'.$mod['name'])) {
+	                	exit;
+	                }
             	} else if (isset($_REQUEST[$mod['name'].'_reset'])) {
             		$this->resetMod($mod);
+            		if (wp_redirect(self::$options_page_url.'#'.$mod['name'])) {
+	                	exit;
+	                }
             	}
             }
         }
@@ -148,7 +155,6 @@ class reclaim_core {
     }
     
     public function status_widget() {
-    	$options_page_url='options-general.php?page=reclaim/reclaim.php'
     	?>
     	<h4><?php _e('Auto Update', 'reclaim')?>: <?php get_option('reclaim_auto_update') ? _e('On', 'reclaim') : _e('Off', 'reclaim'); ?></h4>
 		<div class="table">
@@ -166,7 +172,7 @@ class reclaim_core {
 					?>
 					<tr>
 						<td><input type="checkbox" disabled="disabled"
-						<?php checked($mod['active']); ?> /> <a href="<?php echo $options_page_url; ?>#<?php echo $mod['instance']->shortName(); ?>"><?php _e($mod['instance']->shortName(), 'reclaim'); ?></a>
+						<?php checked($mod['active']); ?> /> <a href="<?php echo self::$options_page_url; ?>#<?php echo $mod['instance']->shortName(); ?>"><?php _e($mod['instance']->shortName(), 'reclaim'); ?></a>
 						</td>
 		
 						<td class="count"><?php echo $mod['instance']->count_items() ?>
