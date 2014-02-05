@@ -254,8 +254,9 @@ class reclaim_module {
             $image_string = self::my_get_remote_content($imageurl, true);
             $headers = $image_string['headers'];
             self::log( 'headers: '.print_r($headers, true) );
-            if ( !substr_count($headers["content-type"], "image") &&
-                 !substr_count($wp_filetype['type'], "image") ) {
+            if ( (!substr_count($headers["content-type"], "image") &&
+                 !substr_count($wp_filetype['type'], "image")) || 
+                 !isset($headers) ) {
                 self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] );
                 return;
             }
@@ -304,6 +305,7 @@ class reclaim_module {
         );
         if( is_wp_error( $response ) ) {
             self::log('Error fetching remote content from '.$url.', wp error: '.$response->get_error_message());
+            return "";
         } 
         if ($return_full_response) {
             return $response;
