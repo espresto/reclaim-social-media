@@ -139,10 +139,12 @@ class reclaim_core {
     public function prefix_add_reclaim_stylesheet() {
         wp_register_style('prefix-style', plugins_url('css/style.css', __FILE__));
         wp_enqueue_style('prefix-style');
-        wp_register_style('leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css');
-        wp_enqueue_style('leaflet');
-        wp_enqueue_script( 'leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js' );
-        wp_enqueue_script( 'stamen', 'http://maps.stamen.com/js/tile.stamen.js?v1.2.4' );
+        if (get_option('reclaim_show_map') == '1') {
+	        wp_register_style('leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css');
+	        wp_enqueue_style('leaflet');
+	        wp_enqueue_script( 'leaflet', 'http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js' );
+	        wp_enqueue_script( 'stamen', 'http://maps.stamen.com/js/tile.stamen.js?v1.2.4' );
+        }
 //        wp_enqueue_script( 'twitter-widget', 'https://platform.twitter.com/widgets.js' );
 //        wp_enqueue_script( 'google-plus-widget', 'https://apis.google.com/js/plusone.js' );
 //        wp_enqueue_script( 'facebook-jssdk', 'https://connect.facebook.net/de_DE/all.js#xfbml=1' );
@@ -214,6 +216,7 @@ class reclaim_core {
     public function register_settings() {
         register_setting('reclaim-social-settings', 'reclaim_update_interval');
         register_setting('reclaim-social-settings', 'reclaim_auto_update');
+        register_setting('reclaim-social-settings', 'reclaim_show_map');
         foreach($this->mods_loaded as $mod) {
             $mod['instance']->register_settings();
         }
@@ -237,6 +240,10 @@ class reclaim_core {
             <tr valign="top">
                 <th scope="row"><?php _e('Update Interval (in seconds)', 'reclaim'); ?></th>
                 <td><input type="text" name="reclaim_update_interval" value="<?php echo self::get_interval(); ?>" /></td>
+            </tr>
+             <tr valign="top">
+                <th scope="row"><?php _e('Show integrated map', 'reclaim'); ?></th>
+                <td><input type="checkbox" name="reclaim_show_map" value="1" <?php checked(get_option('reclaim_show_map')); ?> /></td>
             </tr>
 <?php
         foreach($this->mods_loaded as $mod) {
@@ -289,7 +296,7 @@ class reclaim_core {
             //!is_category()
 
         // Show map, if geo data present
-        if (get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
+        if (get_option('reclaim_show_map') == '1' && get_post_meta($post->ID, 'geo_latitude', true) && get_post_meta($post->ID, 'geo_longitude', true)) {
 
             $map = '<div class="clearfix leaflet-map" id="map-'.$post->ID.'" style=""></div>'
                 .'<script type="text/javascript">var layer = new L.StamenTileLayer("toner-lite");'
