@@ -18,6 +18,7 @@
 */
 
 class reclaim_module {
+	private static $force_delete = true;
     protected $shortname;
 
     public function register_settings($modname) {
@@ -35,6 +36,10 @@ class reclaim_module {
                     <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em>
                     <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
                     <input type="submit" class="button button-primary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
+                    <?php $count = $this->count_posts(); ?>
+                    <?php if ($count > 0) :?>
+                    	<input type="submit" class="button button-primary" value="<?php _e('Remove '.$count.' Posts', 'reclaim'); ?>" name="<?php echo $modname; ?>_remove_posts" />
+                    <?php endif; ?>
                 <?php endif;?>
             </td>
         </tr>
@@ -88,6 +93,37 @@ class reclaim_module {
     */
     public function reset() {
     	update_option('reclaim_'.$this->shortName().'_last_update', 0);
+    }
+    
+    public function remove_posts() {
+    	$posts = new WP_Query(array(
+    		'posts_per_page' => -1,
+    		'post_type' => 'post',
+    		'meta_query' => array(
+    				array(
+    						'key' => '_post_generator',
+    						'value' => $this->shortName(),
+    						'compare' => 'like'
+    				)
+    		)
+    	));
+    	
+    	foreach ($posts->get_posts() as $post) {
+    		$postid = $post->ID;
+    		self::log($this->shortName().' remove post with id='.$postid);
+    		
+    		$attachments = get_children(array(
+    			'post_type' => 'attachment',
+    			'post_parent' => $postid
+    		));
+    		
+    		foreach ($attachments as $attachment) {
+    			self::log($this->shortName().' remove attachment with id='.$attachment->ID);
+    			wp_delete_attachment($attachment->ID, self::$force_delete);
+    		}
+    		
+    		wp_delete_post($postid, self::$force_delete);
+    	}
     }
 
     /**

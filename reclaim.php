@@ -72,6 +72,11 @@ class reclaim_core {
             		if (wp_redirect(self::$options_page_url.'#'.$mod['name'])) {
 	                	exit;
 	                }
+            	} else if (isset($_REQUEST[$mod['name'].'_remove_posts'])) {
+            		$this->removePostsMod($mod);
+            		if (wp_redirect(self::$options_page_url.'#'.$mod['name'])) {
+	                	exit;
+	                }
             	}
             }
         }
@@ -121,6 +126,12 @@ class reclaim_core {
     public function resetMod(&$mod) {
     	if ($mod['active']) {
     		$mod['instance']->reset();
+    	}
+    }
+    
+    public function removePostsMod(&$mod) {
+    	if ($mod['active']) {
+    		$mod['instance']->remove_posts();
     	}
     }
 
