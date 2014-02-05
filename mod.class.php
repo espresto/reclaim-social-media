@@ -251,13 +251,16 @@ class reclaim_module {
         }
 
         try {
-            $headers = get_headers($imageurl, 1);
-            if ( !substr_count($headers["Content-Type"], "image") &&
+            $image_string = self::my_get_remote_content($imageurl, true);
+            $headers = $image_string['headers'];
+            self::log( 'headers: '.print_r($headers, true) );
+            if ( !substr_count($headers["content-type"], "image") &&
                  !substr_count($wp_filetype['type'], "image") ) {
-                self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["Content-Type"] );
+                self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] );
+                return;
             }
 
-            $image_string = self::my_get_remote_content($imageurl);
+            $image_string = wp_remote_retrieve_body($image_string);
             $fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
             if ( !$fileSaved ) {
                 self::log("The file cannot be saved.");
@@ -271,8 +274,8 @@ class reclaim_module {
                 'post_status' => 'inherit',
                 'guid' => $uploads['url'] . "/" . $filename
             );
-            if (!is_array($headers["Content-Type"])) {
-                $attachment['post_mime_type'] = $headers["Content-Type"];
+            if (!is_array($headers["content-type"])) {
+                $attachment['post_mime_type'] = $headers["content-type"];
             }
 
             $attach_id = wp_insert_attachment( $attachment, $fullpathfilename, $post_id );
@@ -291,7 +294,7 @@ class reclaim_module {
         }
     }
 
-    public static function my_get_remote_content($url) {
+    public static function my_get_remote_content($url, $return_full_response = false) {
         $response = wp_remote_get($url,
             array(
                 'headers' => array(
@@ -301,6 +304,9 @@ class reclaim_module {
         );
         if( is_wp_error( $response ) ) {
             self::log('Error fetching remote content from '.$url.', wp error: '.$response->get_error_message());
+        } 
+        if ($return_full_response) {
+            return $response;
         } else {
             $data = wp_remote_retrieve_body($response);
             return $data;
