@@ -182,7 +182,7 @@ class reclaim_module {
                 if ($ext_image) {
                     if (!is_array($post['ext_image'])) {
                         update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image']));
-                        self::post_image_to_media_library($post['ext_image'], $inserted_post_id, $post['post_title']);
+                        self::post_image_to_media_library($post['ext_image'], $inserted_post_id, $post['post_title'], true, $post['post_date']);
                     }
                     else {
                         //[$i]['link_url']
@@ -190,7 +190,7 @@ class reclaim_module {
                         //[$i]['title']
                         update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image'][0]['image_url']));
                         foreach($post['ext_image'] as $post_image) {
-                            self::post_image_to_media_library(trim($post_image['image_url']), $inserted_post_id, $post_image['title']);
+                            self::post_image_to_media_library(trim($post_image['image_url']), $inserted_post_id, $post_image['title'], true, $post['post_date']);
                         }
                     }
 
@@ -211,7 +211,7 @@ class reclaim_module {
                                 $image_url = isset($image_data['og:image:url']) ? $image_data['og:image:url'] : '';
                                 if ($image_url != "") {
                                     update_post_meta($inserted_post_id, 'image_url', $image_url);
-                                    self::post_image_to_media_library($image_url, $inserted_post_id, $post['post_title']);
+                                    self::post_image_to_media_library($image_url, $inserted_post_id, $post['post_title'], true, $post['post_date']);
                                 }
                             } catch(RuntimeException $e) {
                                 self::log('Remote opengraph-content not parsable:' . $open_graph_content);
@@ -228,7 +228,7 @@ class reclaim_module {
         }
     }
 
-    public static function post_image_to_media_library($source, $post_id, $title, $set_post_thumbnail = true ) {
+    public static function post_image_to_media_library($source, $post_id, $title, $set_post_thumbnail = true, $post_date ) {
     // source http://digitalmemo.neobie.net/grab-save
         $imageurl = $source;
         $imageurl = stripslashes($imageurl);
@@ -273,7 +273,12 @@ class reclaim_module {
                 'post_title' => $title,
                 'post_content' => '',
                 'post_status' => 'inherit',
-                'guid' => $uploads['url'] . "/" . $filename
+                'guid' => $uploads['url'] . "/" . $filename,
+				'post_date' => $post_date,
+				// assume that the given post_date is a gmt-date
+				// we need to set this field, because otherwise the attachment
+				// doesnt get the date
+				'post_date_gmt' => $post_date
             );
             if (!is_array($headers["content-type"])) {
                 $attachment['post_mime_type'] = $headers["content-type"];
