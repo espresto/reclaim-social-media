@@ -64,7 +64,7 @@ class vine_reclaim_module extends reclaim_module {
             $key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
             $userId = strtok($key,'-');
             $rawData = self::vineTimeline($userId,$key);
-//            parent::log(print_r($rawData,1));
+            //parent::log(print_r($rawData,1));
 
             if (is_array($rawData)) {
                 $data = self::map_data($rawData);
@@ -110,6 +110,13 @@ class vine_reclaim_module extends reclaim_module {
 
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
+            if (isset($entry['repost']) && $entry['repost'] != "") {
+                $post_content = sprintf(__('<p>Revined from <a href="%s">@%s</a>.</p>', 'reclaim'), $entry['permalinkUrl'], $entry['username']). "[embed_code]";
+                $post_meta["revined"] = 1;
+            } else {
+                $post_content = "[embed_code]";
+                $post_meta["revined"] = 0;
+            }
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),
@@ -118,7 +125,7 @@ class vine_reclaim_module extends reclaim_module {
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created"]))),
 //                'post_excerpt' => $description,
 //                'post_content' => $content['constructed'],
-                'post_content' => '[embed_code]',
+                'post_content' => $post_content,
                 'post_title' => $title,
                 'post_type' => 'post',
                 'post_status' => 'publish',
@@ -199,15 +206,18 @@ class vine_reclaim_module extends reclaim_module {
 
     private function vineTimeline($userId, $key) {
         // Additional endpoints available from https://github.com/starlock/vino/wiki/API-Reference
-        //$url = 'https://vine.co/api/timelines/users/906592469217587200';
-        //$url = 'https://api.vineapp.com/timelines/users/'.$userId;
-        $url = 'https://api.vineapp.com/timelines/users/'.$userId.'?size='.self::$count;
+        // old setting
+        //$url = 'https://api.vineapp.com/timelines/users/'.$userId.'?size='.self::$count;
+        // new setting from vine.co/username -> if x-vine-client: vinewww/1.0, response 
+        // includes revines
+        $url = 'https://vine.co/api/timelines/users/'.$userId.'?size='.self::$count;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, "iphone/110 (iPhone; iOS 7.0.4; Scale/2.00)");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('vine-session-id: '.$key));
+        curl_setopt($ch, CURLOPT_REFERER, 'https://vine.co/felix.schwenzel');
+        //curl_setopt($ch, CURLOPT_USERAGENT, "iphone/110 (iPhone; iOS 7.0.4; Scale/2.00)");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('vine-session-id: '.$key, "x-vine-client: vinewww/1.0", "X-Requested-With: XMLHttpRequest", "Cache-Control: max-age=0", "DNT: 1"));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $result = json_decode(curl_exec($ch), true);
