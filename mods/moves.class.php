@@ -17,8 +17,8 @@
 */
 
 class moves_reclaim_module extends reclaim_module {
-    private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?pastDays=%s&access_token=%s";
-    private static $apiurl_count= "https://api.moves-app.com/api/v1/user/summary/daily?pastDays=%s&access_token=%s";
+    private static $apiurl= "https://api.moves-app.com/api/1.1/user/summary/daily?pastDays=%s&access_token=%s";
+    private static $apiurl_count= "https://api.moves-app.com/api/1.1/user/summary/daily?pastDays=%s&access_token=%s";
     // change for one-time import
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=yyyymmdd&to=yyyymmdd&&foo=%s&access_token=%s";
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=20130304&to=20130331&&foo=%s&access_token=%s";
@@ -231,10 +231,12 @@ class moves_reclaim_module extends reclaim_module {
     private function construct_content($day) {
         if (isset($day['summary'])) {
             $distance = 0;
+            $drive_distance = 0;
             $description = 'ich bin heute ';
+            $description_transport ="";
             foreach($day['summary'] as $summary) {
                 if (isset($summary['activity'])) {
-                    if ($summary['activity']=="wlk") {
+                    if ($summary['activity']=="walking") {
                         $distance = intval($summary['distance']);
                         if ($summary['steps'] >= 500) {
                             $description .= number_format(intval($summary['steps']),0,',','.'). ' schritte gelaufen';
@@ -242,21 +244,29 @@ class moves_reclaim_module extends reclaim_module {
                         else {
                             $description .= 'sehr wenig gelaufen';
                         }
-                    } elseif ($summary['activity']=="run") {
+                    } elseif ($summary['activity']=="running") {
                         $distance = $distance + intval($summary['distance']);
                         if ($summary['distance'] >= 500) {
                             $description .= ' und ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer gerannt';
                         }
-                    } elseif ($summary['activity']=="cyc") {
+                    } elseif ($summary['activity']=="cycling") {
                         $distance = $distance + intval($summary['distance']);
                         if ($summary['distance'] >= 1000) {
                             $description .= ' und ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer fahrrad gefahren';
+                        }
+                    } elseif ($summary['group']=="transport") {
+                        $drive_distance = intval($summary['distance']);
+                        if ($summary['distance'] >= 1000) {
+                            $description_transport .= ' für ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer transportmittel benutzt';
+                            $description .= "  und habe". $description_transport;
                         }
                     }
                 }
             }
             $description .= '.';
-            if ($distance <= 500) {
+            if ($distance <= 500 && $description_transport != "") {
+                $description = 'ich habe mich heute kaum bewegt, habe aber '.$description_transport;
+            } elseif ($distance <= 500 && $description_transport == "") {
                 $description = 'ich habe mich heute kaum bewegt.';
             }
         }
