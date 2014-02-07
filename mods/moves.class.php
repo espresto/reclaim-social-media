@@ -32,6 +32,10 @@ class moves_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'moves';
+        add_filter('the_content', array($this, 'moves_content'), 100);
+        add_action('wp_enqueue_scripts', array($this, 'moves_add_reclaim_stylesheet'));
+        add_action('wp_head', array($this, 'add_moves_styles'));
+        
     }
 
     public function register_settings() {
@@ -41,6 +45,7 @@ class moves_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'moves_client_id');
         register_setting('reclaim-social-settings', 'moves_client_secret');
         register_setting('reclaim-social-settings', 'moves_access_token');
+        register_setting('reclaim-social-settings', 'reclaim_show_moves_dataset');
     }
 
     public function display_settings() {
@@ -67,6 +72,10 @@ class moves_reclaim_module extends reclaim_module {
 <?php
         parent::display_settings($this->shortname);
 ?>
+         <tr valign="top">
+            <th scope="row"><?php _e('Show moves diagram', 'reclaim'); ?></th>
+            <td><input type="checkbox" name="reclaim_show_moves_dataset" value="1" <?php checked(get_option('reclaim_show_moves_dataset')); ?> /></td>
+        </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Moves client id', 'reclaim'); ?></th>
             <td><input type="text" name="moves_client_id" value="<?php echo get_option('moves_client_id'); ?>" />
@@ -163,7 +172,7 @@ class moves_reclaim_module extends reclaim_module {
     private function map_data(array $rawData) {
         $data = array();
         foreach($rawData as $day){
-			if ($this->check_for_import($day) && intval(date("H")) > 2) {
+            if ($this->check_for_import($day) && intval(date("H")) > 2) {
                 $id = 'moves-'.$day["date"];
                 $image_url = '';
                 $tags = '';
@@ -196,37 +205,125 @@ class moves_reclaim_module extends reclaim_module {
         return $data;
     }
     
-    public function count_items() {
-		if (get_option('moves_user_id') && get_option('moves_access_token') ) {
-			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, self::$count, get_option('moves_access_token')), self::$timeout);
-			$rawData = json_decode($rawData, true);
-			
-    		if (is_array($rawData)) {
-				$count = 0; 
-				foreach($rawData as $day) {
-					if ($this->check_for_import($day)) {
-						$count++;
-					}
-				}
+    public function moves_add_reclaim_stylesheet() {
+        if (get_option('reclaim_show_moves_dataset') == '1') {
+	        wp_enqueue_script( 'd3', RECLAIM_PLUGIN_URL.'/js/d3.v3.min.js' );
+        }
 
-    			return $count;
-    		}
-    	}
-    	else {
-    		return false;
-    	}
+    }
+    public function add_moves_styles() {
+    ?>
+    <style type="text/css" id="moves-custom-styles">
+    /* SV for moves */
+
+	svg.moves {
+		width: 100%;
+		height: 200px;
+	}
+
+	svg {
+		background-color: #000;
+	}
+	
+	svg body {
+		background-color: transparent !important;
+		background-image: none;
+	}
+
+	svg circle {
+		fill: rgba(225, 152, 53, 1.000);
+		-webkit-svg-shadow: -2px 1px 4px rgba(0, 0, 0, 0.6);
+	}
+	
+	svg circle.walking, svg circle.walking_on_treadmill {
+		fill: #00d55a;
+	}
+
+	svg circle.cycling, svg circle.indoor_cycling {
+		fill: #00cdec;
+	}
+	
+	svg circle.transport, svg circle.underground {
+		fill: #848484;
+	}
+
+	svg circle.running, svg circle.running_on_treadmill {
+		fill: #f660f4;
+	}
+	
+
+	svg text {
+		fill: rgba(255, 255, 255, 0.9);
+		font-weight: normal;
+		font-family: sans-serif;
+		font-size: 10pt;
+		text-anchor: middle;
+		alignment-baseline: central;
+	}
+
+	svg .title {
+		font-family: sans-serif;
+		font-weight: bold;
+		font-size: 32pt;
+		letter-spacing: -0.05em;
+		text-anchor: start;
+		fill: rgba(255, 255, 255, 0.9);
+	}
+
+	svg div.labelDiv {
+		padding: 0px;
+		margin: 0px;
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+	}
+
+	svg foreignObject {
+		padding: 0px;
+	}
+
+	svg .label {
+		font-weight: normal;
+		font-family: sans-serif;
+		font-size: 9pt;
+		line-height:10pt;
+		color: rgba(255, 255, 255, 0.9);
+	}
+    </style>
+    <?php
+    }
+
+    public function count_items() {
+        if (get_option('moves_user_id') && get_option('moves_access_token') ) {
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl_count, self::$count, get_option('moves_access_token')), self::$timeout);
+            $rawData = json_decode($rawData, true);
+
+            if (is_array($rawData)) {
+                $count = 0; 
+                foreach($rawData as $day) {
+                    if ($this->check_for_import($day)) {
+                        $count++;
+                    }
+                }
+
+                return $count;
+            }
+        }
+        else {
+            return false;
+        }
     }
     
     private function check_for_import(&$day) {
-		$check = true;
-		
-		// no entry, if it's from today
-		if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
-			$check = false;
-		}
-		
-		return $check;
-	}
+        $check = true;
+        
+        // no entry, if it's from today
+        if ( strtotime($day['date']) >= strtotime(date('d.m.Y')) ) {
+            $check = false;
+        }
+        
+        return $check;
+    }
     
     private function construct_content($day) {
         if (isset($day['summary'])) {
@@ -286,18 +383,202 @@ class moves_reclaim_module extends reclaim_module {
     private function construct_post_meta(array $day) {
         if (isset($day['summary'])) {
         $post_meta = array();
+        $post_meta_dataset_distance = array();
+        
             foreach ($day['summary'] as $activityData) {
                 $activity = isset($activityData['activity']) ? $activityData['activity'] : 'unknown';
                 unset($activityData['activity']);
                 foreach ($activityData as $activityDataKey => $activityDataValue) {
                     $postMetaKey = $activity . '_' . $activityDataKey;
                     $post_meta[$postMetaKey] = $activityDataValue;
+                    if ($activityDataKey == "distance") {
+                        $post_meta_dataset_distance[] = array("label" => $activity, "circle_label" => number_format( (intval($activityDataValue)/1000), 1, ',', '.') . ' km', "value" => $activityDataValue);
+                    }
                 }
             }
+            $post_meta['moves_dataset'] = json_encode($post_meta_dataset_distance);
             return $post_meta;
         }
         else {
             return array();
         }
     }
+
+    public function moves_content($content = '') {
+        global $post;
+
+        // Do not process feed / excerpt
+        if (is_feed() || reclaim_core::in_excerpt())
+            return $content;
+
+            //!is_home() &&
+            //!is_single() &&
+            //!is_page() &&
+            //!is_archive() &&
+            //!is_category()
+        
+        if ( get_option('reclaim_show_moves_dataset') == '1' && get_post_meta($post->ID, 'moves_dataset', true) ) {
+            $moves_diagram = '
+    <div id="moves-'.$post->ID.'"></div>
+    <script>
+
+    var h = 200;
+    var w = 400;
+    var minimumBubbleSize = 10;
+    var labelsWithinBubbles = true;
+    var title = "";
+    var dataset = '.get_post_meta($post->ID, 'moves_dataset', true).';
+    var gapBetweenBubbles = 15;
+    var xPadding = 20;
+    var yPadding = 100;
+    var scaling = 40;
+    
+    /* Sort the dataset to ensure the bubble are always ascending */
+    dataset = dataset.sort(function (a, b) { return (b.value - a.value);});
+
+    /* Scale the dataset */
+    var factor = minimumBubbleSize / dataset[0].value;
+    //var l = dataset.length-1;
+    //var factor = minimumBubbleSize / dataset[l].value;
+    
+    dataset.forEach(function(d) { d.value = d.value * factor; });
+
+    /* Scaling */
+
+    function getRadius(area) {
+        return Math.sqrt(area / Math.PI);
+    }
+
+    function getLabelDivSideFromArea(area) {
+        return Math.sqrt(Math.pow(2 * rScale(area), 2) / 2);
+    }
+
+    var rScale = function(input) {
+        /* Magic number here is just to get a reasonable sized smallest bubble */
+        return getRadius(input) * scaling;
+    }
+
+    /* For bubbles that are too big to centre their text, compute a better position */
+
+    function getNewXPosition(leftBubble, rightBubble) {
+
+    }
+
+    function getNewYPosition(leftBubble, rightBubble) {
+
+    }
+
+    /* Create the chart */
+
+    var svg = d3.select("div#moves-'.$post->ID.'")
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h)
+    .attr("class", "moves")
+    .attr("viewBox", "0 0 "+ w + " " + h)
+
+    /* Adjust left hand side to add on the radius of the first bubble */
+    xPaddingPlusRadius = xPadding + rScale(dataset[0].value);
+    dataset[0].xPos = xPaddingPlusRadius;
+
+    var circles = svg.selectAll("circle")
+    .data(dataset)
+    .enter()
+    .append("circle");
+
+    var accumulator = xPaddingPlusRadius;
+    
+    circles.attr("cx", function(d, i) {
+
+        if (i > 0) {
+
+            var previousRadius = rScale(dataset[i-1].value);
+            var currentRadius = rScale(d.value);
+            var increment = previousRadius + currentRadius + gapBetweenBubbles;
+            accumulator += increment;
+            d.xPos = accumulator;
+            return accumulator;
+
+        } else {
+            return xPaddingPlusRadius;
+        }
+
+    })
+    .attr("cy", function(d) {
+        //return h - rScale(d.value) - yPadding;
+        return h / 2;
+    })
+    .attr("r", function(d) {
+        return rScale(d.value);
+    })
+    .attr("class", function(d) {
+        return d.label;
+    })
+    .attr("title", function(d) {
+        return d.label;
+    })
+    .on("mouseover", function(d,i)
+    {
+        //d3.select(this).style("fill", "gold"); 
+        //showToolTip(d.label,d.x+d3.mouse(this)[0]+50,d.y+d3.mouse(this)[1],true);
+        //console.log(d3.mouse(this));
+    })
+    .on("mousemove", function(d,i)
+    {
+        //tooltipDivID.css({top:d.y+d3.mouse(this)[1],left:d.x+d3.mouse(this)[0]+50});
+        //showToolTip("<ul><li>"+data[0][i]+"<li>"+data[1][i]+"</ul>",d.x+d3.mouse(this)[0]+10,d.y+d3.mouse(this)[1]-10,true);
+        //console.log(d3.mouse(this));
+    })    
+    .on("mouseout", function()
+    {
+        //d3.select(this).style("fill", function(d) { return color(data[0][d.key]); });
+        //showToolTip(" ",0,0,false);
+    })    
+    ;
+
+    /* Place text in the circles. Could try replacing this with foreignObject */
+
+    svg.selectAll("foreignObject")
+    .data(dataset)
+    .enter()
+    .append("foreignObject")
+    .attr("x", function(d, i) {
+        if (d.xPos > w) {
+            /* Do the different thing */
+            return d.xPos - (getLabelDivSideFromArea(d.value)/2);
+        } else {
+            return d.xPos - (getLabelDivSideFromArea(d.value)/2);
+        }
+    })
+    .attr("y", function(d, i) {
+        if (labelsWithinBubbles) {
+                return h /2  - (getLabelDivSideFromArea(d.value)/2);
+        } else {
+            return h - yPadding + 20;
+        }
+    })
+    .attr("width", function(d) { return getLabelDivSideFromArea(d.value); })
+    .attr("height", function(d) { return getLabelDivSideFromArea(d.value); })
+    .append("xhtml:body")
+    .append("div")
+    .attr("style", function(d) { return "width: " + getLabelDivSideFromArea(d.value) + "px; height: " + getLabelDivSideFromArea(d.value) + "px;"; })
+    .attr("class", "labelDiv")
+    .attr("title", function(d) {
+        return d.label;
+    })
+    .html(function(d, i) { 
+        if (rScale(d.value) > 30) { 
+            return "<p class=\'label\'>" + d.circle_label + "</p>"; 
+        } else { return ""; }
+    });
+
+
+    </script>
+';
+            $content .= $moves_diagram;
+        }
+
+        return $content;
+    }
+
 }
