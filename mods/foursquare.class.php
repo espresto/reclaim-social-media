@@ -194,12 +194,16 @@ class foursquare_reclaim_module extends reclaim_module {
 
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
-
+                
+                $post_date = date('Y-m-d H:i:s', $checkin["createdAt"] + ($checkin['timeZoneOffset'] * HOUR_IN_SECONDS ) - get_option( 'gmt_offset' ) * HOUR_IN_SECONDS);
+                $post_date_gmt = date('Y-m-d H:i:s', $checkin["createdAt"]);
+                
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),
                     'post_category' => array(get_option($this->shortname.'_category')),
                     'post_format' => self::$post_format,
-                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', $checkin["createdAt"])),
+                    'post_date' => get_date_from_gmt($post_date),
+                    'post_date_gmt' => $post_date_gmt,
                     'post_content' => $content,
                     'post_title' => $title,
                     'post_type' => 'post',
