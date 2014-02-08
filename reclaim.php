@@ -80,6 +80,8 @@ class reclaim_core {
             	}
             }
         }
+        
+        $this->add_admin_ajax_handlers();
 
         add_action('admin_menu', array($this, 'admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'admin_stylesheets'));
@@ -333,6 +335,16 @@ class reclaim_core {
             in_array('the_excerpt', $GLOBALS['wp_current_filter']) ||
             in_array('get_the_excerpt', $GLOBALS['wp_current_filter']);
     }
+    
+    public function add_admin_ajax_handlers() {
+		if (is_admin()) {
+			foreach($this->mods_loaded as $mod) {
+				if ($mod['active']) {
+					$mod['instance']->add_admin_ajax_handlers();
+				}
+			}
+		}
+	}
 }
 
 add_action('init', 'reclaim_init');
