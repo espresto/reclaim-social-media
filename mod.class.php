@@ -33,13 +33,20 @@ class reclaim_module {
             <th scope="row"><?php _e('Active', 'reclaim'); ?></th>
             <td><input type="checkbox" name="<?php echo $modname; ?>_active" value="1" <?php checked(get_option($modname.'_active')); ?> />
                 <?php if (get_option($modname.'_active')) :?>
-                    <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em>
+                    <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em><br/>
                     <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
                     <input type="submit" class="button button-primary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
                     <?php $count = $this->count_posts(); ?>
                     <?php if ($count > 0) :?>
                     	<input type="submit" class="button button-primary" value="<?php _e('Remove '.$count.' Posts', 'reclaim'); ?>" name="<?php echo $modname; ?>_remove_posts" />
                     <?php endif; ?>
+                    <input type="submit" id="<?php echo $modname; ?>_count_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
+                    <span id="<?php echo $modname; ?>_spinner" class="spinner"></span>
+                    
+                    <div id="<?php echo $modname; ?>_notice" class="updated inline" style="display:none">
+						<p><strong class="message"></strong></p>
+                    </div>
+                    
                 <?php endif;?>
             </td>
         </tr>
@@ -359,4 +366,52 @@ class reclaim_module {
     public static function log($message) {
         file_put_contents(RECLAIM_PLUGIN_PATH.'/reclaim-log.txt', '['.date('c').']: '.$message."\n", FILE_APPEND);
     }
+    
+    public function add_admin_ajax_handlers() {
+		add_action( 'wp_ajax_'.$this->shortName().'_count_items', array($this, 'ajax_count_items'));
+		// todo: add actions for resync, remove posts
+		// this way it may be possible to do page-based
+		// imports which do not stretch memory and execution times
+		
+		wp_enqueue_script('jquery');
+		add_action( 'admin_print_footer_scripts', array($this, 'print_scripts'));
+	}
+	
+	public function ajax_count_items() {
+		echo $this->count_items().' ';
+		_e('items available', 'reclaim');
+		echo ', '.$this->count_posts().' ';
+		_e('posts created', 'reclaim');
+		echo '.';
+		
+		die();
+	}
+	
+	public function print_scripts() {
+		?>
+		<script type="text/javascript" >
+		jQuery(document).ready(function($j) {
+			var modname = '<?php echo($this->shortName()); ?>';
+			
+			var doPost = function(data, postingText) {
+				$j('#'+modname+'_spinner').show();
+				$j('#'+modname+'_notice .message').text(postingText);
+				
+				$j.post(ajaxurl, data, function(response){
+					$j('#'+modname+'_notice .message').text(response);
+					$j('#'+modname+'_notice').show();
+					$j('#'+modname+'_spinner').hide();
+				});
+			}
+			
+			$j('#'+modname+'_count_items').click(function() {
+				doPost({
+					action: modname+'_count_items'
+				}, '<?php _e('Counting...', 'reclaim');?>');
+				return false;
+			});
+		});
+		</script>
+		<?php		
+	}
 }
