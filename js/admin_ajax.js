@@ -153,7 +153,7 @@ jQuery(document).ready(function($) {
 		},
 	
 		run : function () {
-			this.r.ajax_start('Resync Items '+this.data.offset+'-' + Math.min(this.data.offset + this.limit, this.count) + ' of ' + this.count + '...');
+			this.r.ajax_start('Resync ' + (this.count - this.data.offset) + ' items...');
 			
 			// take these values always from config
 			this.data['limit'] = this.limit;
