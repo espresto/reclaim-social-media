@@ -297,7 +297,7 @@ class reclaim_module {
         try {
             $image_string = self::my_get_remote_content($imageurl, true);
             $headers = $image_string['headers'];
-            self::log( 'headers: '.print_r($headers, true) );
+            //self::log( 'headers: '.print_r($headers, true) );
             if ( (!substr_count($headers["content-type"], "image") &&
                  !substr_count($wp_filetype['type'], "image")) || 
                  !isset($headers) ) {
