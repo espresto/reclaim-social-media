@@ -297,7 +297,7 @@ class reclaim_module {
         try {
             $image_string = self::my_get_remote_content($imageurl, true);
             $headers = $image_string['headers'];
-            self::log( 'headers: '.print_r($headers, true) );
+            //self::log( 'headers: '.print_r($headers, true) );
             if ( (!substr_count($headers["content-type"], "image") &&
                  !substr_count($wp_filetype['type'], "image")) || 
                  !isset($headers) ) {
@@ -422,35 +422,19 @@ class reclaim_module {
 		jQuery(document).ready(function($) {
 			var modname = '<?php echo($this->shortName()); ?>';
 
-			var r = new reclaim();
-			r.init($, modname);
 			
-			$('#'+modname+'_count_all_items').click(function() {
-				r.ajax_start('<?php _e('Count items and posts...', 'reclaim');?>');
+			$('#'+modname+'_count_all_items').click(function(eventObject) {
+				var r = reclaim.getInstance(modname, eventObject);
 
-				r.ajax('count_all_items', {}, function(result) {
-					r.ajax_end(result);
-				});
+				r.count_all_items();
 				
 				return false;
 			});
 
-			$('#'+modname+'_resync_items').click(function() {
-				r.ajax_start('<?php _e('Count items...', 'reclaim');?>');
+			$('#'+modname+'_resync_items').click(function(eventObject) {
+				var r = reclaim.getInstance(modname, eventObject);
 
-				r.ajax('count_items', {}, function(result) {
-					if (isNaN(result)) {
-						reclaim.ajax_end(modname, 'item count is not a valid number. value=' + result);
-					}
-					else if (result <= 0) {
-						reclaim.ajax_end(modname, 'Not valid item count: ' + result);
-					}
-					else {
-						var resync = new reclaim.resync();
-						resync.init(r, 0, 10, result);
-						resync.run();
-					}
-				});
+				r.resync_items();
 				
 				return false;
 			});

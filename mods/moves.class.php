@@ -17,8 +17,10 @@
 */
 
 class moves_reclaim_module extends reclaim_module {
-    private static $apiurl= "https://api.moves-app.com/api/1.1/user/summary/daily?pastDays=%s&access_token=%s";
-    private static $apiurl_count= "https://api.moves-app.com/api/1.1/user/summary/daily?pastDays=%s&access_token=%s";
+    private static $apiurl = "https://api.moves-app.com/api/1.1/user/summary/daily?pastDays=%s&access_token=%s";
+    private static $apiurl_month = "https://api.moves-app.com/api/1.1/user/summary/daily/%s?&access_token=%s";
+    private static $apiurl_profile = "https://api.moves-app.com/api/1.1/user/profile?access_token=%s";
+
     // change for one-time import
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=yyyymmdd&to=yyyymmdd&&foo=%s&access_token=%s";
     // private static $apiurl= "https://api.moves-app.com/api/v1/user/summary/daily?from=20130304&to=20130331&&foo=%s&access_token=%s";
@@ -164,6 +166,63 @@ class moves_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
+    public function ajax_resync_items() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	 
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	    	
+    	if (get_option('moves_user_id') && get_option('moves_access_token') ) {
+            $month = date( "Ym", round(time() - ($offset * (60*60*24))));
+    		if ($next_url != '') {
+				$rawData = parent::import_via_curl($next_url, self::$timeout);
+			}
+			else {
+                // offset = days synced, substracting that point to month to be synced
+                // at first run: 0
+                parent::log("month: ".$month);
+    			$rawData = parent::import_via_curl(sprintf(self::$apiurl_month, $month, get_option('moves_access_token')), self::$timeout);
+    		}
+
+    		$rawData = json_decode($rawData, true);
+    		
+    		if ($rawData) {
+    			$data = self::map_data($rawData);
+    			parent::insert_posts($data);
+    			update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+
+                // calculate next url
+                $new_offset = $offset + sizeof($data);
+                $month = date( "Ym", round(strtotime($month) - (($new_offset) * (60*60*24))));
+                parent::log("strtotime(month): ". strtotime($month). " month: ".$month . " new_offset: ".$new_offset);
+    			$next_url = sprintf(self::$apiurl_month, $month, get_option('moves_access_token'));
+    			
+    			$return['result'] = array(
+    				'offset' => $new_offset,
+					// take the next pagination url instead of calculating
+					// a self one
+					'next_url' => $next_url,
+    			);
+    			$return['success'] = true;
+    		}
+    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+    	}
+    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+    	
+    	
+    	echo(json_encode($return));
+    	 
+    	die();
+    }
+
     /**
      * Maps moves summery data to wp-content data. Check https://dev.moves-app.com/docs/api_summaries for more info.
      * @param array $rawData
@@ -208,6 +267,27 @@ class moves_reclaim_module extends reclaim_module {
         return $data;
     }
     
+
+    public function count_items() {
+		if (get_option('moves_user_id') && get_option('moves_access_token') ) {
+			$rawData = parent::import_via_curl(sprintf(self::$apiurl_profile, get_option('moves_access_token')), self::$timeout);
+    		$rawData = json_decode($rawData, true);
+    		$firstdate = strtotime($rawData['profile']['firstDate']);
+            $second = 1; 
+            $minute = $second*60; 
+            $hour = $minute*60; 
+            $day = $hour*24; 
+            $week = $day*7; 
+
+            $delta = (time()-$firstdate); //29584979
+            $days = round($delta/$day); 
+    		return $days;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
     public function moves_add_reclaim_stylesheet() {
         if (get_option('reclaim_show_moves_dataset') == '1') {
 	        wp_enqueue_script( 'd3', RECLAIM_PLUGIN_URL.'/js/d3.v3.min.js' );
@@ -314,27 +394,6 @@ class moves_reclaim_module extends reclaim_module {
 	}
     </style>
     <?php
-        }
-    }
-
-    public function count_items() {
-        if (get_option('moves_user_id') && get_option('moves_access_token') ) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl_count, self::$count, get_option('moves_access_token')), self::$timeout);
-            $rawData = json_decode($rawData, true);
-
-            if (is_array($rawData)) {
-                $count = 0; 
-                foreach($rawData as $day) {
-                    if ($this->check_for_import($day)) {
-                        $count++;
-                    }
-                }
-
-                return $count;
-            }
-        }
-        else {
-            return false;
         }
     }
     

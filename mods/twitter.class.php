@@ -20,8 +20,10 @@
 class twitter_reclaim_module extends reclaim_module {
     private static $apiurl = "https://api.twitter.com/1.1/statuses/user_timeline.json";
     private static $fav_apiurl = "https://api.twitter.com/1.1/favorites/list.json";
-    private static $count = 200;
-    private static $max_import_loops = 0;
+    private static $apiurl_profile = "https://api.twitter.com/1.1/users/show.json";
+
+    private static $count = 50;
+    private static $max_import_loops = 1;
     private static $lang = 'en';
 
 //    const TWITTER_TWEET_TPL = '<blockquote class="twitter-tweet imported"><p>%s</p>%s&mdash; %s (<a href="https://twitter.com/%s/">@%s</a>) <a href="http://twitter.com/%s/status/%s">%s</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>';
@@ -234,6 +236,30 @@ class twitter_reclaim_module extends reclaim_module {
             }
         }
         return $tags;
+    }
+
+    public function count_items() {
+        $reqOptions = array(
+            'screen_name' => get_option('twitter_username'),
+            'include_entities' => "false"
+        );
+
+        $tmhOAuth = new tmhOAuth(array(
+            'consumer_key' => get_option('twitter_consumer_key'),
+            'consumer_secret' => get_option('twitter_consumer_secret'),
+            'user_token' => get_option('twitter_user_token'),
+            'user_secret' => get_option('twitter_user_secret'),
+        ));
+
+        $tmhOAuth->request('GET', self::$apiurl_profile, $reqOptions, true);
+
+        if ($tmhOAuth->response['code'] == 200) {
+            $data = json_decode($tmhOAuth->response['response'], true);
+            return $data['statuses_count'];
+        }
+        else {
+    		return false;
+        }
     }
 
     private function construct_content($entry) {
