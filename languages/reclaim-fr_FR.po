@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-02-09 11:19+0100\n"
-"PO-Revision-Date: 2014-02-09 11:19+0100\n"
+"PO-Revision-Date: 2014-02-09 11:39+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -71,7 +71,7 @@ msgstr "Calculer éléments et articles"
 
 #: mod.class.php:439
 msgid "Count items..."
-msgstr "Compter éléments..."
+msgstr "Calculer le nombre d'éléments..."
 
 #: reclaim.php:30
 msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
@@ -537,9 +537,8 @@ msgid "<p>Facebook is authorized as %s</p>"
 msgstr "<p>Connecté à Facebook comme %s</p>"
 
 #: mods/facebook.class.php:164
-#, fuzzy
 msgid "getting FB token"
-msgstr "getting FB token"
+msgstr "acquisition FB token"
 
 #: mods/facebook.class.php:179
 #, php-format
