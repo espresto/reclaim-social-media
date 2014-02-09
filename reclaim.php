@@ -241,6 +241,11 @@ class reclaim_core {
     public function display_settings() {
 ?>
     <div class="wrap">
+<?php
+        foreach($this->mods_loaded as $mod) {
+           echo '<a href="#'.$mod['name'].'">'.$mod['name'].'</a> | ';
+        }
+?>
         <div id="icon-options-general" class="icon32"></div>
         <h2><?php _e('Reclaim Social Accounts Settings', 'reclaim'); ?></h2>
         <form action="options.php" method="post">

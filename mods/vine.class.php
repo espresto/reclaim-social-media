@@ -26,7 +26,7 @@ class vine_reclaim_module extends reclaim_module {
     // api calls hav their own function
     private static $apiurl = "";
     private static $timeout = 15;
-    private static $count = 20;
+    private static $count = 10;
     private static $post_format = 'video'; // or 'status', 'aside'
 
     public function __construct() {
@@ -77,6 +77,51 @@ class vine_reclaim_module extends reclaim_module {
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
 
+    }
+
+    public function ajax_resync_items() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	 
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	    	
+        if (get_option('vine_user_id') ) {
+            $page = ($offset / self::$count) + 1;
+			parent::log($page);
+
+            $key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
+            $userId = strtok($key,'-');
+            $rawData = self::vineTimeline($userId, $key, $page);
+            //parent::log(print_r($rawData,1));
+
+            if (is_array($rawData)) {
+                $data = self::map_data($rawData);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+    			$return['result'] = array(
+    				'offset' => $offset + sizeof($data),
+					// take the next pagination url instead of calculating
+					// a self one
+					'next_url' => $next_url,
+    			);
+    			$return['success'] = true;
+            }
+    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+    		
+    	}
+    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+
+    	echo(json_encode($return));
+    	 
+    	die();
     }
 
     private function map_data($rawData) {
@@ -139,6 +184,21 @@ class vine_reclaim_module extends reclaim_module {
 
         }
         return $data;
+    }
+
+    public function count_items() {
+        if (get_option('vine_user_id') ) {
+            $key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
+            $userId = strtok($key,'-');
+            $rawData = self::vineTimeline($userId,$key);
+
+            if (is_array($rawData)) {
+                return $rawData['count'];
+            }
+            else {
+                return false;
+            }
+        }
     }
 
     private function construct_content($entry, $id, $image_url, $description) {
@@ -204,13 +264,13 @@ class vine_reclaim_module extends reclaim_module {
         curl_close($ch);
     }
 
-    private function vineTimeline($userId, $key) {
+    private function vineTimeline($userId, $key, $page = 1 ) {
         // Additional endpoints available from https://github.com/starlock/vino/wiki/API-Reference
         // old setting
-        //$url = 'https://api.vineapp.com/timelines/users/'.$userId.'?size='.self::$count;
+        // $url = 'https://api.vineapp.com/timelines/users/'.$userId.'?size='.self::$count;
         // new setting from vine.co/username -> if x-vine-client: vinewww/1.0, response 
         // includes revines
-        $url = 'https://vine.co/api/timelines/users/'.$userId.'?size='.self::$count;
+        $url = 'https://vine.co/api/timelines/users/'.$userId.'?page='.$page.'&size='.self::$count;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -223,8 +283,7 @@ class vine_reclaim_module extends reclaim_module {
         $result = json_decode(curl_exec($ch), true);
 
         if (!$result) {
-            echo curl_error($ch);
-            parent::log('curl error:'.curl_error($ch));
+            parent::log('curl error: '.curl_error($ch));
         }
         else
         {
