@@ -36,6 +36,7 @@ if (file_exists( __DIR__ . '/vendor/autoload.php')) {
 
 define('RECLAIM_UPDATE_INTERVAL', 10*60);
 define('RECLAIM_PLUGIN_PATH', dirname( __FILE__));
+define('RECLAIM_PLUGIN_URL', plugins_url('', __FILE__));
 
 class reclaim_core {
     private $mods_loaded = array();
