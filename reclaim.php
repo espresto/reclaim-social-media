@@ -243,7 +243,7 @@ class reclaim_core {
     <div class="wrap">
 <?php
         foreach($this->mods_loaded as $mod) {
-           echo '<a href="#"'.$mod['name'].'">'.$mod['name'].'</a> | ';
+           echo '<a href="#'.$mod['name'].'">'.$mod['name'].'</a> | ';
         }
 ?>
         <div id="icon-options-general" class="icon32"></div>
