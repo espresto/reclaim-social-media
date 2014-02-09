@@ -17,8 +17,8 @@
 */
 
 class foursquare_reclaim_module extends reclaim_module {
-    private static $apiurl= "https://api.foursquare.com/v2/users/self/checkins?limit=%s&oauth_token=%s&v=20140120";
-	private static $apiurl_count= "https://api.foursquare.com/v2/users/self/checkins?limit=1&oauth_token=%s&v=20140120";
+    private static $apiurl= "https://api.foursquare.com/v2/users/self/checkins?offset=%s&limit=%s&oauth_token=%s&v=20140120";
+    private static $apiurl_count= "https://api.foursquare.com/v2/users/self/checkins?limit=1&oauth_token=%s&v=20140120";
 
     private static $timeout = 15;
     private static $count = 31; // maximum 31 days
@@ -140,7 +140,7 @@ class foursquare_reclaim_module extends reclaim_module {
 
     public function import() {
         if (get_option('foursquare_user_id') && get_option('foursquare_access_token') ) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, self::$count, get_option('foursquare_access_token')), self::$timeout);
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, 0, self::$count, get_option('foursquare_access_token')), self::$timeout);
             $rawData = json_decode($rawData, true);
 
             if ($rawData) {
@@ -151,6 +151,41 @@ class foursquare_reclaim_module extends reclaim_module {
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
+    }
+    
+    public function ajax_resync_items() {
+    	$offset = intval( $_POST['offset'] );
+    	$limit = intval( $_POST['limit'] );
+    	$count = intval( $_POST['count'] );
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	
+    	if (get_option('foursquare_user_id') && get_option('foursquare_access_token') ) {
+    		$rawData = parent::import_via_curl(sprintf(self::$apiurl, $offset, $limit, get_option('foursquare_access_token')), self::$timeout);
+    		$rawData = json_decode($rawData, true);
+    	
+    		if ($rawData) {
+    			$data = $this->map_data($rawData);
+    			parent::insert_posts($data);
+    			update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+    			$return['result'] = array(
+					'offset' => $offset + sizeof($data)
+				);
+    			$return['success'] = true;
+    		}
+    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+    	}
+    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+    	
+    	echo(json_encode($return));
+    	 
+    	die();
     }
 
     /**
@@ -229,7 +264,6 @@ class foursquare_reclaim_module extends reclaim_module {
     	}
     }
     
-
     private function construct_content(array $checkin) {}
 
     /**

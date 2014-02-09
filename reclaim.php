@@ -165,6 +165,8 @@ class reclaim_core {
     }
     
     public function admin_stylesheets() {
+    	wp_register_script('admin-reclaim-script', plugins_url('js/admin_ajax.js', __FILE__), array('jquery'));
+    	wp_enqueue_script('admin-reclaim-script');
     	wp_register_style('admin-reclaim-style', plugins_url('css/style_admin.css', __FILE__));
     	wp_enqueue_style('admin-reclaim-style');
     }

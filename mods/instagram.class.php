@@ -199,6 +199,53 @@ class instagram_reclaim_module extends reclaim_module {
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
+    
+    public function ajax_resync_items() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	 
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	    	
+    	if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+    		if ($next_url != '') {
+				$rawData = parent::import_via_curl($next_url, self::$timeout);
+			}
+			else {
+    			$rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+    		}
+    		
+    		$rawData = json_decode($rawData, true);
+    		
+    		if ($rawData) {
+    			$data = self::map_data($rawData, 'instagrams');
+    			parent::insert_posts($data);
+    			update_option('reclaim_'.$this->shortname.'_instagrams_last_update', current_time('timestamp'));
+    			
+    			$return['result'] = array(
+    				'offset' => $offset + sizeof($data),
+					// take the next pagination url instead of calculating
+					// a self one
+					'next_url' => $rawData['pagination']['next_url'],
+    			);
+    			$return['success'] = true;
+    		}
+    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+    	}
+    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+    	
+    	
+    	echo(json_encode($return));
+    	 
+    	die();
+    }
 
     private function map_data($rawData, $type = "instagrams") {
         $data = array();

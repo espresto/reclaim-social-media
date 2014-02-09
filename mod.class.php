@@ -40,7 +40,8 @@ class reclaim_module {
                     <?php if ($count > 0) :?>
                     	<input type="submit" class="button button-primary" value="<?php _e('Remove '.$count.' Posts', 'reclaim'); ?>" name="<?php echo $modname; ?>_remove_posts" />
                     <?php endif; ?>
-                    <input type="submit" id="<?php echo $modname; ?>_count_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
+                    <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
+                    <input type="submit" id="<?php echo $modname; ?>_resync_items" class="button button-primary" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
                     <span id="<?php echo $modname; ?>_spinner" class="spinner"></span>
                     
                     <div id="<?php echo $modname; ?>_notice" class="updated inline" style="display:none">
@@ -368,21 +369,49 @@ class reclaim_module {
     }
     
     public function add_admin_ajax_handlers() {
+		add_action( 'wp_ajax_'.$this->shortName().'_count_all_items', array($this, 'ajax_count_all_items'));
 		add_action( 'wp_ajax_'.$this->shortName().'_count_items', array($this, 'ajax_count_items'));
+		add_action( 'wp_ajax_'.$this->shortName().'_resync_items', array($this, 'ajax_resync_items'));
 		// todo: add actions for resync, remove posts
 		// this way it may be possible to do page-based
 		// imports which do not stretch memory and execution times
 		
-		wp_enqueue_script('jquery');
 		add_action( 'admin_print_footer_scripts', array($this, 'print_scripts'));
 	}
 	
+	public function ajax_count_all_items() {
+		echo (json_encode(array(
+			'success' => true,
+			'result' => $this->count_items().' '
+            	.translate('items available', 'reclaim')
+            	.', '.$this->count_posts().' '
+            	.translate('posts created', 'reclaim')
+		)));
+		
+		die();
+	}
+	
 	public function ajax_count_items() {
-		echo $this->count_items().' ';
-		_e('items available', 'reclaim');
-		echo ', '.$this->count_posts().' ';
-		_e('posts created', 'reclaim');
-		echo '.';
+		$count = $this->count_items();
+		
+		echo(json_encode(array(
+			'success' => true,
+			'result' => $count
+		)));
+		die();
+	}
+	
+	public function ajax_resync_items() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+		
+		self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+		
+		echo(json_encode(array(
+			'success' => false,
+			'error' => 'ajax-resync is not implemented'
+		)));
 		
 		die();
 	}
@@ -390,24 +419,39 @@ class reclaim_module {
 	public function print_scripts() {
 		?>
 		<script type="text/javascript" >
-		jQuery(document).ready(function($j) {
+		jQuery(document).ready(function($) {
 			var modname = '<?php echo($this->shortName()); ?>';
+
+			var r = new reclaim();
+			r.init($, modname);
 			
-			var doPost = function(data, postingText) {
-				$j('#'+modname+'_spinner').show();
-				$j('#'+modname+'_notice .message').text(postingText);
-				
-				$j.post(ajaxurl, data, function(response){
-					$j('#'+modname+'_notice .message').text(response);
-					$j('#'+modname+'_notice').show();
-					$j('#'+modname+'_spinner').hide();
+			$('#'+modname+'_count_all_items').click(function() {
+				r.ajax_start('<?php _e('Count items and posts...', 'reclaim');?>');
+
+				r.ajax('count_all_items', {}, function(result) {
+					r.ajax_end(result);
 				});
-			}
-			
-			$j('#'+modname+'_count_items').click(function() {
-				doPost({
-					action: modname+'_count_items'
-				}, '<?php _e('Counting...', 'reclaim');?>');
+				
+				return false;
+			});
+
+			$('#'+modname+'_resync_items').click(function() {
+				r.ajax_start('<?php _e('Count items...', 'reclaim');?>');
+
+				r.ajax('count_items', {}, function(result) {
+					if (isNaN(result)) {
+						reclaim.ajax_end(modname, 'item count is not a valid number. value=' + result);
+					}
+					else if (result <= 0) {
+						reclaim.ajax_end(modname, 'Not valid item count: ' + result);
+					}
+					else {
+						var resync = new reclaim.resync();
+						resync.init(r, 0, 10, result);
+						resync.run();
+					}
+				});
+				
 				return false;
 			});
 		});
