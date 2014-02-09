@@ -179,8 +179,11 @@ class moves_reclaim_module extends reclaim_module {
                 $link = '';
                 $title = sprintf(__('Activity on %s', 'reclaim'), date(get_option('date_format'), strtotime($day["date"])));
 
-                $content = $this->construct_content($day);
-                $post_meta = $this->construct_post_meta($day);
+                $post_meta['moves_api_data'] = json_encode($day);
+                $activity_grouped = $this->construct_activity_group_array($day);
+                $post_meta['moves_group_data'] = json_encode($activity_grouped['data2']);
+                $post_meta['moves_group_data1'] = json_encode($activity_grouped['data1']);
+                $content = $this->construct_content($activity_grouped['data1']);
 
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
@@ -212,6 +215,7 @@ class moves_reclaim_module extends reclaim_module {
 
     }
     public function add_moves_styles() {
+        if ( get_option('reclaim_show_moves_dataset') == '1' ) {
     ?>
     <style type="text/css" id="moves-custom-styles">
     /* SV for moves */
@@ -235,20 +239,28 @@ class moves_reclaim_module extends reclaim_module {
 		-webkit-svg-shadow: -2px 1px 4px rgba(0, 0, 0, 0.6);
 	}
 	
-	svg circle.walking, svg circle.walking_on_treadmill {
+	svg circle.walking, svg circle.walking_on_treadmill,
+	svg text.walking {
 		fill: #00d55a;
+		text-color: #00d55a;
 	}
 
-	svg circle.cycling, svg circle.indoor_cycling {
+	svg circle.cycling, svg circle.indoor_cycling,
+	svg text.cycling {
 		fill: #00cdec;
+		text-color: #00cdec;
 	}
 	
-	svg circle.transport, svg circle.underground {
+	svg circle.transport, svg circle.underground,
+	svt text.transport {
 		fill: #848484;
+		text-color: #848484;
 	}
 
-	svg circle.running, svg circle.running_on_treadmill {
+	svg circle.running, svg circle.running_on_treadmill,
+	svg text.running {
 		fill: #f660f4;
+		text-color: #f660f4;
 	}
 	
 
@@ -282,15 +294,27 @@ class moves_reclaim_module extends reclaim_module {
 		padding: 0px;
 	}
 
-	svg .label {
+	svg .label,
+	svg.moves p.label,
+	#core-content svg p.label {
 		font-weight: normal;
 		font-family: sans-serif;
 		font-size: 9pt;
 		line-height:10pt;
 		color: rgba(255, 255, 255, 0.9);
+		margin: 0;
+		padding: 0;
+		display: block;
+		border-radius: 0;
+		text-align: center;
+		
+	}
+	span.label-small {
+		font-size:8px;
 	}
     </style>
     <?php
+        }
     }
 
     public function count_items() {
@@ -326,49 +350,50 @@ class moves_reclaim_module extends reclaim_module {
     }
     
     private function construct_content($day) {
-        if (isset($day['summary'])) {
-            $distance = 0;
-            $drive_distance = 0;
-            $description = 'ich bin heute ';
-            $description_transport ="";
-            foreach($day['summary'] as $summary) {
-                if (isset($summary['activity'])) {
-                    if ($summary['activity']=="walking") {
-                        $distance = intval($summary['distance']);
-                        if ($summary['steps'] >= 500) {
-                            $description .= number_format(intval($summary['steps']),0,',','.'). ' schritte gelaufen';
-                        }
-                        else {
-                            $description .= 'sehr wenig gelaufen';
-                        }
-                    } elseif ($summary['activity']=="running") {
-                        $distance = $distance + intval($summary['distance']);
-                        if ($summary['distance'] >= 500) {
-                            $description .= ' und ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer gerannt';
-                        }
-                    } elseif ($summary['activity']=="cycling") {
-                        $distance = $distance + intval($summary['distance']);
-                        if ($summary['distance'] >= 1000) {
-                            $description .= ' und ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer fahrrad gefahren';
-                        }
-                    } elseif ($summary['group']=="transport") {
-                        $drive_distance = intval($summary['distance']);
-                        if ($summary['distance'] >= 1000) {
-                            $description_transport .= ' für ' . number_format( (intval($summary['distance'])/1000), 1, ',', '.') . ' kilometer transportmittel benutzt';
-                            $description .= "  und habe". $description_transport;
-                        }
-                    }
-                }
-            }
-            $description .= '.';
-            if ($distance <= 500 && $description_transport != "") {
-                $description = 'ich habe mich heute kaum bewegt, habe aber '.$description_transport;
-            } elseif ($distance <= 500 && $description_transport == "") {
-                $description = 'ich habe mich heute kaum bewegt.';
-            }
+        $distance = 0;
+        $transport_distance = 0;
+        $description = "ich bin heute ";
+        $description_transport ="";
+        if (isset($day['walking']['steps']) && $day['walking']['steps'] >= 500) {
+            $distance = intval($day['walking']['distance']);
+            $description .= number_format(intval($day['walking']['steps']),0,',','.'). " schritte gelaufen";
         }
         else {
-            $description = 'ich habe mich heute kaum bewegt.';
+            $description .= "sehr wenig gelaufen";
+        }
+        if (isset($day['running']['distance']) && $day['running']['distance'] >= 500) {
+            $distance = $distance + intval($day['running']['distance']);
+            $description .= ' und ' . number_format( (intval($day['running']['distance'])/1000), 1, ',', '.') . " kilometer gerannt";
+        }
+        else {
+            $description .= "";
+        }
+        if (isset($day['cycling']['distance']) && $day['cycling']['distance'] >= 1000) {
+            $distance = $distance + intval($day['cycling']['distance']);
+            $description .= ' und ' . number_format( (intval($day['cycling']['distance'])/1000), 1, ',', '.') . " kilometer fahrrad gefahren";
+        }
+        else {
+            $description .= "";
+        }
+        if (isset($day['transport']['distance']) && $day['transport']['distance'] >= 1000) {
+            $transport_distance = intval($summary['distance']);
+            $description_transport .= ' für ' . number_format( (intval($day['transport']['distance'])/1000), 1, ',', '.') . " kilometer transportmittel benutzt";
+            $description .= "  und habe". $description_transport;
+        }
+        else {
+            $description .= "";
+            $description_transport = "";
+        }
+        $description .= '.';
+
+        if ($distance <= 500 && $description_transport != "") {
+            $description = "ich habe mich heute kaum bewegt, habe aber ".$description_transport;
+        } elseif ($distance <= 500 && $description_transport == "") {
+            $description = "ich habe mich heute kaum bewegt.";
+        }
+        
+        if ($distance == 0 && $transport_distance == 0) {
+            $description = "ich habe mich heute kaum bewegt.";
         }
 
         return $description;
@@ -404,6 +429,45 @@ class moves_reclaim_module extends reclaim_module {
         }
     }
 
+    private function construct_activity_group_array(array $day) {
+        $groups = array(
+            "cycling" => array("label" => __("Fahrradfahrt","reclaim")),
+            "running" => array("label" => __("Laufen","reclaim")),
+            "walking" => array("label" => __("Fussweg","reclaim")),
+            "transport" => array("label" => __("Verkehrsmittel","reclaim"))
+            );
+        if (isset($day['summary'])) {
+        $data = array();
+        $graph_data = array();
+        foreach ($groups as $group => $label) {
+            // filter all activity with group
+            // sum it up
+            foreach ($day['summary'] as $activityData) { 
+            	if ($activityData['group'] == $group) {
+                    unset($activityData['activity']);
+                    unset($activityData['group']);
+                    $data[$group]['group'] = $group;
+                    $data[$group]['label'] = $label['label'];
+                    foreach ($activityData as $activityDataKey => $activityDataValue) {
+                        $data[$group][$activityDataKey] = $data[$group][$activityDataKey] + $activityDataValue; // summieren pro key?
+                    }
+            	}
+            }
+        }
+        //parent::log(json_encode($data));
+            foreach ($data as $group) { 
+                $graph_data[] = $group;
+            }
+        	$data['data1'] = $data;
+        	$data['data2'] = $graph_data;
+
+            return $data;
+        }
+        else {
+            return array();
+        }
+    }
+
     public function moves_content($content = '') {
         global $post;
 
@@ -417,31 +481,32 @@ class moves_reclaim_module extends reclaim_module {
             //!is_archive() &&
             //!is_category()
         
-        if ( get_option('reclaim_show_moves_dataset') == '1' && get_post_meta($post->ID, 'moves_dataset', true) ) {
+        if ( get_option('reclaim_show_moves_dataset') == '1' && get_post_meta($post->ID, 'moves_group_data', true) ) {
             $moves_diagram = '
     <div id="moves-'.$post->ID.'"></div>
     <script>
 
     var h = 200;
-    var w = 400;
+    var w = 500;
     var minimumBubbleSize = 10;
     var labelsWithinBubbles = true;
     var title = "";
-    var dataset = '.get_post_meta($post->ID, 'moves_dataset', true).';
+    var dataset = '.get_post_meta($post->ID, 'moves_group_data', true).';
     var gapBetweenBubbles = 15;
     var xPadding = 20;
     var yPadding = 100;
     var scaling = 40;
+    var steps = false;
     
     /* Sort the dataset to ensure the bubble are always ascending */
-    dataset = dataset.sort(function (a, b) { return (b.value - a.value);});
+    dataset = dataset.sort(function (a, b) { return (b.distance - a.distance);});
 
     /* Scale the dataset */
-    var factor = minimumBubbleSize / dataset[0].value;
+    var factor = minimumBubbleSize / dataset[0].distance;
     //var l = dataset.length-1;
-    //var factor = minimumBubbleSize / dataset[l].value;
+    //var factor = minimumBubbleSize / dataset[l].distance;
     
-    dataset.forEach(function(d) { d.value = d.value * factor; });
+    dataset.forEach(function(d) { d.value = d.distance * factor; });
 
     /* Scaling */
 
@@ -480,15 +545,72 @@ class moves_reclaim_module extends reclaim_module {
     /* Adjust left hand side to add on the radius of the first bubble */
     xPaddingPlusRadius = xPadding + rScale(dataset[0].value);
     dataset[0].xPos = xPaddingPlusRadius;
-
-    var circles = svg.selectAll("circle")
+	
+	var node = svg.selectAll(".node")
     .data(dataset)
     .enter()
-    .append("circle");
+    .append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+    .on("mouseover", function(d) {
+    	d3.select(this).transition().ease("elastic")
+	        .duration(1000)
+	        .select("circle").attr("r", rScale(d.value)-1)
+	        ;
+    })
+    .on("mousemove", function(d,i)
+    {
+        //tooltipDivID.css({top:d.y+d3.mouse(this)[1],left:d.x+d3.mouse(this)[0]+50});
+        //showToolTip("<ul><li>"+data[0][i]+"<li>"+data[1][i]+"</ul>",d.x+d3.mouse(this)[0]+10,d.y+d3.mouse(this)[1]-10,true);
+        //console.log(d3.mouse(this));
+    })    
+    .on("mouseout", function(d) {
+    	d3.select(this).transition().ease("elastic")
+	        .duration(1000)
+	        .attr("transform", "scale(1)")
+	        .select("circle").attr("r", rScale(d.value))
+	        ;
+    })    
+    .on("mousedown", function(d) {
+        if (rScale(d.value) > 30 && d.group != "transport") { 
+			if (steps == false) {
+	    		d3.select(this)
+		        .select(".label")
+			    .html(function(d, i) { 
+		    	    return "<p class=\'label\'>" + (d.steps) + " <br /><span class=\'label-small\'>Schritte</span></p>"; 
+	    		});
+				d3.select(this).select("circle")
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-3)
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-1)
+	    		;
+		    	steps = true;
+		    } else {
+    			d3.select(this)
+	    	    .select(".label")
+		    	.html(function(d, i) { 
+			        return "<p class=\'label\'>" + (d.distance/1000).toFixed(1) + " <br /><span class=\'label-small\'>km</span></p>"; 
+    			})
+				d3.select(this).select("circle")
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-3)
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-1)
+	    		;
+	    		steps = false;
+		    }
+	    }
+    })    
+    ;
 
     var accumulator = xPaddingPlusRadius;
-    
-    circles.attr("cx", function(d, i) {
+    node.append("circle")
+    .attr("cx", function(d, i) {
 
         if (i > 0) {
 
@@ -512,65 +634,62 @@ class moves_reclaim_module extends reclaim_module {
         return rScale(d.value);
     })
     .attr("class", function(d) {
-        return d.label;
+        return d.group;
     })
-    .attr("title", function(d) {
-        return d.label;
-    })
-    .on("mouseover", function(d,i)
-    {
-        //d3.select(this).style("fill", "gold"); 
-        //showToolTip(d.label,d.x+d3.mouse(this)[0]+50,d.y+d3.mouse(this)[1],true);
-        //console.log(d3.mouse(this));
-    })
-    .on("mousemove", function(d,i)
-    {
-        //tooltipDivID.css({top:d.y+d3.mouse(this)[1],left:d.x+d3.mouse(this)[0]+50});
-        //showToolTip("<ul><li>"+data[0][i]+"<li>"+data[1][i]+"</ul>",d.x+d3.mouse(this)[0]+10,d.y+d3.mouse(this)[1]-10,true);
-        //console.log(d3.mouse(this));
-    })    
-    .on("mouseout", function()
-    {
-        //d3.select(this).style("fill", function(d) { return color(data[0][d.key]); });
-        //showToolTip(" ",0,0,false);
-    })    
     ;
 
     /* Place text in the circles. Could try replacing this with foreignObject */
 
-    svg.selectAll("foreignObject")
-    .data(dataset)
-    .enter()
-    .append("foreignObject")
+    node.append("foreignObject")
     .attr("x", function(d, i) {
         if (d.xPos > w) {
             /* Do the different thing */
-            return d.xPos - (getLabelDivSideFromArea(d.value)/2);
+            return d.xPos - ((getLabelDivSideFromArea(d.value)*1.2)/2);
         } else {
-            return d.xPos - (getLabelDivSideFromArea(d.value)/2);
+            return d.xPos - ((getLabelDivSideFromArea(d.value)*1.2)/2);
         }
     })
     .attr("y", function(d, i) {
         if (labelsWithinBubbles) {
-                return h /2  - (getLabelDivSideFromArea(d.value)/2);
+                return h /2  - ((getLabelDivSideFromArea(d.value)*1.2)/2);
         } else {
             return h - yPadding + 20;
         }
     })
-    .attr("width", function(d) { return getLabelDivSideFromArea(d.value); })
-    .attr("height", function(d) { return getLabelDivSideFromArea(d.value); })
+    .attr("width", function(d) { return getLabelDivSideFromArea(d.value)*1.2; })
+    .attr("height", function(d) { return getLabelDivSideFromArea(d.value)*1.2; })
     .append("xhtml:body")
     .append("div")
-    .attr("style", function(d) { return "width: " + getLabelDivSideFromArea(d.value) + "px; height: " + getLabelDivSideFromArea(d.value) + "px;"; })
+    .attr("style", function(d) { return "width: " + getLabelDivSideFromArea(d.value)*1.2 + "px; height: " + getLabelDivSideFromArea(d.value)*1.2 + "px;"; })
     .attr("class", "labelDiv")
     .attr("title", function(d) {
-        return d.label;
+        return d.label + " " + (d.distance/1000).toFixed(1) + " km";
     })
     .html(function(d, i) { 
-        if (rScale(d.value) > 30) { 
-            return "<p class=\'label\'>" + d.circle_label + "</p>"; 
+        if (rScale(d.value) > 20) { 
+            return "<p class=\'label\'>" + (d.distance/1000).toFixed(1) + " <br /><span class=\'label-small\'>km</span></p>"; 
         } else { return ""; }
-    });
+    })
+    ;
+
+
+	node.append("text")
+    .text(function(d){
+    	return d.label;
+    })
+    .attr("y", function(d) {
+        return h/2 + rScale(d.value)+10;
+    })
+    .attr("x", function(d,i){
+    	return d.xPos;
+    })
+    .attr("font-size",10)
+    .attr("class", function(d) {
+        return d.group;
+    })
+    .attr("text-anchor","middle")
+    ;
+
 
 
     </script>
