@@ -224,7 +224,7 @@ class instagram_reclaim_module extends reclaim_module {
 			}
 			else {
     			$apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
-    			$rawData = parent::import_via_curl(sprintf(self::$apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+    			$rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
     		}
     		
     		$rawData = json_decode($rawData, true);
