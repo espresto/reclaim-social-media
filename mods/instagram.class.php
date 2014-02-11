@@ -75,7 +75,7 @@ class instagram_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="instagram_import_favs" value="1" <?php checked(get_option('instagram_import_favs')); ?> />
-            <input type="submit" id="<?php echo $this->shortName(); ?>_resync_favs" class="button button-primary" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" />
+            <input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" />
             </td>
         </tr>
         <tr valign="top">
@@ -201,11 +201,10 @@ class instagram_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    public function ajax_resync_favs() {
-        self::ajax_resync_items("favs");
-    }
-    
-    public function ajax_resync_items($type = "posts") {
+    public function ajax_resync_items() {
+		// the type comes magically back from the
+		// data-resync="{type:'favs'}" - attribute of the submit-button.
+		$type = isset($_POST['type']) ? $_POST['type'] : 'posts';
 		$offset = intval( $_POST['offset'] );
 		$limit = intval( $_POST['limit'] );
 		$count = intval( $_POST['count'] );
@@ -225,7 +224,7 @@ class instagram_reclaim_module extends reclaim_module {
 			}
 			else {
     			$apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
-    			$rawData = parent::import_via_curl(sprintf(self::$apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+    			$rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
     		}
     		
     		$rawData = json_decode($rawData, true);
@@ -330,6 +329,10 @@ class instagram_reclaim_module extends reclaim_module {
     
     public function count_items($type = "posts") {
 		if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+			// when it is called from a ajax-resync, post could be set...
+			// this name 'type' should be better choosen not to break other things
+			// in wordpress maybe mod_instagram_type
+			$type = isset($_POST['type']) ? $_POST['type'] : $type;
             if ($type == "favs") { return 99999; }
 			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
     		$rawData = json_decode($rawData, true);
