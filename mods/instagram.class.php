@@ -329,6 +329,10 @@ class instagram_reclaim_module extends reclaim_module {
     
     public function count_items($type = "posts") {
 		if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+			// when it is called from a ajax-resync, post could be set...
+			// this name 'type' should be better choosen not to break other things
+			// in wordpress maybe mod_instagram_type
+			$type = isset($_POST['type']) ? $_POST['type'] : $type;
             if ($type == "favs") { return 99999; }
 			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
     		$rawData = json_decode($rawData, true);
