@@ -104,7 +104,7 @@ jQuery(document).ready(function($) {
 			}
 		},
 		
-		resync_items: function() {
+		resync_items: function(options) {
 			if (this.is_running()) {
 				this.ajax_abort();
 				
@@ -128,7 +128,7 @@ jQuery(document).ready(function($) {
 					else {
 						var resync = new reclaim.resync();
 						this.resync = resync;
-						resync.init(this, 0, 10, result);
+						resync.init(this, 0, 10, result, options);
 						resync.run();
 					}
 				}, this));
@@ -139,15 +139,23 @@ jQuery(document).ready(function($) {
 	
 	reclaim.resync = function () {};
 	reclaim.resync.prototype = {
-		init : function (reclaim, offset, limit, count) {
+		init : function (reclaim, offset, limit, count, options) {
 			this.r = reclaim;
 			this.limit = limit;
 			this.count = count;
 			this.start_date = new Date();
-			// first offset
-			this.data = {
-				offset : offset
+			
+			// clear options from field offset
+			if (options) {
+				delete options.offset;
 			}
+			
+			this.options = options;
+			
+			// first offset
+			this.data = $.extend({
+				offset : offset
+			}, this.options);
 			
 			this.aborted = false;
 		},
@@ -173,7 +181,7 @@ jQuery(document).ready(function($) {
 				else {
 					// copy the result into data and send
 					// it to the next iteration
-					this.data = $.extend(this.data, result);
+					this.data = $.extend(this.data, result, this.options);
 					this.run();
 				}
 			}, this));

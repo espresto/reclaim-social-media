@@ -75,7 +75,7 @@ class instagram_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="instagram_import_favs" value="1" <?php checked(get_option('instagram_import_favs')); ?> />
-            <input type="submit" id="<?php echo $this->shortName(); ?>_resync_favs" class="button button-primary" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" />
+            <input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" />
             </td>
         </tr>
         <tr valign="top">
@@ -201,11 +201,10 @@ class instagram_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    public function ajax_resync_favs() {
-        self::ajax_resync_items("favs");
-    }
-    
-    public function ajax_resync_items($type = "posts") {
+    public function ajax_resync_items() {
+		// the type comes magically back from the
+		// data-resync="{type:'favs'}" - attribute of the submit-button.
+		$type = isset($_POST['type']) ? $_POST['type'] : 'posts';
 		$offset = intval( $_POST['offset'] );
 		$limit = intval( $_POST['limit'] );
 		$count = intval( $_POST['count'] );

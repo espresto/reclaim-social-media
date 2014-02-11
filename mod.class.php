@@ -41,7 +41,7 @@ class reclaim_module {
                     	<input type="submit" class="button button-primary" value="<?php _e('Remove '.$count.' Posts', 'reclaim'); ?>" name="<?php echo $modname; ?>_remove_posts" />
                     <?php endif; ?>
                     <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
-                    <input type="submit" id="<?php echo $modname; ?>_resync_items" class="button button-primary" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
+                    <input type="submit" class="button button-primary <?php echo $modname; ?>_resync_items" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
                     <span id="<?php echo $modname; ?>_spinner" class="spinner"></span>
                     
                     <div id="<?php echo $modname; ?>_notice" class="updated inline" style="display:none">
@@ -431,10 +431,17 @@ class reclaim_module {
 				return false;
 			});
 
-			$('#'+modname+'_resync_items').click(function(eventObject) {
+			$('.'+modname+'_resync_items').click(function(eventObject) {
 				var r = reclaim.getInstance(modname, eventObject);
+				// the options is generated from a json-field in the
+				// dom of the clicked object:
+				// eg: data-resync="{type:'favs'}"
+				// the properties in this field are passed back to
+				// wordpress via POST-variables
+				// fieldvalues with the protected name 'offset' will be deleted.
+				var options = eval('('+$(eventObject.target).data('resync')+')');
 
-				r.resync_items();
+				r.resync_items(options);
 				
 				return false;
 			});
