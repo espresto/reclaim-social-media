@@ -17,10 +17,8 @@
 */
 
 class google_plus_reclaim_module extends reclaim_module {
-    private static $apiurl = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
-    private static $apiurl_count = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=";
-    
-    private static $count = 100; // max = 100
+    private static $apiurl = "https://www.googleapis.com/plus/v1/people/%s/activities/public/?key=%s&maxResults=%s&pageToken=%s";
+    private static $count = 10; // max = 100
     private static $timeout = 15;
     private static $post_format = 'aside'; // or 'status', 'aside'
 
@@ -58,10 +56,55 @@ class google_plus_reclaim_module extends reclaim_module {
         </tr>
 <?php
     }
+    public function ajax_resync_items() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	 
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	    	
+        if (get_option('google_api_key') && get_option('google_plus_user_id')) {
+    		// $next_url is actually the nextPageToken
+    		if ($next_url != '') {
+                $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count, $next_url), self::$timeout);
+			}
+			else {
+                $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count, ""), self::$timeout);
+    		}
+            $rawData = json_decode($rawData, true);
+
+            if (is_array($rawData) && !isset($rawdata['code'])) {
+                $data = self::map_data($rawData);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+    			$return['result'] = array(
+    				'offset' => $offset + sizeof($data),
+					// take the next pagination url instead of calculating
+					// a self one
+					'next_url' => $rawData['nextPageToken'],
+    			);
+    			$return['success'] = true;
+            }
+    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+    		
+    	}
+    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+
+    	echo(json_encode($return));
+    	 
+    	die();
+    }
 
     public function import($forceResync) {
         if (get_option('google_api_key') && get_option('google_plus_user_id')) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count), self::$timeout);
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count,""), self::$timeout);
             //parent::log(print_r($rawData,true));
             $rawData = json_decode($rawData, true);
             if (is_array($rawData) && !isset($rawdata['code'])) {
@@ -104,19 +147,9 @@ class google_plus_reclaim_module extends reclaim_module {
         }
         return $data;
     }
-    
+
     public function count_items() {
-        if (get_option('google_api_key') && get_option('google_plus_user_id')) {
-            $rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count), self::$timeout);
-            
-            $rawData = json_decode($rawData, true);
-            if (is_array($rawData) && !isset($rawdata['code'])) {
-    	    	return sizeof($rawData['items']);
-            }
-    	}
-    	else {
-    		return false;
-    	}
+                return 999999;
     }
 
     private function get_post_format($entry) {
