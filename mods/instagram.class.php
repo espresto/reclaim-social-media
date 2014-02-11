@@ -228,8 +228,7 @@ class instagram_reclaim_module extends reclaim_module {
     		}
 
     		$rawData = json_decode($rawData, true);
-    		
-    		if ($rawData) {
+    		if ($rawData['meta']['code'] == 200) {
     			$data = self::map_data($rawData, $type);
     			parent::insert_posts($data);
     			update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
@@ -241,6 +240,9 @@ class instagram_reclaim_module extends reclaim_module {
 					'next_url' => $rawData['pagination']['next_url'],
     			);
     			$return['success'] = true;
+    		}
+    		elseif (isset($rawdata['meta']['code']) != 200) {
+    		    $return['error'] = $rawData['meta']['error_message'] . " (Error code " . $rawData['meta']['code'] . ")";
     		}
     		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
     	}
