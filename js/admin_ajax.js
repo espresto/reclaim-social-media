@@ -4,13 +4,13 @@ jQuery(document).ready(function($) {
 	reclaim.instances = {};
 	
 	reclaim.getInstance = function(modname, eventObject) {
-		if (!reclaim.instances[eventObject.target.id]) {
+		if (!reclaim.instances[eventObject.target]) {
 			var r = new reclaim();
 			r.init(modname, eventObject);
-			reclaim.instances[eventObject.target.id] = r;
+			reclaim.instances[eventObject.target] = r;
 		}
 		
-		return reclaim.instances[eventObject.target.id];
+		return reclaim.instances[eventObject.target];
 	}
 	
 	reclaim.prototype = {
@@ -114,8 +114,9 @@ jQuery(document).ready(function($) {
 			}
 			else {
 				this.ajax_start('Count items...');
+				var o = $.extend({}, options);
 	
-				this.ajax('count_items', {}, $.proxy(function(result) {
+				this.ajax('count_items', o, $.proxy(function(result) {
 					if (this.is_aborted()) {
 						// do nothing
 					}
@@ -128,7 +129,7 @@ jQuery(document).ready(function($) {
 					else {
 						var resync = new reclaim.resync();
 						this.resync = resync;
-						resync.init(this, 0, 10, result, options);
+						resync.init(this, 0, 10, result, o);
 						resync.run();
 					}
 				}, this));
