@@ -75,6 +75,7 @@ class instagram_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="instagram_import_favs" value="1" <?php checked(get_option('instagram_import_favs')); ?> />
+            <input type="submit" id="<?php echo $this->shortName(); ?>_resync_favs" class="button button-primary" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" />
             </td>
         </tr>
         <tr valign="top">
@@ -176,9 +177,9 @@ class instagram_reclaim_module extends reclaim_module {
             $rawData = json_decode($rawData, true);
 
             if ($rawData) {
-            	$data = self::map_data($rawData, 'instagrams');
+            	$data = self::map_data($rawData, 'posts');
             	parent::insert_posts($data);
-            	update_option('reclaim_'.$this->shortname.'_instagrams_last_update', current_time('timestamp'));
+            	update_option('reclaim_'.$this->shortname.'_posts_last_update', current_time('timestamp'));
             	parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
             }
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
@@ -199,14 +200,18 @@ class instagram_reclaim_module extends reclaim_module {
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
+
+    public function ajax_resync_favs() {
+        self::ajax_resync_items("favs");
+    }
     
-    public function ajax_resync_items() {
+    public function ajax_resync_items($type = "posts") {
 		$offset = intval( $_POST['offset'] );
 		$limit = intval( $_POST['limit'] );
 		$count = intval( $_POST['count'] );
     	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
     
-    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	self::log($this->shortName().' ' . $type . ' resync '.$offset.'-'.($offset + $limit).':'.$count);
     	 
     	$return = array(
     		'success' => false,
@@ -219,15 +224,16 @@ class instagram_reclaim_module extends reclaim_module {
 				$rawData = parent::import_via_curl($next_url, self::$timeout);
 			}
 			else {
-    			$rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+    			$apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
+    			$rawData = parent::import_via_curl(sprintf(self::$apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
     		}
     		
     		$rawData = json_decode($rawData, true);
     		
     		if ($rawData) {
-    			$data = self::map_data($rawData, 'instagrams');
+    			$data = self::map_data($rawData, $type);
     			parent::insert_posts($data);
-    			update_option('reclaim_'.$this->shortname.'_instagrams_last_update', current_time('timestamp'));
+    			update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
     			
     			$return['result'] = array(
     				'offset' => $offset + sizeof($data),
@@ -247,7 +253,7 @@ class instagram_reclaim_module extends reclaim_module {
     	die();
     }
 
-    private function map_data($rawData, $type = "instagrams") {
+    private function map_data($rawData, $type = "posts") {
         $data = array();
         foreach($rawData['data'] as $entry){
             $id = $entry["link"];
@@ -258,7 +264,7 @@ class instagram_reclaim_module extends reclaim_module {
 
             $content = self::construct_content($entry,$id,$image_url,$title); // !
 
-            if ($type == "instagrams") {
+            if ($type == "posts") {
                 $description = $entry['caption']['text'];
                 $venueName = $entry['location']['name'];
                 if (isset($description) && isset($venueName)) {
@@ -322,8 +328,9 @@ class instagram_reclaim_module extends reclaim_module {
         return $data;
     }
     
-    public function count_items() {
+    public function count_items($type = "posts") {
 		if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+            if ($type == "favs") { return 99999; }
 			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
     		$rawData = json_decode($rawData, true);
     		return $rawData['data']['counts']['media'];
@@ -338,7 +345,7 @@ class instagram_reclaim_module extends reclaim_module {
         
         if ($entry['type']=='image') {
             $post_content_constructed = 
-                 'ich habe <a href="'.$entry['link'].'">ein instagram</a> hochgeladen.'
+                 sprintf(__('I uploaded <a href="%s">an instagram</a>.'), $entry['link'])
                 .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>';
         } else {
             $post_content_constructed = 

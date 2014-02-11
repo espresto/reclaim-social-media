@@ -372,6 +372,7 @@ class reclaim_module {
 		add_action( 'wp_ajax_'.$this->shortName().'_count_all_items', array($this, 'ajax_count_all_items'));
 		add_action( 'wp_ajax_'.$this->shortName().'_count_items', array($this, 'ajax_count_items'));
 		add_action( 'wp_ajax_'.$this->shortName().'_resync_items', array($this, 'ajax_resync_items'));
+		add_action( 'wp_ajax_'.$this->shortName().'_resync_items', array($this, 'ajax_resync_favs'));
 		// todo: add actions for resync, remove posts
 		// this way it may be possible to do page-based
 		// imports which do not stretch memory and execution times
@@ -406,11 +407,26 @@ class reclaim_module {
 		$limit = intval( $_POST['limit'] );
 		$count = intval( $_POST['count'] );
 		
-		self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
+		self::log($this->shortName().' resync posts '.$offset.'-'.($offset + $limit).':'.$count);
 		
 		echo(json_encode(array(
 			'success' => false,
-			'error' => 'ajax-resync is not implemented'
+			'error' => 'ajax resync is not implemented'
+		)));
+		
+		die();
+	}
+
+	public function ajax_resync_favs() {
+		$offset = intval( $_POST['offset'] );
+		$limit = intval( $_POST['limit'] );
+		$count = intval( $_POST['count'] );
+		
+		self::log($this->shortName().' resync favs '.$offset.'-'.($offset + $limit).':'.$count);
+		
+		echo(json_encode(array(
+			'success' => false,
+			'error' => 'ajax fav resync is not implemented'
 		)));
 		
 		die();
