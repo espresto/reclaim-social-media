@@ -439,7 +439,11 @@ class reclaim_module {
 				// the properties in this field are passed back to
 				// wordpress via POST-variables
 				// fieldvalues with the protected name 'offset' will be deleted.
-				var options = eval('('+$(eventObject.target).data('resync')+')');
+				var options = {};
+				
+				if ($(eventObject.target).data('resync')) {
+					options = eval('('+$(eventObject.target).data('resync')+')');
+				}
 
 				r.resync_items(options);
 				
