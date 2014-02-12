@@ -230,7 +230,7 @@ class foursquare_reclaim_module extends reclaim_module {
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
                 
-                $post_date = date('Y-m-d H:i:s', $checkin["createdAt"] + ($checkin['timeZoneOffset'] * HOUR_IN_SECONDS ) - get_option( 'gmt_offset' ) * HOUR_IN_SECONDS);
+                $post_date = date('Y-m-d H:i:s', $checkin["createdAt"] + ($checkin['timeZoneOffset'] * 60 ) - get_option( 'gmt_offset' ) * 3600);
                 $post_date_gmt = date('Y-m-d H:i:s', $checkin["createdAt"]);
                 
                 $data[] = array(
