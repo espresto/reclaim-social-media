@@ -361,7 +361,7 @@ class instagram_reclaim_module extends reclaim_module {
         
         if ($entry['type']=='image') {
             $post_content_constructed = 
-                 sprintf(__('I uploaded <a href="%s">an instagram</a>.'), $entry['link'])
+                 sprintf(__('I uploaded <a href="%s">an instagram</a>.', 'reclaim'), $entry['link'])
                 .'<div class="inimage">[gallery size="large" columns="1" link="file"]</div>';
         } else {
             $post_content_constructed = 
