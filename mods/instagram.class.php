@@ -18,7 +18,7 @@
 
 class instagram_reclaim_module extends reclaim_module {
     private static $apiurl= "https://api.instagram.com/v1/users/%s/media/recent/?access_token=%s&count=%s";
-	private static $fav_apiurl = "https://api.instagram.com/v1/users/self/media/liked/?foo=%s&access_token=%s&count=%s";
+    private static $fav_apiurl = "https://api.instagram.com/v1/users/self/media/liked/?foo=%s&access_token=%s&count=%s";
     private static $apiurl_count = "https://api.instagram.com/v1/users/%s/?access_token=%s";
     private static $timeout = 15;
     private static $count = 40;
@@ -133,16 +133,16 @@ class instagram_reclaim_module extends reclaim_module {
 //                $_SESSION[$this->shortname]['mod'] = $this->shortname;
 
 
-            	echo '<a class="button button-secondary" href="'
-            	.plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
-            	.'?'
-            	.'&mod='.$this->shortname
-            	.'&callbackUrl='.$callback
-            	.'">'.$link_text.'</a>';
+                echo '<a class="button button-secondary" href="'
+                .plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
+                .'?'
+                .'&mod='.$this->shortname
+                .'&callbackUrl='.$callback
+                .'">'.$link_text.'</a>';
 
             }
             else {
-            	echo _e('enter instagram app id and secret', 'reclaim');
+                echo _e('enter instagram app id and secret', 'reclaim');
             }
             ?>
             </td>
@@ -177,10 +177,10 @@ class instagram_reclaim_module extends reclaim_module {
             $rawData = json_decode($rawData, true);
 
             if ($rawData) {
-            	$data = self::map_data($rawData, 'posts');
-            	parent::insert_posts($data);
-            	update_option('reclaim_'.$this->shortname.'_posts_last_update', current_time('timestamp'));
-            	parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
+                $data = self::map_data($rawData, 'posts');
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_posts_last_update', current_time('timestamp'));
+                parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
             }
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
 
@@ -192,7 +192,7 @@ class instagram_reclaim_module extends reclaim_module {
             if ($rawData) {
                     $data = self::map_data($rawData, 'favs');
                     parent::insert_posts($data);
-            	    update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
+                    update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
                     parent::log(sprintf(__('END %s favs import', 'reclaim'), $this->shortname));
                 }
                 else parent::log(sprintf(__('%s favs returned no data. No import was done', 'reclaim'), $this->shortname));
@@ -202,56 +202,67 @@ class instagram_reclaim_module extends reclaim_module {
     }
 
     public function ajax_resync_items() {
-		// the type comes magically back from the
-		// data-resync="{type:'favs'}" - attribute of the submit-button.
-		$type = isset($_POST['type']) ? $_POST['type'] : 'posts';
-		$offset = intval( $_POST['offset'] );
-		$limit = intval( $_POST['limit'] );
-		$count = intval( $_POST['count'] );
-    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+        // the type comes magically back from the
+        // data-resync="{type:'favs'}" - attribute of the submit-button.
+        $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
+        $offset = intval( $_POST['offset'] );
+        $limit = intval( $_POST['limit'] );
+        $count = intval( $_POST['count'] );
+        $next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
     
-    	self::log($this->shortName().' ' . $type . ' resync '.$offset.'-'.($offset + $limit).':'.$count);
-    	 
-    	$return = array(
-    		'success' => false,
-    		'error' => '',
-			'result' => null
-    	);
-    	    	
-    	if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
-    		if ($next_url != '') {
-				$rawData = parent::import_via_curl($next_url, self::$timeout);
-			}
-			else {
-    			$apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
-    			$rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
-    		}
+        self::log($this->shortName().' ' . $type . ' resync '.$offset.'-'.($offset + $limit).':'.$count);
+         
+        $return = array(
+            'success' => false,
+            'error' => '',
+            'result' => null
+        );
+                
+        if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+            if ($next_url != '') {
+                $rawData = parent::import_via_curl($next_url, self::$timeout);
+            }
+            else {
+                $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
+                $rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+            }
 
-    		$rawData = json_decode($rawData, true);
-    		if ($rawData['meta']['code'] == 200) {
-    			$data = self::map_data($rawData, $type);
-    			parent::insert_posts($data);
-    			update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
-    			
-    			$return['result'] = array(
-    				'offset' => $offset + sizeof($data),
-					// take the next pagination url instead of calculating
-					// a self one
-					'next_url' => $rawData['pagination']['next_url'],
-    			);
-    			$return['success'] = true;
-    		}
-    		elseif (isset($rawdata['meta']['code']) != 200) {
-    		    $return['error'] = $rawData['meta']['error_message'] . " (Error code " . $rawData['meta']['code'] . ")";
-    		}
-    		else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
-    	}
-    	else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
-    	
-    	
-    	echo(json_encode($return));
-    	 
-    	die();
+            $rawData = json_decode($rawData, true);
+            if ($rawData['meta']['code'] == 200) {
+                $data = self::map_data($rawData, $type);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+                
+                if (!isset($rawData['pagination']['next_url'])) { 
+                    //$return['error'] = sprintf(__('%s %s import done.', 'reclaim'), $type, $this->shortname); 
+                    $return['result'] = array(
+                        // when we're done, tell ajax script the number of imported items
+                        // and that we're done (offset == count)
+                        'offset' => $offset,
+                        'count' => $offset ,
+                        'next_url' => $rawData['pagination']['next_url'],
+                    );
+                } else {
+                    $return['result'] = array(
+                        'offset' => $offset + sizeof($data),
+                        // take the next pagination url instead of calculating
+                        // a self one
+                        'next_url' => $rawData['pagination']['next_url'],
+                    );
+                }
+                $return['success'] = true;
+            }
+            elseif (isset($rawdata['meta']['code']) != 200) {
+                $return['error'] = $rawData['meta']['error_message'] . " (Error code " . $rawData['meta']['code'] . ")";
+            }
+            else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+        }
+        else $return['error'] = sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname);
+        
+        
+        echo(json_encode($return));
+         
+        die();
     }
 
     private function map_data($rawData, $type = "posts") {
@@ -269,13 +280,13 @@ class instagram_reclaim_module extends reclaim_module {
                 $description = $entry['caption']['text'];
                 $venueName = $entry['location']['name'];
                 if (isset($description) && isset($venueName)) {
-                	$title = $description . ' @ ' . $venueName;
+                    $title = $description . ' @ ' . $venueName;
                 }
                 elseif ( isset($description) && !isset($venueName)) {
-                	$title = $description;
+                    $title = $description;
                 }
                 else {
-                	$title = ' @ ' . $venueName;
+                    $title = ' @ ' . $venueName;
                 }
                 // save geo coordinates?
                 // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
@@ -330,19 +341,19 @@ class instagram_reclaim_module extends reclaim_module {
     }
     
     public function count_items($type = "posts") {
-		if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
-			// when it is called from a ajax-resync, post could be set...
-			// this name 'type' should be better choosen not to break other things
-			// in wordpress maybe mod_instagram_type
-			$type = isset($_POST['type']) ? $_POST['type'] : $type;
+        if (get_option('instagram_user_id') && get_option('instagram_access_token') ) {
+            // when it is called from a ajax-resync, post could be set...
+            // this name 'type' should be better choosen not to break other things
+            // in wordpress maybe mod_instagram_type
+            $type = isset($_POST['type']) ? $_POST['type'] : $type;
             if ($type == "favs") { return 99999; }
-			$rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
-    		$rawData = json_decode($rawData, true);
-    		return $rawData['data']['counts']['media'];
-    	}
-    	else {
-    		return false;
-    	}
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl_count, get_option('instagram_user_id'), get_option('instagram_access_token')), self::$timeout);
+            $rawData = json_decode($rawData, true);
+            return $rawData['data']['counts']['media'];
+        }
+        else {
+            return false;
+        }
     }
     
     private function construct_content($entry,$id,$image_url,$description) {
