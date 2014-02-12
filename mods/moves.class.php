@@ -306,7 +306,8 @@ class moves_reclaim_module extends reclaim_module {
 	}
 
 	svg {
-		background-color: #000;
+		/* background-color: #000; */
+		background-color: transparent;
 	}
 	
 	svg body {
@@ -332,7 +333,7 @@ class moves_reclaim_module extends reclaim_module {
 	}
 	
 	svg circle.transport, svg circle.underground,
-	svt text.transport {
+	svg text.transport {
 		fill: #848484;
 		text-color: #848484;
 	}
@@ -411,33 +412,33 @@ class moves_reclaim_module extends reclaim_module {
     private function construct_content($day) {
         $distance = 0;
         $transport_distance = 0;
-        $description = "ich bin heute ";
+        $description = __("Today I ", 'reclaim');
         $description_transport ="";
         if (isset($day['walking']['steps']) && $day['walking']['steps'] >= 500) {
             $distance = intval($day['walking']['distance']);
-            $description .= number_format(intval($day['walking']['steps']),0,',','.'). " schritte gelaufen";
+            $description .= sprintf(__("walked %s steps", 'reclaim'), number_format(intval($day['walking']['steps']),0,',','.'));
         }
         else {
-            $description .= "sehr wenig gelaufen";
+            $description .= __("didn’t walke much", 'reclaim');
         }
         if (isset($day['running']['distance']) && $day['running']['distance'] >= 500) {
             $distance = $distance + intval($day['running']['distance']);
-            $description .= ' und ' . number_format( (intval($day['running']['distance'])/1000), 1, ',', '.') . " kilometer gerannt";
+            $description .= sprintf(__(" and ran for %s kilometers", 'reclaim'), number_format( (intval($day['running']['distance'])/1000), 1, ',', '.'));
         }
         else {
             $description .= "";
         }
         if (isset($day['cycling']['distance']) && $day['cycling']['distance'] >= 1000) {
             $distance = $distance + intval($day['cycling']['distance']);
-            $description .= ' und ' . number_format( (intval($day['cycling']['distance'])/1000), 1, ',', '.') . " kilometer fahrrad gefahren";
+            $description .= sprintf(__(" and rode bicyce for %s kilometers", 'reclaim'), number_format( (intval($day['cycling']['distance'])/1000), 1, ',', '.'));
         }
         else {
             $description .= "";
         }
         if (isset($day['transport']['distance']) && $day['transport']['distance'] >= 1000) {
             $transport_distance = intval($summary['distance']);
-            $description_transport .= ' für ' . number_format( (intval($day['transport']['distance'])/1000), 1, ',', '.') . " kilometer transportmittel benutzt";
-            $description .= "  und habe". $description_transport;
+            // 
+            $description .= sprintf(__(" and used transport for %s kilometers", 'reclaim'), number_format( (intval($day['transport']['distance'])/1000), 1, ',', '.'));
         }
         else {
             $description .= "";
@@ -446,13 +447,13 @@ class moves_reclaim_module extends reclaim_module {
         $description .= '.';
 
         if ($distance <= 500 && $description_transport != "") {
-            $description = "ich habe mich heute kaum bewegt, habe aber ".$description_transport;
+            $description = sprintf(__("I hardly moved today, but i %s.", 'reclaim'), $description_transport); 
         } elseif ($distance <= 500 && $description_transport == "") {
-            $description = "ich habe mich heute kaum bewegt.";
+            $description = __("I hardly moved today", 'reclaim');
         }
         
         if ($distance == 0 && $transport_distance == 0) {
-            $description = "ich habe mich heute kaum bewegt.";
+            $description = __("I hardly moved today", 'reclaim');
         }
 
         return $description;
@@ -490,10 +491,10 @@ class moves_reclaim_module extends reclaim_module {
 
     private function construct_activity_group_array(array $day) {
         $groups = array(
-            "cycling" => array("label" => __("Fahrradfahrt","reclaim")),
-            "running" => array("label" => __("Laufen","reclaim")),
-            "walking" => array("label" => __("Fussweg","reclaim")),
-            "transport" => array("label" => __("Verkehrsmittel","reclaim"))
+            "cycling" => array("label" => __("cycling","reclaim")), // 
+            "running" => array("label" => __("running","reclaim")), // 
+            "walking" => array("label" => __("walking","reclaim")), // 
+            "transport" => array("label" => __("transport","reclaim")) // 
             );
         if (isset($day['summary'])) {
         $data = array();
@@ -554,7 +555,7 @@ class moves_reclaim_module extends reclaim_module {
     var gapBetweenBubbles = 15;
     var xPadding = 20;
     var yPadding = 100;
-    var scaling = 40;
+    var scaling = 45;
     var steps = false;
     
     /* Sort the dataset to ensure the bubble are always ascending */
@@ -610,7 +611,7 @@ class moves_reclaim_module extends reclaim_module {
     .enter()
     .append("g")
     .attr("class", "node")
-    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+    //.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
     .on("mouseover", function(d) {
     	d3.select(this).transition().ease("elastic")
 	        .duration(1000)
@@ -636,7 +637,7 @@ class moves_reclaim_module extends reclaim_module {
 	    		d3.select(this)
 		        .select(".label")
 			    .html(function(d, i) { 
-		    	    return "<p class=\'label\'>" + (d.steps) + " <br /><span class=\'label-small\'>Schritte</span></p>"; 
+		    	    return "<p class=\'label\'>" + (d.steps) + " <br /><span class=\'label-small\'>'.__("Steps", 'reclaim').'</span></p>"; 
 	    		});
 				d3.select(this).select("circle")
 				.transition().ease("elastic")
