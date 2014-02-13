@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-02-13 08:39+0100\n"
-"PO-Revision-Date: 2014-02-13 08:41+0100\n"
+"PO-Revision-Date: 2014-02-13 09:05+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -149,7 +149,7 @@ msgstr ""
 #: mods/goodreads.class.php:73 mods/vine.class.php:75
 #, php-format
 msgid "no %s data"
-msgstr "no %s data"
+msgstr "Keine %s Daten"
 
 #: mods/bookmarks.class.php:87 mods/facebook.class.php:213
 #: mods/flickr.class.php:121 mods/foursquare.class.php:153
@@ -161,7 +161,7 @@ msgstr "no %s data"
 #: mods/vine.class.php:120 mods/youtube.class.php:100
 #, php-format
 msgid "%s user data missing. No import was done"
-msgstr "%s user data missing. No import was done"
+msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
 
 #: mods/bookmarks.class.php:148
 #, php-format
@@ -204,7 +204,7 @@ msgstr "Nochmal anmelden"
 
 #: mods/facebook.class.php:164
 msgid "getting FB token"
-msgstr "getting FB token"
+msgstr "Hole FB-Token"
 
 #: mods/facebook.class.php:179
 #, php-format
@@ -214,12 +214,12 @@ msgstr "GETTING for %s from %s"
 #: mods/facebook.class.php:203
 #, php-format
 msgid "%s ended with an error. Aborted getting %s"
-msgstr "%s ended with an error. Aborted getting %s"
+msgstr "%s schloss mit einem Fehler ab. Abgebrochen während %s"
 
 #: mods/facebook.class.php:206
 #, php-format
 msgid "%s ended with an error. Continue anyway with %s"
-msgstr "%s ended with an error. Continue anyway with %s"
+msgstr "%s schloss mit einem Fehler ab. Fahre fort mit %s"
 
 #: mods/facebook.class.php:368
 msgid "Facebook activity"
@@ -227,7 +227,7 @@ msgstr "Facebook Aktivität"
 
 #: mods/facebook.class.php:392
 msgid "multiple items"
-msgstr "multiple items"
+msgstr "mehrfache Elemente"
 
 #: mods/facebook.class.php:396
 #, php-format
@@ -285,7 +285,7 @@ msgstr "Die Foursquare App ID und Secret eingeben"
 #: mods/moves.class.php:216 mods/vine.class.php:117 mods/youtube.class.php:74
 #, php-format
 msgid "%s returned no data. No import was done"
-msgstr "%s returned no data. No import was done"
+msgstr "%s gab keine Daten zurück. Kein Import ausgeführt."
 
 #: mods/foursquare.class.php:214
 #, php-format
@@ -490,7 +490,7 @@ msgstr " und %s Kilometer gerannt"
 #: mods/moves.class.php:433
 #, php-format
 msgid " and rode bicyce for %s kilometers"
-msgstr " und %s Kilometer fahrrad gefahren"
+msgstr " und %s Kilometer Fahrrad gefahren"
 
 #: mods/moves.class.php:441
 #, php-format
