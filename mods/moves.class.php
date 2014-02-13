@@ -557,6 +557,7 @@ class moves_reclaim_module extends reclaim_module {
     var yPadding = 100;
     var scaling = 45;
     var steps = false;
+    var distance = true;
     
     /* Sort the dataset to ensure the bubble are always ascending */
     dataset = dataset.sort(function (a, b) { return (b.distance - a.distance);});
@@ -632,7 +633,7 @@ class moves_reclaim_module extends reclaim_module {
 	        ;
     })    
     .on("mousedown", function(d) {
-        if (rScale(d.value) > 30 && d.group != "transport") { 
+        if (rScale(d.value) > 30 && (d.group == "walking" || d.group == "running")) { 
 			if (steps == false) {
 	    		d3.select(this)
 		        .select(".label")
@@ -665,8 +666,41 @@ class moves_reclaim_module extends reclaim_module {
 	    		steps = false;
 		    }
 	    }
-    })    
-    ;
+        if (rScale(d.value) > 30 && (d.group == "transport" || d.group == "cycling")) { 
+			if (distance == false) {
+	    		d3.select(this)
+		        .select(".label")
+			    .html(function(d, i) { 
+		    	    return "<p class=\'label\'>" + (d.distance/1000).toFixed(1) + " <br /><span class=\'label-small\'>km</span></p>"; 
+	    		});
+				d3.select(this).select("circle")
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-3)
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-1)
+	    		;
+		    	distance = true;
+		    } else {
+    			d3.select(this)
+	    	    .select(".label")
+		    	.html(function(d, i) { 
+			        return "<p class=\'label\'>" + ("0" + Math.floor(d.duration/(60*60))).slice(-2) + ":" +  ("0" + (Math.floor(d.duration/60)%60)).slice(-2) + " '.__("h", "reclaim").'</p>"; 
+    			})
+				d3.select(this).select("circle")
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-3)
+				.transition().ease("elastic")
+		        .duration(100)
+		        .attr("r", rScale(d.value)-1)
+	    		;
+	    		distance = false;
+		    }
+
+		}
+    });
 
     var accumulator = xPaddingPlusRadius;
     node.append("circle")

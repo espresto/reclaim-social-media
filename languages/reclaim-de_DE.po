@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-12 14:53+0100\n"
-"PO-Revision-Date: 2014-02-12 14:53+0100\n"
+"POT-Creation-Date: 2014-02-13 08:39+0100\n"
+"PO-Revision-Date: 2014-02-13 08:41+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -485,17 +485,17 @@ msgstr "sehr wenig gelaufen"
 #: mods/moves.class.php:426
 #, php-format
 msgid " and ran for %s kilometers"
-msgstr " und %s kilometer gerannt"
+msgstr " und %s Kilometer gerannt"
 
 #: mods/moves.class.php:433
 #, php-format
 msgid " and rode bicyce for %s kilometers"
-msgstr " und %s kilometer fahrrad gefahren"
+msgstr " und %s Kilometer fahrrad gefahren"
 
 #: mods/moves.class.php:441
 #, php-format
 msgid " and used transport for %s kilometers"
-msgstr "und habe für %s kilometer transportmittel benutzt"
+msgstr " und habe für %s Kilometer Transportmittel benutzt"
 
 #: mods/moves.class.php:450
 #, php-format
@@ -522,9 +522,13 @@ msgstr "Fussweg"
 msgid "transport"
 msgstr "Verkehrsmittel"
 
-#: mods/moves.class.php:640
+#: mods/moves.class.php:641
 msgid "Steps"
 msgstr "Schritte"
+
+#: mods/moves.class.php:689
+msgid "h"
+msgstr "h"
 
 #: mods/twitter.class.php:50
 msgid "Twitter"
