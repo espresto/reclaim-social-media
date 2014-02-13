@@ -419,7 +419,7 @@ class moves_reclaim_module extends reclaim_module {
             $description .= sprintf(__("walked %s steps", 'reclaim'), number_format(intval($day['walking']['steps']),0,',','.'));
         }
         else {
-            $description .= __("didn’t walke much", 'reclaim');
+            $description .= __("didn’t walk much", 'reclaim');
         }
         if (isset($day['running']['distance']) && $day['running']['distance'] >= 500) {
             $distance = $distance + intval($day['running']['distance']);
@@ -430,7 +430,7 @@ class moves_reclaim_module extends reclaim_module {
         }
         if (isset($day['cycling']['distance']) && $day['cycling']['distance'] >= 1000) {
             $distance = $distance + intval($day['cycling']['distance']);
-            $description .= sprintf(__(" and rode bicyce for %s kilometers", 'reclaim'), number_format( (intval($day['cycling']['distance'])/1000), 1, ',', '.'));
+            $description .= sprintf(__(" and rode bicycle for %s kilometers", 'reclaim'), number_format( (intval($day['cycling']['distance'])/1000), 1, ',', '.'));
         }
         else {
             $description .= "";
