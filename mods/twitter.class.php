@@ -22,7 +22,8 @@ class twitter_reclaim_module extends reclaim_module {
     private static $fav_apiurl = "https://api.twitter.com/1.1/favorites/list.json";
     private static $apiurl_profile = "https://api.twitter.com/1.1/users/show.json";
 
-    private static $count = 50;
+    private static $count = 50; // max 200
+    private static $fav_count = 100; // if we choose less, we get "Rate limit exceeded" too soon
     private static $max_import_loops = 1;
     private static $lang = 'en';
 
@@ -55,6 +56,7 @@ class twitter_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="twitter_import_favs" value="1" <?php checked(get_option('twitter_import_favs')); ?> />
+            <?php if (get_option('twitter_import_favs')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
             </td>
         </tr>
         <tr valign="top">
@@ -88,7 +90,7 @@ class twitter_reclaim_module extends reclaim_module {
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
 
             parent::log(sprintf(__('starting %s import', 'reclaim'), $this->shortname));
-            self::import_tweets($forceResync, "tweets");
+            self::import_tweets($forceResync, "posts");
             if (get_option('twitter_import_favs')) {
                 parent::log(sprintf(__('starting %s-favs import', 'reclaim'), $this->shortname));
                 self::import_tweets($forceResync, "favs");
@@ -97,7 +99,83 @@ class twitter_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function import_tweets( $forceResync, $type = "tweets" ) {
+    public function ajax_resync_items() {
+        $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
+    	$offset = intval( $_POST['offset'] );
+    	$limit = intval( $_POST['limit'] );
+    	$count = intval( $_POST['count'] );
+    	$lastid = isset($_POST['next_url']) ? $_POST['next_url'] : null;
+    
+    	self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count . ' lastid: ' . $lastid);
+    	
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	
+        if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
+            $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
+            $count_ = ($type == 'posts' ? self::$count : self::$fav_count);
+            $reqOptions = array(
+                'lang' => substr(get_bloginfo('language'), 0, 2),
+                'count' => $count_,
+                'screen_name' => get_option('twitter_username'),
+                'include_rts' => "false",
+                'exclude_replies' => "true",
+                'include_entities' => "true"
+            );
+            if (isset($lastid)) {
+                $reqOptions['max_id'] = $lastid;
+            }
+            $tmhOAuth = new tmhOAuth(array(
+                'consumer_key' => get_option('twitter_consumer_key'),
+                'consumer_secret' => get_option('twitter_consumer_secret'),
+                'user_token' => get_option('twitter_user_token'),
+                'user_secret' => get_option('twitter_user_secret'),
+            ));
+            $tmhOAuth->request('GET', $apiurl_, $reqOptions, true);
+    	
+            if ($tmhOAuth->response['code'] == 200) {
+                $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
+    			parent::insert_posts($data);
+    			update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+                if ($offset == 0) {
+                    // store the last-seen-id, which is the first message of the first request
+                    update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $data[0]["ext_guid"]);
+                }
+                $lastid = $data[count($data)-1]["ext_guid"];
+    			$return['result'] = array(
+					'offset' => $offset + sizeof($data),
+					// use last seen id instead of url
+					'next_url' => $lastid,
+				);
+    			$return['success'] = true;
+    		}
+            elseif ($tmhOAuth->response['code'] != 200) { //&& $offset != 0
+                /*
+                $return['result'] = array(
+                    // when we're done, tell ajax script the number of imported items
+                    // and that we're done (offset == count)
+                    'offset' => $offset,
+                    'count' => $offset ,
+                    'next_url' => $lastid,
+                );
+                */
+                $errors = json_decode($tmhOAuth->response['response'], true);
+                $return['error'] = $errors['errors'][0]['message'] . " (Error code " . $errors['errors'][0]['code'] . ")";
+                
+            }
+            else $return['error'] = sprintf(__('%s %s returned no data. No import was done', 'reclaim'), $this->shortname, $type);
+        }
+        else $return['error'] = sprintf(__('%s %s user data missing. No import was done', 'reclaim'), $this->shortname, $type);
+
+    	echo(json_encode($return));
+    	 
+    	die();
+    }
+
+    private function import_tweets( $forceResync, $type = "posts" ) {
 
             $lastseenid = get_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id');
             $reqOptions = array(
@@ -108,10 +186,10 @@ class twitter_reclaim_module extends reclaim_module {
                 'exclude_replies' => "true",
                 'include_entities' => "true"
             );
-            if (strlen($lastseenid) > 0 && !$forceResync) {
+            if (strlen($lastseenid) > 0 && !$forceResync) { //&& $type == "posts" ?
                 $reqOptions['since_id'] = $lastseenid;
             }
-            $i = 0;
+            $i = 1;
             do {
                 $tmhOAuth = new tmhOAuth(array(
                     'consumer_key' => get_option('twitter_consumer_key'),
@@ -123,7 +201,7 @@ class twitter_reclaim_module extends reclaim_module {
                 if (isset($lastid)) {
                     $reqOptions['max_id'] = $lastid;
                 }
-                if ($type == "tweets") {
+                if ($type == "posts") {
                     $tmhOAuth->request('GET', self::$apiurl, $reqOptions, true);
                 }
                 else {
@@ -156,7 +234,7 @@ class twitter_reclaim_module extends reclaim_module {
             update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $lastseenid);
             }
 
-    private function map_data($rawData, $type = "tweets") {
+    private function map_data($rawData, $type = "posts") {
         $data = array();
         $tags = array();
         foreach($rawData as $entry){
@@ -174,7 +252,7 @@ class twitter_reclaim_module extends reclaim_module {
             unset($post_meta["geo_latitude"]);
             unset($post_meta["geo_longitude"]);
 
-            if ($type == "tweets") {
+            if ($type == "posts") {
                 // save geo coordinates?
                 // "location":{"latitude":52.546969779,"name":"Simit Evi - Caf\u00e9 \u0026 Simit House","longitude":13.357669574,"id":17207108},
                 // http://codex.wordpress.org/Geodata
@@ -214,7 +292,7 @@ class twitter_reclaim_module extends reclaim_module {
                 'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($entry["created_at"]))),
                 'post_format' => $post_format,
                 'post_content'   => $post_content,
-                'post_title' => $title,
+                'post_title' => sanitize_text_field($title),
                 'post_type' => 'post',
                 'post_status' => 'publish',
                 'tags_input' => $tags,
@@ -239,6 +317,8 @@ class twitter_reclaim_module extends reclaim_module {
     }
 
     public function count_items() {
+        $type = isset($_POST['type']) ? $_POST['type'] : $type;
+        if ($type == "favs") { return 99999; }
         $reqOptions = array(
             'screen_name' => get_option('twitter_username'),
             'include_entities' => "false"
