@@ -85,20 +85,23 @@ class twitter_reclaim_module extends reclaim_module {
         </tr>
 <?php
     }
-
+    
+    // called from mod.class.php for auto syncing and force resync
+    // calls resync_items()
     public function import($forceResync) {
         if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
 
             parent::log(sprintf(__('starting %s import', 'reclaim'), $this->shortname));
-            self::import_tweets($forceResync, "posts");
+            self::resync_items($forceResync, "posts");
             if (get_option('twitter_import_favs')) {
                 parent::log(sprintf(__('starting %s-favs import', 'reclaim'), $this->shortname));
-                self::import_tweets($forceResync, "favs");
+                self::resync_items($forceResync, "favs");
             }
         }
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
+    // called from ajax sync, calls import_tweet()
     public function ajax_resync_items() {
         $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
     	$offset = intval( $_POST['offset'] );
@@ -114,7 +117,8 @@ class twitter_reclaim_module extends reclaim_module {
 			'result' => null
     	);
     	
-        if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
+        if (get_option('twitter_consumer_key') && get_option('twitter_consumer_secret') 
+            && get_option('twitter_user_token') && get_option('twitter_user_secret')) {
             $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
             $count_ = ($type == 'posts' ? self::$count : self::$fav_count);
             $reqOptions = array(
@@ -128,45 +132,8 @@ class twitter_reclaim_module extends reclaim_module {
             if (isset($lastid)) {
                 $reqOptions['max_id'] = $lastid;
             }
-            $tmhOAuth = new tmhOAuth(array(
-                'consumer_key' => get_option('twitter_consumer_key'),
-                'consumer_secret' => get_option('twitter_consumer_secret'),
-                'user_token' => get_option('twitter_user_token'),
-                'user_secret' => get_option('twitter_user_secret'),
-            ));
-            $tmhOAuth->request('GET', $apiurl_, $reqOptions, true);
-    	
-            if ($tmhOAuth->response['code'] == 200) {
-                $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
-    			parent::insert_posts($data);
-    			update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
-                if ($offset == 0) {
-                    // store the last-seen-id, which is the first message of the first request
-                    update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $data[0]["ext_guid"]);
-                }
-                $lastid = $data[count($data)-1]["ext_guid"];
-    			$return['result'] = array(
-					'offset' => $offset + sizeof($data),
-					// use last seen id instead of url
-					'next_url' => $lastid,
-				);
-    			$return['success'] = true;
-    		}
-            elseif ($tmhOAuth->response['code'] != 200) { //&& $offset != 0
-                /*
-                $return['result'] = array(
-                    // when we're done, tell ajax script the number of imported items
-                    // and that we're done (offset == count)
-                    'offset' => $offset,
-                    'count' => $offset ,
-                    'next_url' => $lastid,
-                );
-                */
-                $errors = json_decode($tmhOAuth->response['response'], true);
-                $return['error'] = $errors['errors'][0]['message'] . " (Error code " . $errors['errors'][0]['code'] . ")";
-                
-            }
-            else $return['error'] = sprintf(__('%s %s returned no data. No import was done', 'reclaim'), $this->shortname, $type);
+            //make API call
+            $return = self::import_tweets($apiurl_, $reqOptions, $type);
         }
         else $return['error'] = sprintf(__('%s %s user data missing. No import was done', 'reclaim'), $this->shortname, $type);
 
@@ -175,7 +142,8 @@ class twitter_reclaim_module extends reclaim_module {
     	die();
     }
 
-    private function import_tweets( $forceResync, $type = "posts" ) {
+    // called from import(), uses import_tweet()
+    private function resync_items( $forceResync, $type = "posts" ) {
 
             $lastseenid = get_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id');
             $reqOptions = array(
@@ -191,48 +159,78 @@ class twitter_reclaim_module extends reclaim_module {
             }
             $i = 1;
             do {
-                $tmhOAuth = new tmhOAuth(array(
-                    'consumer_key' => get_option('twitter_consumer_key'),
-                    'consumer_secret' => get_option('twitter_consumer_secret'),
-                    'user_token' => get_option('twitter_user_token'),
-                    'user_secret' => get_option('twitter_user_secret'),
-                ));
-
+                $return = array(
+                    'success' => false,
+                    'error' => '',
+                    'result' => null,
+                    'reqOk' => false
+                );
                 if (isset($lastid)) {
                     $reqOptions['max_id'] = $lastid;
                 }
-                if ($type == "posts") {
-                    $tmhOAuth->request('GET', self::$apiurl, $reqOptions, true);
-                }
-                else {
-                    $tmhOAuth->request('GET', self::$fav_apiurl, $reqOptions, true);
-                }
-
-                if ($tmhOAuth->response['code'] == 200) {
-                    $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
-                    parent::insert_posts($data);
-
-                    $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $lastid;
-                    if ( self::$max_import_loops > 0 && $i >= self::$max_import_loops )
-                        $reqOk = false;
-
-                    if (!isset($lastid) && $reqOk) {
-                        // store the last-seen-id, which is the first message of the first request
-                        $lastseenid = $data[0]["ext_guid"];
-                    }
-                    $lastid = $data[count($data)-1]["ext_guid"];
-                    parent::log(sprintf(__('Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in batch: %s, req-ok: %d', 'reclaim'), $type, count($data), $lastseenid, $lastid, $reqOk));
-                }
-                else {
-                    $reqOk = false;
-                    parent::log(sprintf(__('GET failed with: %s', 'reclaim'), $tmhOAuth->response['code']));
-                }
+                $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
+                //make API call
+                $return = self::import_tweets($apiurl_, $reqOptions, $type);
+                $reqOk = $return['result']['reqOk'];
+                $reqOk = (self::$max_import_loops > 0 && $i >= self::$max_import_loops ? false : $reqOk);
+                $reqOK = (isset($return['error']) ? false : $reqOk);
+                // store the last-seen-id, which is the first message of the first request
+                $lastseenid = (!isset($lastid) && $reqOk ? $lastseenid = $data[0]["ext_guid"] : null);
+                $lastid = $return['result']['next_url'];
+                parent::log(sprintf(__('Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in batch: %s, req-ok: %d, error: %s', 'reclaim'), $type, $return['result']['offset'], $lastseenid, $lastid, $reqOk, $return['error']));
                 $i++;
             } while ($reqOk);
 
             update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
             update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $lastseenid);
             }
+
+    // utility function that makes the actual API calls for ajax_resync_items() and resync_items ()
+    private function import_tweets($apiurl_, $reqOptions, $type = "posts") {
+        if (!isset($reqOptions)) { } // set standard
+        $tmhOAuth = new tmhOAuth(array(
+            'consumer_key' => get_option('twitter_consumer_key'),
+            'consumer_secret' => get_option('twitter_consumer_secret'),
+            'user_token' => get_option('twitter_user_token'),
+            'user_secret' => get_option('twitter_user_secret'),
+        ));
+        $tmhOAuth->request('GET', $apiurl_, $reqOptions, true);
+        if ($tmhOAuth->response['code'] == 200) {
+            $data = self::map_data(json_decode($tmhOAuth->response['response'], true), $type);
+    		parent::insert_posts($data);
+    		update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+            if ($offset == 0) {
+                // store the last-seen-id, which is the first message of the first request
+                update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $data[0]["ext_guid"]);
+            }
+            $reqOk = count($data) > 0 && $data[count($data)-1]["ext_guid"] != $reqOptions['max_id'];
+            $lastid = $data[count($data)-1]["ext_guid"];
+
+    		$return['result'] = array(
+				'offset' => $offset + sizeof($data),
+				// use last seen id instead of url
+				'next_url' => $lastid,
+				'reqOk' => $reqOk,
+			);
+    		$return['success'] = true;
+		}
+        elseif ($tmhOAuth->response['code'] != 200) { //&& $offset != 0
+            /*
+            $return['result'] = array(
+                // when we're done, tell ajax script the number of imported items
+                // and that we're done (offset == count)
+                'offset' => $offset,
+                'count' => $offset ,
+                'next_url' => $lastid,
+            );
+            */
+            $errors = json_decode($tmhOAuth->response['response'], true);
+            $return['error'] = $errors['errors'][0]['message'] . " (Error code " . $errors['errors'][0]['code'] . ")";
+        }
+        else $return['error'] = sprintf(__('%s %s returned no data. No import was done', 'reclaim'), $this->shortname, $type);
+        
+        return $return;
+    }
 
     private function map_data($rawData, $type = "posts") {
         $data = array();
