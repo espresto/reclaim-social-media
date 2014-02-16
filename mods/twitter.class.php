@@ -133,7 +133,7 @@ class twitter_reclaim_module extends reclaim_module {
                 $reqOptions['max_id'] = $lastid;
             }
             //make API call
-            $return = self::import_tweets($apiurl_, $reqOptions, $type);
+            $return = self::import_tweets($apiurl_, $reqOptions, $type, $offset);
         }
         else $return['error'] = sprintf(__('%s %s user data missing. No import was done', 'reclaim'), $this->shortname, $type);
 
@@ -158,6 +158,7 @@ class twitter_reclaim_module extends reclaim_module {
                 $reqOptions['since_id'] = $lastseenid;
             }
             $i = 1;
+            $offset = 0;
             do {
                 $return = array(
                     'success' => false,
@@ -170,7 +171,10 @@ class twitter_reclaim_module extends reclaim_module {
                 }
                 $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
                 //make API call
-                $return = self::import_tweets($apiurl_, $reqOptions, $type);
+                $return = self::import_tweets($apiurl_, $reqOptions, $type, $offset);
+                // $offset = 0 sets las_seen_id in first loop. no further use of $offset here
+                // lets run with it anyways and set it for next loop, if there is one
+                $offset = $return['result']['offset'];
                 $reqOk = $return['result']['reqOk'];
                 $reqOk = (self::$max_import_loops > 0 && $i >= self::$max_import_loops ? false : $reqOk);
                 $reqOK = (isset($return['error']) ? false : $reqOk);
@@ -186,7 +190,7 @@ class twitter_reclaim_module extends reclaim_module {
             }
 
     // utility function that makes the actual API calls for ajax_resync_items() and resync_items ()
-    private function import_tweets($apiurl_, $reqOptions, $type = "posts") {
+    private function import_tweets($apiurl_, $reqOptions, $type = "posts", $offset = 0) {
         if (!isset($reqOptions)) { } // set standard
         $tmhOAuth = new tmhOAuth(array(
             'consumer_key' => get_option('twitter_consumer_key'),
