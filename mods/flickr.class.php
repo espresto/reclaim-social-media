@@ -21,7 +21,7 @@ class flickr_reclaim_module extends reclaim_module {
     public RSS, gets 20 last images of a user
 */  
     private static $feedurl = "http://www.flickr.com/services/feeds/photos_public.gne?id=%s&lang=%s&format=json";
-    private static $apiurl  = "http://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos&user_id=%s&per_page=%s&&page=%s&format=json&api_key=%s&extras=description,license,date_upload,date_taken,owner_name,icon_server,original_format,last_update,geo,tags,machine_tags,o_dims,views,media,url_l,url_o";
+    private static $apiurl  = "http://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos&user_id=%s&per_page=%s&page=%s&format=json&api_key=%s&extras=description,license,date_upload,date_taken,owner_name,icon_server,original_format,last_update,geo,tags,machine_tags,o_dims,views,media,url_l,url_o";
 
 /*
     querying the API requires an API-key, but gets more than 20 images. in fact
@@ -37,15 +37,7 @@ class flickr_reclaim_module extends reclaim_module {
 
 */
 
-//    private static $apiurl = "http://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos";
-/*
-	$apiurl = "http://api.flickr.com/services/rest/?method=flickr.people.getPublicPhotos"
-	."&user_id=".$userid
-	."&per_page=".$count."&page=1&format=feed-atom_10"
-	."&api_key=".$flickr_api_key;
-*/
-
-    private static $count = 20; //maximum für flickr RSS
+    private static $count = 10; // maximum für flickr RSS: 20
     private static $lang = 'de-de';
     private static $timeout = 15;
     private static $post_format = 'image'; // or 'status', 'aside'
@@ -80,7 +72,7 @@ class flickr_reclaim_module extends reclaim_module {
             If you don't have a flickr app yet, <a href="http://www.flickr.com/services/apps/create/apply">apply for a noncommercial app key</a>.
             After successful registration, click on "view app key" and copy it here.
             This will pull your public photos only.</p>
-            <p class="description">If you don't enter an API key, only up to 50 Flickr will be copied.</p>
+            <p class="description">If you don't enter an API key, only the latest 20 pictures will be copied and the full ajax sync won't work.</p>
 
             </td>
         </tr>
@@ -121,6 +113,70 @@ class flickr_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
 
     }
+
+    public function ajax_resync_items() {
+        // the type comes magically back from the
+        // data-resync="{type:'favs'}" - attribute of the submit-button.
+        // favs not implemented yet
+        $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
+        $offset = intval( $_POST['offset'] );
+        $limit = intval( $_POST['limit'] );
+        $count = intval( $_POST['count'] );
+        $next_url = isset($_POST['next_url']) ? $_POST['next_url'] : '';
+        $user_id = get_option('flickr_user_id');
+        $app_key = get_option('flickr_api_key');
+    
+        self::log($this->shortName().' ' . $type . ' resync '.$offset.'-'.($offset + $limit).':'.$count);
+         
+        $return = array(
+            'success' => false,
+            'error' => '',
+            'result' => null
+        );
+                
+        if ( isset($user_id) && isset($app_key) ) {
+            if ($next_url != '') {
+                $rawData = parent::import_via_curl($next_url, self::$timeout);
+            }
+            else {
+                //$apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
+                $rawData = parent::import_via_curl(sprintf(self::$apiurl, $user_id, self::$count, 1, $app_key), self::$timeout);
+            }
+
+            $rawData = str_replace( 'jsonFlickrApi(', '', $rawData );
+            $rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
+            $rawData = json_decode($rawData, true);
+
+            if ($rawData['stat'] == "ok" && is_array($rawData)) { // xxx
+                $data = self::map_api_data($rawData);
+                //$data = self::map_data($rawData, $type);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+                //update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+                $newoffset = $offset + sizeof($data);
+                $page = floor($newoffset / self::$count)+1;
+                $next_url = sprintf(self::$apiurl, $user_id, self::$count, $page, $app_key);
+                $return['result'] = array(
+                    'offset' => $newoffset,
+                    // take the next pagination url instead of calculating
+                    // a self one
+                    'next_url' => $next_url,
+                );
+                $return['success'] = true;
+            }
+            elseif ($rawdata['stat'] != "ok") {
+                $return['error'] = $rawData['message'] . " (Error code " . $rawData['code'] . ")";
+            }
+            else $return['error'] = sprintf(__('%s %s returned no data. No import was done', 'reclaim'), $this->shortname, $type);
+        }
+        else $return['error'] = sprintf(__('%s %s user data missing. No import was done', 'reclaim'), $this->shortname, $type);
+        
+        
+        echo(json_encode($return));
+         
+        die();
+    }
+
 
     private function map_data($rawData) {
         $data = array();
@@ -214,6 +270,23 @@ class flickr_reclaim_module extends reclaim_module {
         }
         return $data;
     }
+
+    public function count_items() {
+        $user_id = get_option('flickr_user_id');
+        $app_key = get_option('flickr_api_key');
+        if ( isset($user_id) && isset($app_key) ) {
+            $rawData = parent::import_via_curl(sprintf(self::$apiurl, $user_id, 1, 1, $app_key), self::$timeout);
+            $rawData = str_replace( 'jsonFlickrApi(', '', $rawData );
+            $rawData = substr( $rawData, 0, strlen( $rawData ) - 1 ); //strip out last paren
+            $rawData = json_decode($rawData, true);
+            //parent::log(print_r($rawData, true));
+            return $rawData['photos']['total'];
+        }
+        else {
+            return false;
+        }
+    }
+
     private function get_id($link) {
         // http://www.flickr.com/photos/92049783@N06/8763490364/
         // http://stackoverflow.com/questions/15118047/php-url-explode
