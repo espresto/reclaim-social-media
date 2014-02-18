@@ -240,8 +240,8 @@ class moves_reclaim_module extends reclaim_module {
 
                 $post_meta['moves_api_data'] = json_encode($day);
                 $activity_grouped = $this->construct_activity_group_array($day);
-                $post_meta['moves_group_data'] = json_encode($activity_grouped['data2']);
-                $post_meta['moves_group_data1'] = json_encode($activity_grouped['data1']);
+                $post_meta['moves_group_data'] = $activity_grouped['data2'];
+                $post_meta['moves_group_data1'] = $activity_grouped['data1'];
                 $content = $this->construct_content($activity_grouped['data1']);
 
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
@@ -266,7 +266,6 @@ class moves_reclaim_module extends reclaim_module {
         }
         return $data;
     }
-    
 
     public function count_items() {
 		if (get_option('moves_user_id') && get_option('moves_access_token') ) {
@@ -551,7 +550,7 @@ class moves_reclaim_module extends reclaim_module {
     var minimumBubbleSize = 10;
     var labelsWithinBubbles = true;
     var title = "";
-    var dataset = '.get_post_meta($post->ID, 'moves_group_data', true).';
+    var dataset = '.json_encode(get_post_meta($post->ID, 'moves_group_data', true)).';
     var gapBetweenBubbles = 15;
     var xPadding = 20;
     var yPadding = 100;

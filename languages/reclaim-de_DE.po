@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-02-13 08:39+0100\n"
-"PO-Revision-Date: 2014-02-13 09:05+0100\n"
+"PO-Revision-Date: 2014-02-18 16:17+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -516,7 +516,7 @@ msgstr "Laufen"
 
 #: mods/moves.class.php:496
 msgid "walking"
-msgstr "Fussweg"
+msgstr "Fußweg"
 
 #: mods/moves.class.php:497
 msgid "transport"
