@@ -53,7 +53,9 @@ class google_plus_reclaim_module extends reclaim_module {
                 <label for="google_api_key"><?php _e('Google API Key', 'reclaim'); ?></label>
                 <input type="text" name="google_api_key" class="widefat" value="<?php echo get_option('google_api_key'); ?>" />
                 <p class="description">
-                Read more info about the G+ API <a href="https://github.com/espresto/reclaim-social-media/wiki/Get-API-keys-for-Google-" target="_blank">here</aW
+                <?php
+                echo sprintf(__(Read more info about the G+ API <a href="%s" target="_blank">here</a>','reclaim'),'https://github.com/espresto/reclaim-social-media/wiki/Get-API-keys-for-Google-');
+                ?>
                 </p>
             </td>
             
