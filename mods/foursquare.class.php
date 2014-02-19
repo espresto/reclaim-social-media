@@ -75,8 +75,11 @@ class foursquare_reclaim_module extends reclaim_module {
             <td><input type="text" name="foursquare_client_secret" value="<?php echo get_option('foursquare_client_secret'); ?>" />
             <input type="hidden" name="foursquare_user_id" value="<?php echo get_option('foursquare_user_id'); ?>" />
             <input type="hidden" name="foursquare_access_token" value="<?php echo get_option('foursquare_access_token'); ?>" />
-            <p class="description">Get your Foursqaure client and credentials <a href="https://de.foursquare.com/developers/apps">here</a>. Use <code><?php echo plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/') ?></code> as "Redirect URI"</p>
-            </td>
+           <?php
+            echo sprintf(__('Get your Foursquare client and credentials <a href="%s">here</a>. ','reclaim'),'https://foursquare.com/developers/apps/');
+            echo sprintf(__('Use <code>%s</code> as "Redirect URI"','reclaim'),plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'));
+            ?>
+           </td>
         </tr>
 
         <tr valign="top">
