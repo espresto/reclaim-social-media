@@ -103,8 +103,14 @@ class instagram_reclaim_module extends reclaim_module {
             <th scope="row"><?php _e('Instagram client secret', 'reclaim'); ?></th>
             <td><input type="text" type="password" name="instagram_client_secret" value="<?php echo get_option('instagram_client_secret'); ?>" />
             <input type="hidden" name="instagram_access_token" value="<?php echo get_option('instagram_access_token'); ?>" />
-            <p class="description">Get your Instagram client and credentials <a href="http://instagram.com/developer/">here</a>. Use <code><?php echo plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/') ?></code> as "OAuth redirect_uri"</p>
-            </td>
+            <p class="description">
+             <p class="description">
+            <?php
+            echo sprintf(__('Get your Instagram client and credentials <a href="%s">here</a>. ','reclaim'),'http://instagram.com/developer/');
+            echo sprintf(__('Use <code>%s</code> as "Redirect URI"','reclaim'),plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/')); 
+            ?>
+            </p>
+           </td>
         </tr>
 
         <tr valign="top">
