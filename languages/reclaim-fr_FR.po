@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-17 23:33+0100\n"
-"PO-Revision-Date: 2014-02-17 23:35+0100\n"
+"POT-Creation-Date: 2014-02-19 21:14+0100\n"
+"PO-Revision-Date: 2014-02-19 21:14+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -20,16 +20,16 @@ msgstr ""
 
 #: mod.class.php:33
 msgid "Active"
-msgstr "Actif"
+msgstr "Activé"
 
 #: mod.class.php:36
 #, php-format
 msgid "last update %s"
-msgstr "Dernières mises à jour %s"
+msgstr "Dernières mises à jour le %s"
 
 #: mod.class.php:37
 msgid "Re-Sync"
-msgstr "Resynchronisation"
+msgstr "Resynchroniser"
 
 #: mod.class.php:38
 msgid "Reset"
@@ -41,11 +41,11 @@ msgstr "Retirer"
 
 #: mod.class.php:43
 msgid "Count with ajax"
-msgstr "Calcul des éléments avec ajax"
+msgstr "Nbre d'éléments (ajax)"
 
 #: mod.class.php:44
 msgid "Resync with ajax"
-msgstr "Resynchroniser avec ajax"
+msgstr "Resynchroniser (Ajax)"
 
 #: mod.class.php:55
 msgid "Category"
@@ -103,7 +103,7 @@ msgstr "Intervale d'actualisation (en secondes)"
 
 #: reclaim.php:266
 msgid "Show integrated map"
-msgstr "Afficher carte intégrée"
+msgstr "Afficher cartes intégrées"
 
 #: mods/google_plus.class.php:39
 msgid "Google+"
@@ -128,7 +128,7 @@ msgstr "Google API Key"
 #: mods/google_plus.class.php:95 mods/foursquare.class.php:151
 #: mods/foursquare.class.php:182 mods/vine.class.php:117
 #: mods/instagram.class.php:185 mods/instagram.class.php:258
-#: mods/youtube.class.php:74 mods/moves.class.php:164 mods/moves.class.php:216
+#: mods/youtube.class.php:74 mods/moves.class.php:165 mods/moves.class.php:217
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s ne retourne aucune donnée. Aucun import effectué."
@@ -139,7 +139,7 @@ msgstr "%s ne retourne aucune donnée. Aucun import effectué."
 #: mods/vine.class.php:120 mods/bookmarks.class.php:87
 #: mods/instagram.class.php:201 mods/instagram.class.php:260
 #: mods/youtube.class.php:100 mods/goodreads.class.php:82
-#: mods/moves.class.php:166 mods/moves.class.php:218
+#: mods/moves.class.php:167 mods/moves.class.php:219
 #: mods/twitter.class.php:101 mods/github.class.php:79
 #: mods/facebook.class.php:213
 #, php-format
@@ -210,10 +210,10 @@ msgstr "S'identifier avec Foursquare"
 #: mods/foursquare.class.php:93
 #, php-format
 msgid "<p>Foursquare is authorized as %s</p>"
-msgstr "<p>Connecté à Foursquare comme %s</p>"
+msgstr "<p>Connecté à Foursquare : %s</p>"
 
 #: mods/foursquare.class.php:94 mods/instagram.class.php:123
-#: mods/moves.class.php:107 mods/facebook.class.php:109
+#: mods/moves.class.php:108 mods/facebook.class.php:109
 msgid "Authorize again"
 msgstr "Reconnecter"
 
@@ -246,7 +246,7 @@ msgstr "Mot de passe Vine"
 #: mods/vine.class.php:159
 #, php-format
 msgid "<p>Revined from <a href=\"%s\">@%s</a>.</p>"
-msgstr "<p>Reviné de <a href=\"%s\">@%s</a>.</p>"
+msgstr "<p>Re-viné de <a href=\"%s\">@%s</a>.</p>"
 
 #: mods/bookmarks.class.php:36
 msgid "Bookmarks"
@@ -313,7 +313,7 @@ msgstr "S'identifier à Instagram"
 #: mods/instagram.class.php:122
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
-msgstr "<p>Connecté à Instagram comme %s</p>"
+msgstr "<p>Connecté à Instagram : %s</p>"
 
 #: mods/instagram.class.php:145
 msgid "enter instagram app id and secret"
@@ -359,7 +359,7 @@ msgstr "identifiant YouTube"
 #: mods/youtube.class.php:91
 #, php-format
 msgid "%s activity returned data. Import will be done"
-msgstr "%s a retourné des données. Import va s'effectuer."
+msgstr "%s a retourné des données. L'import va démarrer."
 
 #: mods/youtube.class.php:96
 #, php-format
@@ -404,51 +404,60 @@ msgstr "Moves Client ID"
 msgid "Moves client secret"
 msgstr "Moves Client Secret"
 
-#: mods/moves.class.php:104
+#: mods/moves.class.php:91
+#, php-format
+msgid "Get your Moves client and credentials <a href=\"%s\">here</a>. "
+msgstr "Retrouvez les identifiants Moves  <a href=\"%s\">ici</a>. "
+
+#: mods/moves.class.php:92
+#, php-format
+msgid "Use %s %s %s as \"Redirect URI\""
+msgstr "Utilisez %s %s %s comme \"Redirect URI\""
+
+#: mods/moves.class.php:105
 msgid "Authorize with Moves"
 msgstr "S'identifier avec Moves"
 
-#: mods/moves.class.php:106
+#: mods/moves.class.php:107
 msgid "<p>Moves is authorized</p>"
 msgstr "<p>Connecté à Moves <p>"
 
-#: mods/moves.class.php:126
+#: mods/moves.class.php:127
 msgid "enter moves app id and secret"
 msgstr "Introduire les app id et app secret de Moves"
 
-#: mods/moves.class.php:239
+#: mods/moves.class.php:240
 #, php-format
 msgid "Activity on %s"
 msgstr "Activités sur %s"
 
 #: mods/moves.class.php:415
 msgid "Today I "
-msgstr "Aujourd'hui j'ai"
+msgstr "Aujourd'hui j'ai "
 
 #: mods/moves.class.php:419
 #, php-format
 msgid "walked %s steps"
-msgstr "marché %s pas"
+msgstr "marché %s pas "
 
 #: mods/moves.class.php:422
-#, fuzzy
 msgid "didn’t walk much"
-msgstr "n'ai pas bougé beaucoup"
+msgstr "je n'ai pas bougé beaucoup"
 
 #: mods/moves.class.php:426
 #, php-format
 msgid " and ran for %s kilometers"
-msgstr "et j'ai couru durant %s km"
+msgstr " et j'ai couru durant %s km"
 
 #: mods/moves.class.php:433
 #, php-format
 msgid " and rode bicycle for %s kilometers"
-msgstr " et fait du vélo durant %s km"
+msgstr " et fait du vélo durant %s km "
 
 #: mods/moves.class.php:441
 #, php-format
 msgid " and used transport for %s kilometers"
-msgstr "et utilisé un transport durant %s km"
+msgstr " et utilisé des transports durant %s km"
 
 #: mods/moves.class.php:450
 #, php-format
@@ -515,16 +524,16 @@ msgstr "Démarrage importation de %s"
 #: mods/twitter.class.php:97
 #, php-format
 msgid "starting %s-favs import"
-msgstr "Démarrer favorits %s"
+msgstr "Démarrer importation des favorits %s"
 
 #: mods/twitter.class.php:184
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
 "batch: %s, req-ok: %d, error: %s"
 msgstr ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
-"batch: %s, req-ok: %d"
+"batch: %s, req-ok: %d, error: %s"
 
 #: mods/twitter.class.php:272
 #, php-format
@@ -589,7 +598,7 @@ msgstr "S'identifier avec Facebook"
 #: mods/facebook.class.php:108
 #, php-format
 msgid "<p>Facebook is authorized as %s</p>"
-msgstr "<p>Connecté à Facebook comme %s</p>"
+msgstr "<p>Connecté à Facebook :  %s</p>"
 
 #: mods/facebook.class.php:164
 msgid "getting FB token"
