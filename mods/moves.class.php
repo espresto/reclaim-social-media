@@ -88,7 +88,7 @@ class moves_reclaim_module extends reclaim_module {
             <td><input type="text" name="moves_client_secret" value="<?php echo get_option('moves_client_secret'); ?>" />
             <input type="hidden" name="moves_user_id" value="<?php echo get_option('moves_user_id'); ?>" />
             <input type="hidden" name="moves_access_token" value="<?php echo get_option('moves_access_token'); ?>" />
-            <p class="description"><?php printf(__('Get your Moves client and credentials <a href="%s">here</a>. '),'https://dev.moves-app.com/apps'); 
+            <p class="description"><?php printf(__('Get your Moves client and credentials <a href="%s">here</a>. ','https://dev.moves-app.com/apps')); 
 printf(__('Use %s %s %s as "Redirect URI"','<code>', plugins_url('reclaim/vendor/hybridauth/hybridauth/hybridauth/'),'</code>')); ?></p>
             </td>
         </tr>
