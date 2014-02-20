@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-19 21:14+0100\n"
-"PO-Revision-Date: 2014-02-19 21:23+0100\n"
+"POT-Creation-Date: 2014-02-20 22:10+0100\n"
+"PO-Revision-Date: 2014-02-20 22:11+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -25,7 +25,7 @@ msgstr "Activé"
 #: mod.class.php:36
 #, php-format
 msgid "last update %s"
-msgstr "Dernières mises à jour le %s"
+msgstr "Dernières mises      à jour le %s"
 
 #: mod.class.php:37
 msgid "Re-Sync"
@@ -125,28 +125,28 @@ msgstr ""
 msgid "Google API Key"
 msgstr "Google API Key"
 
-#: mods/google_plus.class.php:95 mods/foursquare.class.php:151
-#: mods/foursquare.class.php:182 mods/vine.class.php:117
-#: mods/instagram.class.php:185 mods/instagram.class.php:258
-#: mods/youtube.class.php:74 mods/moves.class.php:165 mods/moves.class.php:217
+#: mods/google_plus.class.php:101 mods/foursquare.class.php:154
+#: mods/foursquare.class.php:185 mods/vine.class.php:117
+#: mods/instagram.class.php:191 mods/instagram.class.php:264
+#: mods/youtube.class.php:74 mods/moves.class.php:168 mods/moves.class.php:220
 #, php-format
 msgid "%s returned no data. No import was done"
-msgstr "%s ne retourne aucune donnée. Aucun import effectué."
+msgstr "%s ne retourne aucune donnée. Aucune importation effectuée."
 
-#: mods/google_plus.class.php:98 mods/google_plus.class.php:116
-#: mods/flickr.class.php:113 mods/foursquare.class.php:153
-#: mods/foursquare.class.php:184 mods/vine.class.php:78
+#: mods/google_plus.class.php:104 mods/google_plus.class.php:122
+#: mods/flickr.class.php:113 mods/foursquare.class.php:156
+#: mods/foursquare.class.php:187 mods/vine.class.php:78
 #: mods/vine.class.php:120 mods/bookmarks.class.php:87
-#: mods/instagram.class.php:201 mods/instagram.class.php:260
+#: mods/instagram.class.php:207 mods/instagram.class.php:266
 #: mods/youtube.class.php:100 mods/goodreads.class.php:82
-#: mods/moves.class.php:167 mods/moves.class.php:219
+#: mods/moves.class.php:170 mods/moves.class.php:222
 #: mods/twitter.class.php:101 mods/github.class.php:79
 #: mods/facebook.class.php:213
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "données du profil %s manquantes. Aucun import effectué."
 
-#: mods/google_plus.class.php:208
+#: mods/google_plus.class.php:214
 #, php-format
 msgid ""
 "<hr /><p>Shared on <a href=\"%s\">Google+</a> by <em><a href=\"%s\">%s</a></"
@@ -155,9 +155,14 @@ msgstr ""
 "<hr /><p>Partagé initialement sur <a href=\"%s\">Google+</a> par <em><a href="
 "\"%s\">%s</a></em> </p>"
 
-#: mods/google_plus.class.php:267
+#: mods/google_plus.class.php:273
 msgid "View on Google+"
 msgstr "Montrer sur Auf Google+ "
+
+#: mods/google_plus.class.php:57
+#, php-format
+msgid "%s"
+msgstr ""
 
 #: mods/flickr.class.php:59
 msgid "Flickr"
@@ -203,30 +208,41 @@ msgstr "Foursquare Client ID"
 msgid "foursquare client secret"
 msgstr "Foursquare Client Secret"
 
-#: mods/foursquare.class.php:91
+#: mods/foursquare.class.php:79
+#, php-format
+msgid "Get your Foursquare client and credentials <a href=\"%s\">here</a>. "
+msgstr "Retrouvez les identifiants Foursquare  <a href=\"%s\">ici</a>. "
+
+#: mods/foursquare.class.php:80 mods/instagram.class.php:110
+#: mods/moves.class.php:94
+#, php-format
+msgid "Use <code>%s</code> as \"Redirect URI\""
+msgstr "Utilisez <code>%s</code> comme \"Redirect URI\""
+
+#: mods/foursquare.class.php:94
 msgid "Authorize with Foursquare"
 msgstr "S'identifier avec Foursquare"
 
-#: mods/foursquare.class.php:93
+#: mods/foursquare.class.php:96
 #, php-format
 msgid "<p>Foursquare is authorized as %s</p>"
 msgstr "<p>Connecté à Foursquare : %s</p>"
 
-#: mods/foursquare.class.php:94 mods/instagram.class.php:123
-#: mods/moves.class.php:108 mods/facebook.class.php:109
+#: mods/foursquare.class.php:97 mods/instagram.class.php:129
+#: mods/moves.class.php:111 mods/facebook.class.php:109
 msgid "Authorize again"
 msgstr "Reconnecter"
 
-#: mods/foursquare.class.php:113
+#: mods/foursquare.class.php:116
 msgid "enter Foursquare app id and secret"
 msgstr "introduisez l'app ID et secret de Foursquare"
 
-#: mods/foursquare.class.php:214
+#: mods/foursquare.class.php:217
 #, php-format
 msgid "Checked in to <a href=\"%s\">%s</a>"
 msgstr "Était à <a href=\"%s\">%s</a>"
 
-#: mods/foursquare.class.php:219
+#: mods/foursquare.class.php:222
 #, php-format
 msgid "Checked in to %s"
 msgstr "Est à %s"
@@ -306,45 +322,50 @@ msgstr "Instagram client id"
 msgid "Instagram client secret"
 msgstr "Instagram client secret"
 
-#: mods/instagram.class.php:119
+#: mods/instagram.class.php:109
+#, php-format
+msgid "Get your Instagram client and credentials <a href=\"%s\">here</a>. "
+msgstr "Retrouvez les identifiants Instagram  <a href=\"%s\">ici</a>. "
+
+#: mods/instagram.class.php:125
 msgid "Authorize with Instagram"
 msgstr "S'identifier à Instagram"
 
-#: mods/instagram.class.php:122
+#: mods/instagram.class.php:128
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
 msgstr "<p>Connecté à Instagram : %s</p>"
 
-#: mods/instagram.class.php:145
+#: mods/instagram.class.php:151
 msgid "enter instagram app id and secret"
 msgstr "introduire app id et app secret de Instagram"
 
-#: mods/instagram.class.php:183
+#: mods/instagram.class.php:189
 #, php-format
 msgid "END %s import"
 msgstr "END %s import"
 
-#: mods/instagram.class.php:196
+#: mods/instagram.class.php:202
 #, php-format
 msgid "END %s favs import"
 msgstr "END %s favs import"
 
-#: mods/instagram.class.php:198 mods/youtube.class.php:84
+#: mods/instagram.class.php:204 mods/youtube.class.php:84
 #, php-format
 msgid "%s favs returned no data. No import was done"
-msgstr "%s données du profil manquantes. Aucun import effectué."
+msgstr "Aucunes données pour %s favorits . importation abondonné."
 
-#: mods/instagram.class.php:302
+#: mods/instagram.class.php:308
 #, php-format
 msgid "I faved an Instagram from %s"
 msgstr "J'ai favorisé un Instragram de %s"
 
-#: mods/instagram.class.php:364
+#: mods/instagram.class.php:370
 #, php-format
 msgid "I uploaded <a href=\"%s\">an instagram</a>."
 msgstr "j'ai publié  <a href=\"%s\">un instagram</a>."
 
-#: mods/instagram.class.php:370 mods/instagram.class.php:377
+#: mods/instagram.class.php:376 mods/instagram.class.php:383
 msgid "View on Instagram"
 msgstr "Montrer sur Instagram"
 
@@ -364,7 +385,7 @@ msgstr "%s a retourné des données. L'import va démarrer."
 #: mods/youtube.class.php:96
 #, php-format
 msgid "%s activity returned no data. No import was done"
-msgstr "%s n'a pas retourné de données. Aucun import effectué."
+msgstr "%s n'a pas retourné de données. Aucune importation effectuée."
 
 #: mods/youtube.class.php:129
 #, php-format
@@ -404,91 +425,86 @@ msgstr "Moves Client ID"
 msgid "Moves client secret"
 msgstr "Moves Client Secret"
 
-#: mods/moves.class.php:91
+#: mods/moves.class.php:93
 #, php-format
 msgid "Get your Moves client and credentials <a href=\"%s\">here</a>. "
 msgstr "Retrouvez les identifiants Moves  <a href=\"%s\">ici</a>. "
 
-#: mods/moves.class.php:92
-#, php-format
-msgid "Use %s %s %s as \"Redirect URI\""
-msgstr "Utilisez %s %s %s comme \"Redirect URI\""
-
-#: mods/moves.class.php:105
+#: mods/moves.class.php:108
 msgid "Authorize with Moves"
 msgstr "S'identifier avec Moves"
 
-#: mods/moves.class.php:107
+#: mods/moves.class.php:110
 msgid "<p>Moves is authorized</p>"
 msgstr "<p>Connecté à Moves <p>"
 
-#: mods/moves.class.php:127
+#: mods/moves.class.php:130
 msgid "enter moves app id and secret"
 msgstr "Introduire les app id et app secret de Moves"
 
-#: mods/moves.class.php:240
+#: mods/moves.class.php:243
 #, php-format
 msgid "Activity on %s"
 msgstr "Activités sur %s"
 
-#: mods/moves.class.php:415
+#: mods/moves.class.php:418
 msgid "Today I "
 msgstr "Aujourd'hui j'ai "
 
-#: mods/moves.class.php:419
+#: mods/moves.class.php:422
 #, php-format
 msgid "walked %s steps"
 msgstr "marché %s pas "
 
-#: mods/moves.class.php:422
+#: mods/moves.class.php:425
 msgid "didn’t walk much"
 msgstr "je n'ai pas bougé beaucoup"
 
-#: mods/moves.class.php:426
+#: mods/moves.class.php:429
 #, php-format
 msgid " and ran for %s kilometers"
 msgstr " et j'ai couru durant %s km"
 
-#: mods/moves.class.php:433
+#: mods/moves.class.php:436
 #, php-format
 msgid " and rode bicycle for %s kilometers"
 msgstr " et fait du vélo durant %s km "
 
-#: mods/moves.class.php:441
+#: mods/moves.class.php:444
 #, php-format
 msgid " and used transport for %s kilometers"
 msgstr " et utilisé des transports durant %s km"
 
-#: mods/moves.class.php:450
+#: mods/moves.class.php:453
 #, php-format
 msgid "I hardly moved today, but i %s."
 msgstr "j'ai peu bougé aujourd'hui, mais j'ai %s"
 
-#: mods/moves.class.php:452 mods/moves.class.php:456
+#: mods/moves.class.php:455 mods/moves.class.php:459
 msgid "I hardly moved today"
 msgstr "j'ai à peine bougé aujourd'hui"
 
-#: mods/moves.class.php:494
+#: mods/moves.class.php:497
 msgid "cycling"
 msgstr "du vélo"
 
-#: mods/moves.class.php:495
+#: mods/moves.class.php:498
 msgid "running"
 msgstr "course à pied"
 
-#: mods/moves.class.php:496
+#: mods/moves.class.php:499
 msgid "walking"
 msgstr "marche"
 
-#: mods/moves.class.php:497
+#: mods/moves.class.php:500
 msgid "transport"
 msgstr "transport"
 
-#: mods/moves.class.php:641
+#: mods/moves.class.php:644
 msgid "Steps"
 msgstr "Pas"
 
-#: mods/moves.class.php:689
+#: mods/moves.class.php:692
 msgid "h"
 msgstr "h"
 
@@ -612,12 +628,12 @@ msgstr "GETTING for %s from %s"
 #: mods/facebook.class.php:203
 #, php-format
 msgid "%s ended with an error. Aborted getting %s"
-msgstr "%s ended with an error. Aborted getting %s"
+msgstr "%s s'est terminé en erreur. Importation de %s abandonné."
 
 #: mods/facebook.class.php:206
 #, php-format
 msgid "%s ended with an error. Continue anyway with %s"
-msgstr "%s ended with an error. Continue anyway with %s"
+msgstr "%s s'est terminé en erreur. Continue quand même avec %s"
 
 #: mods/facebook.class.php:368
 msgid "Facebook activity"
