@@ -58,7 +58,6 @@ class google_plus_reclaim_module extends reclaim_module {
                 ?>
                 </p>
             </td>
-            
         </tr>
 <?php
     }
@@ -92,8 +91,7 @@ class google_plus_reclaim_module extends reclaim_module {
                 update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
     			$return['result'] = array(
     				'offset' => $offset + sizeof($data),
-					// take the next pagination url instead of calculating
-					// a self one
+					// use nextPageToken instead of url
 					'next_url' => $rawData['nextPageToken'],
     			);
     			$return['success'] = true;
@@ -108,7 +106,9 @@ class google_plus_reclaim_module extends reclaim_module {
     	die();
     }
 
-    public function import($forceResync) {
+    // this is only one loop, that is triggered through force refresh or the autoupdate
+    // function. it gets the number of posts defined in $count
+    public function import($forceResync) { 
         if (get_option('google_api_key') && get_option('google_plus_user_id')) {
             $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('google_plus_user_id'), get_option('google_api_key'), self::$count,""), self::$timeout);
             //parent::log(print_r($rawData,true));
@@ -155,7 +155,8 @@ class google_plus_reclaim_module extends reclaim_module {
     }
 
     public function count_items() {
-                return 999999;
+        // found no way to determine the overall post count on g+
+        return 999999;
     }
 
     private function get_post_format($entry) {
