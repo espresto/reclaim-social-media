@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-20 22:10+0100\n"
-"PO-Revision-Date: 2014-02-20 22:11+0100\n"
+"POT-Creation-Date: 2014-02-20 23:44+0100\n"
+"PO-Revision-Date: 2014-02-20 23:47+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -36,8 +36,9 @@ msgid "Reset"
 msgstr "Réinitialiser"
 
 #: mod.class.php:41
-msgid "Remove "
-msgstr "Retirer"
+#, php-format
+msgid "Remove %s Posts"
+msgstr "Supprimer %s éléments"
 
 #: mod.class.php:43
 msgid "Count with ajax"
@@ -64,6 +65,14 @@ msgstr "BEGIN %s import %s"
 #, php-format
 msgid "END %s import %s"
 msgstr "END %s import %s"
+
+#: mod.class.php:386
+msgid "items available"
+msgstr "Eléments disponibles."
+
+#: mod.class.php:388
+msgid "posts created"
+msgstr "éléments créés."
 
 #: reclaim.php:30
 msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
@@ -125,7 +134,15 @@ msgstr ""
 msgid "Google API Key"
 msgstr "Google API Key"
 
-#: mods/google_plus.class.php:101 mods/foursquare.class.php:154
+#: mods/google_plus.class.php:57
+#, php-format
+msgid ""
+"Read more info about the G+ API <a href=\"%s\" target=\"_blank\">here</a>"
+msgstr ""
+"Retrouvez les informations sur l'API G+ <a href=\"%s\" target=\"_blank"
+"\">ici</a>"
+
+#: mods/google_plus.class.php:99 mods/foursquare.class.php:154
 #: mods/foursquare.class.php:185 mods/vine.class.php:117
 #: mods/instagram.class.php:191 mods/instagram.class.php:264
 #: mods/youtube.class.php:74 mods/moves.class.php:168 mods/moves.class.php:220
@@ -133,7 +150,7 @@ msgstr "Google API Key"
 msgid "%s returned no data. No import was done"
 msgstr "%s ne retourne aucune donnée. Aucune importation effectuée."
 
-#: mods/google_plus.class.php:104 mods/google_plus.class.php:122
+#: mods/google_plus.class.php:102 mods/google_plus.class.php:122
 #: mods/flickr.class.php:113 mods/foursquare.class.php:156
 #: mods/foursquare.class.php:187 mods/vine.class.php:78
 #: mods/vine.class.php:120 mods/bookmarks.class.php:87
@@ -146,7 +163,7 @@ msgstr "%s ne retourne aucune donnée. Aucune importation effectuée."
 msgid "%s user data missing. No import was done"
 msgstr "données du profil %s manquantes. Aucun import effectué."
 
-#: mods/google_plus.class.php:214
+#: mods/google_plus.class.php:215
 #, php-format
 msgid ""
 "<hr /><p>Shared on <a href=\"%s\">Google+</a> by <em><a href=\"%s\">%s</a></"
@@ -155,14 +172,9 @@ msgstr ""
 "<hr /><p>Partagé initialement sur <a href=\"%s\">Google+</a> par <em><a href="
 "\"%s\">%s</a></em> </p>"
 
-#: mods/google_plus.class.php:273
+#: mods/google_plus.class.php:274
 msgid "View on Google+"
 msgstr "Montrer sur Auf Google+ "
-
-#: mods/google_plus.class.php:57
-#, php-format
-msgid "%s"
-msgstr ""
 
 #: mods/flickr.class.php:59
 msgid "Flickr"
