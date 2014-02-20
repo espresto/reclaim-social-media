@@ -38,7 +38,7 @@ class reclaim_module {
                     <input type="submit" class="button button-primary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
                     <?php $count = $this->count_posts(); ?>
                     <?php if ($count > 0) :?>
-                    	<input type="submit" class="button button-primary" value="<?php _e('Remove '.$count.' Posts', 'reclaim'); ?>" name="<?php echo $modname; ?>_remove_posts" />
+                    	<input type="submit" class="button button-primary" value="<?php echo sprintf(__('Remove %s Posts', 'reclaim'), $count); ?>" name="<?php echo $modname; ?>_remove_posts" />
                     <?php endif; ?>
                     <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
                     <input type="submit" class="button button-primary <?php echo $modname; ?>_resync_items" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
