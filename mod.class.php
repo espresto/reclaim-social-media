@@ -383,9 +383,9 @@ class reclaim_module {
 		echo (json_encode(array(
 			'success' => true,
 			'result' => $this->count_items().' '
-            	.translate('items available', 'reclaim')
+            	.__('items available', 'reclaim')
             	.', '.$this->count_posts().' '
-            	.translate('posts created', 'reclaim')
+            	.__('posts created', 'reclaim')
 		)));
 		
 		die();
