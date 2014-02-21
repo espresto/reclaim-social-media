@@ -175,7 +175,7 @@ class reclaim_core {
     
     public function localize_admin_reclaim_script() {
         return array(
-            'Cancel' => __('Cancel', 'reclaim'),
+            'Cancel' => __('Cancel ', 'reclaim'),
             'Canceled' => __('Canceled.', 'reclaim'),
             'Whoops_Returned_data_must_be_not_null' => __('Whoops! Returned data must be not null.', 'reclaim'),
             'Error_occured' => __('Error occured: ', 'reclaim'),
@@ -272,19 +272,20 @@ class reclaim_core {
                 <th colspan="2"><h3><?php _e('General Settings', 'reclaim'); ?></h3></th>
             </tr>
             <tr valign="top">
-                <th scope="row"><?php _e('Auto-update', 'reclaim'); ?></th>
+                <th scope="row"><label for="reclaim_auto_update"><?php _e('Auto-update', 'reclaim'); ?></label></th>
                 <td><input type="checkbox" name="reclaim_auto_update" value="1" <?php checked(get_option('reclaim_auto_update')); ?> /></td>
             </tr>
             <tr valign="top">
-                <th scope="row"><?php _e('Update Interval (in seconds)', 'reclaim'); ?></th>
+                <th scope="row"><label for="reclaim_update_interval"><?php _e('Update Interval (in seconds)', 'reclaim'); ?></label></th>
                 <td><input type="text" name="reclaim_update_interval" value="<?php echo self::get_interval(); ?>" /></td>
             </tr>
              <tr valign="top">
-                <th scope="row"><?php _e('Show integrated map', 'reclaim'); ?></th>
+                <th scope="row"><label for="reclaim_show_map"><?php _e('Show integrated map', 'reclaim'); ?></label></th>
                 <td><input type="checkbox" name="reclaim_show_map" value="1" <?php checked(get_option('reclaim_show_map')); ?> /></td>
             </tr>
 <?php
         foreach($this->mods_loaded as $mod) {
+            echo '<tr id="'.$mod['name'].'"><th colspan="2"><hr /></th></tr>';
             $mod['instance']->display_settings();
         }
 ?>

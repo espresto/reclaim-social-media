@@ -24,6 +24,7 @@ class facebook_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'facebook';
+        $this->has_ajaxsync = false;
     }
 
     public function register_settings() {
@@ -69,11 +70,9 @@ class facebook_reclaim_module extends reclaim_module {
         }
 
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('Facebook', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('Facebook', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Facebook user ID', 'reclaim'); ?></th>
@@ -88,11 +87,11 @@ class facebook_reclaim_module extends reclaim_module {
             </td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('Facebook app id', 'reclaim'); ?></th>
+            <th scope="row"><label for="facebook_app_id"><?php _e('Facebook app id', 'reclaim'); ?></label></th>
             <td><input type="text" name="facebook_app_id" value="<?php echo get_option('facebook_app_id'); ?>" /></td>
         </tr>
         <tr valign="top">
-            <th scope="row"><?php _e('Facebook app secret', 'reclaim'); ?></th>
+            <th scope="row"><label for="facebook_app_secret"><?php _e('Facebook app secret', 'reclaim'); ?></label></th>
             <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" />
             <input type="hidden" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" />
             </td>

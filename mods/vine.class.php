@@ -31,6 +31,7 @@ class vine_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'vine';
+        $this->has_ajaxsync = true;
     }
 
     public function register_settings() {
@@ -42,11 +43,9 @@ class vine_reclaim_module extends reclaim_module {
 
     public function display_settings() {
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('Vine', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('Vine', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('vine email', 'reclaim'); ?></th>
@@ -95,7 +94,6 @@ class vine_reclaim_module extends reclaim_module {
     	    	
         if (get_option('vine_user_id') ) {
             $page = ($offset / self::$count) + 1;
-			parent::log($page);
 
             $key = self::vineAuth(get_option('vine_user_id'),get_option('vine_password'));
             $userId = strtok($key,'-');
@@ -281,6 +279,7 @@ class vine_reclaim_module extends reclaim_module {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $result = json_decode(curl_exec($ch), true);
+        curl_close($ch);
 
         if (!$result) {
             parent::log('curl error: '.curl_error($ch));
@@ -290,6 +289,5 @@ class vine_reclaim_module extends reclaim_module {
             return $result['data'];
         }
 
-        curl_close($ch);
     }
 }

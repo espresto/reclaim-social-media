@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-21 14:49+0100\n"
-"PO-Revision-Date: 2014-02-21 14:53+0100\n"
+"POT-Creation-Date: 2014-02-21 20:23+0100\n"
+"PO-Revision-Date: 2014-02-21 20:23+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -68,11 +68,11 @@ msgstr "BEGIN %s import %s"
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: mod.class.php:386
+#: mod.class.php:390
 msgid "items available"
 msgstr "Einträge vorhanden"
 
-#: mod.class.php:388
+#: mod.class.php:392
 msgid "posts created"
 msgstr "Einträge erstellt"
 
@@ -81,8 +81,8 @@ msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
 msgstr "Für Reclaim Social Media wird mindestens PHP version 5.3.2 benötigt."
 
 #: reclaim.php:178
-msgid "Cancel"
-msgstr "Abbrechen"
+msgid "Cancel "
+msgstr "Abbrechen "
 
 #: reclaim.php:179
 msgid "Canceled."

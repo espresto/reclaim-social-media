@@ -27,6 +27,7 @@ class youtube_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'youtube';
+        $this->has_ajaxsync = false;
     }
 
     public function register_settings() {
@@ -39,11 +40,9 @@ class youtube_reclaim_module extends reclaim_module {
 
     public function display_settings() {
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('YouTube', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('YouTube', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
