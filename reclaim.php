@@ -168,8 +168,25 @@ class reclaim_core {
     public function admin_stylesheets() {
     	wp_register_script('admin-reclaim-script', plugins_url('js/admin_ajax.js', __FILE__), array('jquery'));
     	wp_enqueue_script('admin-reclaim-script');
+    	wp_localize_script('admin-reclaim-script', 'admin_reclaim_script_translation', self::localize_admin_reclaim_script());
     	wp_register_style('admin-reclaim-style', plugins_url('css/style_admin.css', __FILE__));
     	wp_enqueue_style('admin-reclaim-style');
+    }
+    
+    public function localize_admin_reclaim_script() {
+        return array(
+            'Cancel' => __('Cancel', 'reclaim'),
+            'Canceled' => __('Canceled.', 'reclaim'),
+            'Whoops_Returned_data_must_be_not_null' => __('Whoops! Returned data must be not null.', 'reclaim'),
+            'Error_occured' => __('Error occured: ', 'reclaim'),
+            'Count_items_and_posts' => __('Count items and posts...', 'reclaim'),
+            'Count_items' => __('Count items...', 'reclaim'),
+            'item_count_is_not_a_valid_number' => __('item count is not a valid number. value=', 'reclaim'),
+            'Not_a_valid_item_count' => __('Not a valid item count: ', 'reclaim'),
+            'Resyncing_items' => __('Resyncing items: ', 'reclaim'),
+            'result_offset_is_not_a_number' => __('result.offset is not a number: value=', 'reclaim'),
+            'items_resynced_duration' => __(' items resynced, duration: ', 'reclaim'),
+        );
     }
     
     public function add_dashboard_widgets() {
