@@ -199,6 +199,10 @@ class reclaim_module {
         foreach ($data as $post) {
             $exists = get_posts(array(
                 'post_type' => 'post',
+                // this is how we honor posts in the trash or marked as draft:
+                // if the exist, these will not be resyndicated 
+                // (without this, posts could not be deleted)
+                'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
                 'meta_query' => array(
                     array(
                         'key' => 'original_guid',
