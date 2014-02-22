@@ -29,6 +29,7 @@ class instagram_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'instagram';
+        $this->has_ajaxsync = true;
     }
 
     public function register_settings() {
@@ -66,16 +67,14 @@ class instagram_reclaim_module extends reclaim_module {
             }
         }
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('instagram', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('instagram', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="instagram_import_favs" value="1" <?php checked(get_option('instagram_import_favs')); ?> />
-            <input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" />
+            <?php if (get_option('instagram_import_favs')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
             </td>
         </tr>
         <tr valign="top">

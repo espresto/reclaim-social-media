@@ -34,6 +34,8 @@ class moves_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'moves';
+        $this->has_ajaxsync = true;
+
         add_filter('the_content', array($this, 'moves_content'), 100);
         add_action('wp_enqueue_scripts', array($this, 'moves_add_reclaim_stylesheet'));
         add_action('wp_head', array($this, 'add_moves_styles'));
@@ -68,11 +70,9 @@ class moves_reclaim_module extends reclaim_module {
             }
         }
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('moves', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('moves', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
          <tr valign="top">
             <th scope="row"><?php _e('Show moves diagram', 'reclaim'); ?></th>

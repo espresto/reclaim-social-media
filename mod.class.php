@@ -20,6 +20,7 @@
 class reclaim_module {
 	private static $force_delete = true;
     protected $shortname;
+    protected $has_ajaxsync;
 
     public function register_settings($modname) {
         register_setting('reclaim-social-settings', $modname.'_active');
@@ -27,30 +28,51 @@ class reclaim_module {
         register_setting('reclaim-social-settings', $modname.'_author');
     }
 
-    public function display_settings($modname) {
+    public function display_settings($modname, $displayname = null) {
 ?>
         <tr valign="top">
-            <th scope="row"><?php _e('Active', 'reclaim'); ?></th>
-            <td><input type="checkbox" name="<?php echo $modname; ?>_active" value="1" <?php checked(get_option($modname.'_active')); ?> />
-                <?php if (get_option($modname.'_active')) :?>
-                    <em><?php printf(__('last update %s', 'reclaim'), date(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?></em><br/>
-                    <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
-                    <input type="submit" class="button button-primary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
-                    <?php $count = $this->count_posts(); ?>
-                    <?php if ($count > 0) :?>
-                    	<input type="submit" class="button button-primary" value="<?php echo sprintf(__('Remove %s Posts', 'reclaim'), $count); ?>" name="<?php echo $modname; ?>_remove_posts" />
-                    <?php endif; ?>
-                    <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-primary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
-                    <input type="submit" class="button button-primary <?php echo $modname; ?>_resync_items" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
-                    <span id="<?php echo $modname; ?>_spinner" class="spinner"></span>
-                    
-                    <div id="<?php echo $modname; ?>_notice" class="updated inline" style="display:none">
-						<p><strong class="message"></strong></p>
-                    </div>
-                    
-                <?php endif;?>
+            <th scope="row">
+            <?php if (isset($displayname)) { echo '<h3>'.$displayname.'</h3>'; } ?>
+            </th>
+            <td>
+            <fieldset>
+            <legend class="screen-reader-text"><span><?php _e('Active', 'reclaim'); ?></span></legend>
+            <label for="<?php echo $modname; ?>_active"><input type="checkbox" name="<?php echo $modname; ?>_active" value="1" <?php checked(get_option($modname.'_active')); ?> />
+            <?php _e('Active', 'reclaim'); ?>
+            <?php if (get_option($modname.'_active')) :?>
+            <em>(<?php printf(__('last update %s', 'reclaim'), date_i18n(get_option('date_format').' '.get_option('time_format'), get_option('reclaim_'.$modname.'_last_update'))); ?>)</em>
+            <?php endif;?>
+            </label>
+            </fieldset>
             </td>
         </tr>
+        <?php if (get_option($modname.'_active')) :?>
+        <tr valign="top">
+            <th scope="row"></th>
+            <td>
+                    <?php if ($this->has_ajaxsync()) :?>
+                        <input type="submit" class="button button-primary <?php echo $modname; ?>_resync_items" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
+                        <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-secondary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
+                    <?php else :?>
+                        <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
+                    <?php endif;?>
+                    <input type="submit" class="button button-secondary" value="<?php _e('Reset', 'reclaim'); ?>" name="<?php echo $modname; ?>_reset" />
+                    <?php $count = $this->count_posts(); ?>
+                    <?php if ($count > 0) :?>
+                    	<input type="submit" class="button button-secondary" value="<?php echo sprintf(__('Remove %s Posts', 'reclaim'), $count); ?>" name="<?php echo $modname; ?>_remove_posts" />
+                    <?php endif; ?>
+                    <input type="submit" class="button button-secondary" name="submit" value="<?php _e('Save', 'reclaim'); ?>" name="<?php echo $modname; ?>_save" />
+
+                    <?php if ($this->has_ajaxsync()) :?>
+                        <span id="<?php echo $modname; ?>_spinner" class="spinner"></span>
+                        <div id="<?php echo $modname; ?>_notice" class="updated inline" style="display:none">
+						    <p><strong class="message"></strong></p>
+                        </div>
+                    <?php endif;?>
+                    <p><em></em></p>
+            </td>
+        </tr>
+        <?php endif;?>
         <tr valign="top">
             <th scope="row"><?php _e('Category', 'reclaim'); ?></th>
             <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => $modname.'_category', 'hide_empty' => 0, 'selected' => get_option($modname.'_category'))); ?></td>
@@ -67,6 +89,13 @@ class reclaim_module {
     */
     public function shortName() {
         return $this->shortname;
+    }
+
+    /**
+    * Interface
+    */
+    public function has_ajaxsync() {
+        return $this->has_ajaxsync;
     }
 
     /**
@@ -199,6 +228,10 @@ class reclaim_module {
         foreach ($data as $post) {
             $exists = get_posts(array(
                 'post_type' => 'post',
+                // this is how we honor posts in the trash or marked as draft:
+                // if the exist, these will not be resyndicated 
+                // (without this, posts could not be deleted)
+                'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
                 'meta_query' => array(
                     array(
                         'key' => 'original_guid',

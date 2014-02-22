@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
 			
 			if (!this.target_text) {
 				this.target_text = $(this.eventObject.target).val();
-				$(this.eventObject.target).val('Cancel '+this.target_text);
+				$(this.eventObject.target).val( admin_reclaim_script_translation.Cancel + this.target_text );
 			}
 			
 			this.running = true;
@@ -62,7 +62,7 @@ jQuery(document).ready(function($) {
 		
 		ajax_abort : function() {
 			this.aborted = true;
-			this.ajax_end('Canceled.');
+			this.ajax_end(admin_reclaim_script_translation.Canceled);
 			
 			if (this.request) {
 				this.request.abort();
@@ -79,12 +79,12 @@ jQuery(document).ready(function($) {
 				type : 'POST',
 				success : function(data) {
 					if (!data) {
-						that.ajax_end('Whoops! Returned data must be not null.');
+						that.ajax_end(admin_reclaim_script_translation.Whoops_Returned_data_must_be_not_null);
 					}
 					else if (data.success) {
 						callback(data.result);
 					} else {
-						that.ajax_end('Error occured: ' + data.error);
+						that.ajax_end(admin_reclaim_script_translation.Error_occured + data.error);
 					}
 				}
 			});
@@ -96,7 +96,7 @@ jQuery(document).ready(function($) {
 				this.ajax_abort();
 			}
 			else {
-				this.ajax_start('Count items and posts...');
+				this.ajax_start(admin_reclaim_script_translation.Count_items_and_posts);
 	
 				this.ajax('count_all_items', {}, $.proxy(function(result) {
 					this.ajax_end(result);
@@ -113,7 +113,7 @@ jQuery(document).ready(function($) {
 				}
 			}
 			else {
-				this.ajax_start('Count items...');
+				this.ajax_start(admin_reclaim_script_translation.Count_items);
 				var o = $.extend({}, options);
 	
 				this.ajax('count_items', o, $.proxy(function(result) {
@@ -121,10 +121,10 @@ jQuery(document).ready(function($) {
 						// do nothing
 					}
 					else if (isNaN(result)) {
-						this.ajax_end('item count is not a valid numbethis. value=' + result);
+						this.ajax_end(admin_reclaim_script_translation.item_count_is_not_a_valid_number + result);
 					}
 					else if (result <= 0) {
-						this.ajax_end('Not a valid item count: ' + result);
+						this.ajax_end(admin_reclaim_script_translation.Not_a_valid_item_count + result);
 					}
 					else {
 						var resync = new reclaim.resync();
@@ -162,7 +162,7 @@ jQuery(document).ready(function($) {
 		},
 	
 		run : function () {
-			this.r.ajax_start('Resync ' + (this.count - this.data.offset) + ' items...');
+			this.r.ajax_start(admin_reclaim_script_translation.Resyncing_items + (this.count - this.data.offset));
 			
 			// take these values always from config
 			this.data['limit'] = this.limit;
@@ -172,11 +172,11 @@ jQuery(document).ready(function($) {
 				var offset = parseInt(result.offset);
 				// wrong implementation
 				if (isNaN(offset)) {
-					this.r.ajax_end('result.offset is not a number: value='+result.offset);
+					this.r.ajax_end(admin_reclaim_script_translation.result_offset_is_not_a_number+result.offset);
 				}
 				// end
 				else if (this.aborted || offset <= this.data.offset || this.count <= offset) {
-					this.r.ajax_end(Math.min(offset, this.count) + ' items resynced, duration: '+this.duration());
+					this.r.ajax_end(Math.min(offset, this.count) + admin_reclaim_script_translation.items_resynced_duration+this.duration());
 				}
 				// next
 				else {

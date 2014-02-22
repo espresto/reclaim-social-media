@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-20 23:29+0100\n"
-"PO-Revision-Date: 2014-02-20 23:32+0100\n"
+"POT-Creation-Date: 2014-02-21 20:23+0100\n"
+"PO-Revision-Date: 2014-02-21 20:23+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -68,11 +68,11 @@ msgstr "BEGIN %s import %s"
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: mod.class.php:386
+#: mod.class.php:390
 msgid "items available"
 msgstr "Einträge vorhanden"
 
-#: mod.class.php:388
+#: mod.class.php:392
 msgid "posts created"
 msgstr "Einträge erstellt"
 
@@ -80,39 +80,83 @@ msgstr "Einträge erstellt"
 msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
 msgstr "Für Reclaim Social Media wird mindestens PHP version 5.3.2 benötigt."
 
+#: reclaim.php:178
+msgid "Cancel "
+msgstr "Abbrechen "
+
+#: reclaim.php:179
+msgid "Canceled."
+msgstr "Abgebrochen."
+
+#: reclaim.php:180
+msgid "Whoops! Returned data must be not null."
+msgstr "Ups! Die zurückgelieferte Zahl darf nicht gleich null sein."
+
+#: reclaim.php:181
+msgid "Error occured: "
+msgstr "Fehler: "
+
+#: reclaim.php:182
+msgid "Count items and posts..."
+msgstr "Zähle vorhandene Elemente und Artikel …"
+
 #: reclaim.php:183
+msgid "Count items..."
+msgstr "Zähle Elemente …"
+
+#: reclaim.php:184
+msgid "item count is not a valid number. value="
+msgstr "Zurückgelieferte Elementanzahl ist keine Zahl. value="
+
+#: reclaim.php:185
+msgid "Not a valid item count: "
+msgstr "Ungültige Elementanzahl: "
+
+#: reclaim.php:186
+msgid "Resyncing items: "
+msgstr "Synchronisiere Elemente: "
+
+#: reclaim.php:187
+msgid "result.offset is not a number: value="
+msgstr "result.offset ist keine Zahl: value="
+
+#: reclaim.php:188
+msgid " items resynced, duration: "
+msgstr " Elemente synchronisiert, Dauer: "
+
+#: reclaim.php:200
 msgid "Auto Update"
 msgstr "Auto-Update"
 
-#: reclaim.php:183
+#: reclaim.php:200
 msgid "On"
 msgstr "An"
 
-#: reclaim.php:183
+#: reclaim.php:200
 msgid "Off"
 msgstr "Aus"
 
-#: reclaim.php:228 reclaim.php:250
+#: reclaim.php:245 reclaim.php:267
 msgid "Reclaim Social Accounts Settings"
 msgstr "Reclaim Konten Einstellungen"
 
-#: reclaim.php:228
+#: reclaim.php:245
 msgid "Reclaim"
 msgstr "Reclaim"
 
-#: reclaim.php:255
+#: reclaim.php:272
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: reclaim.php:258
+#: reclaim.php:275
 msgid "Auto-update"
 msgstr "Auto-update"
 
-#: reclaim.php:262
+#: reclaim.php:279
 msgid "Update Interval (in seconds)"
 msgstr "Aktualisierungsinterval (in Sekunden)"
 
-#: reclaim.php:266
+#: reclaim.php:283
 msgid "Show integrated map"
 msgstr "Karte anzeigen"
 
@@ -163,7 +207,7 @@ msgstr "Keine %s Daten"
 #: mods/bookmarks.class.php:87 mods/facebook.class.php:213
 #: mods/flickr.class.php:113 mods/foursquare.class.php:156
 #: mods/foursquare.class.php:187 mods/github.class.php:79
-#: mods/goodreads.class.php:82 mods/google_plus.class.php:104
+#: mods/goodreads.class.php:82 mods/google_plus.class.php:102
 #: mods/google_plus.class.php:122 mods/instagram.class.php:207
 #: mods/instagram.class.php:266 mods/moves.class.php:170
 #: mods/moves.class.php:222 mods/twitter.class.php:101 mods/vine.class.php:78
@@ -310,7 +354,7 @@ msgid "enter Foursquare app id and secret"
 msgstr "Die Foursquare App ID und Secret eingeben"
 
 #: mods/foursquare.class.php:154 mods/foursquare.class.php:185
-#: mods/google_plus.class.php:101 mods/instagram.class.php:191
+#: mods/google_plus.class.php:99 mods/instagram.class.php:191
 #: mods/instagram.class.php:264 mods/moves.class.php:168
 #: mods/moves.class.php:220 mods/vine.class.php:117 mods/youtube.class.php:74
 #, php-format
@@ -383,7 +427,7 @@ msgid ""
 "Read more info about the G+ API <a href=\"%s\" target=\"_blank\">here</a>"
 msgstr "Mehr über die G+ API <a href=\"%s\" target=\"_blank\">hier</a>"
 
-#: mods/google_plus.class.php:214
+#: mods/google_plus.class.php:215
 #, php-format
 msgid ""
 "<hr /><p>Shared on <a href=\"%s\">Google+</a> by <em><a href=\"%s\">%s</a></"
@@ -392,7 +436,7 @@ msgstr ""
 "<hr /><p>Auf <a href=\"%s\">Google+</a> ursprünglich von <em><a href=\"%s\">"
 "%s</a></em> geteilt:</p>"
 
-#: mods/google_plus.class.php:273
+#: mods/google_plus.class.php:274
 msgid "View on Google+"
 msgstr "Auf Google+ ansehen"
 

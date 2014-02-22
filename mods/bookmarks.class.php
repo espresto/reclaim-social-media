@@ -23,6 +23,7 @@ class bookmarks_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'bookmarks';
+        $this->has_ajaxsync = false;
     }
 
     public function register_settings() {
@@ -32,11 +33,9 @@ class bookmarks_reclaim_module extends reclaim_module {
 
     public function display_settings() {
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('Bookmarks', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('Bookmarks', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row">
@@ -99,7 +98,18 @@ class bookmarks_reclaim_module extends reclaim_module {
             $image_url = '';
             $published = $item->get_date();
             $description = self::process_content($item);
-            $tags = explode( " ", $item->get_category()->get_label() );
+	        
+	        $bookmarks_api_url_parsed = parse_url(get_option('bookmarks_api_url'));
+            $is_pinboard = ($bookmarks_api_url_parsed['host'] == "feeds.pinboard.in");
+            $tags = array();
+
+			if ($category= $item->get_category() && $is_pinboard) {
+                $tags = explode( " ", $item->get_category()->get_label() );
+            } else {
+                foreach ($item->get_categories() as $category) {
+                    $tags[] = $category->get_label();
+                }
+            }
             // filter tags, tnx to http://stackoverflow.com/questions/369602/delete-an-element-from-an-array
             $tags = array_diff($tags, array("w", "s"));
 

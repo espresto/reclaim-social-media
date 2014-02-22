@@ -24,6 +24,7 @@ class goodreads_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'goodreads';
+        $this->has_ajaxsync = false;
     }
 
     public function register_settings() {
@@ -33,11 +34,9 @@ class goodreads_reclaim_module extends reclaim_module {
 
     public function display_settings() {
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3><?php _e('Goodreads', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('Goodreads', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Goodreads User ID (6196450)', 'reclaim'); ?></th>

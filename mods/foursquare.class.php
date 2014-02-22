@@ -29,6 +29,7 @@ class foursquare_reclaim_module extends reclaim_module {
 
     public function __construct() {
         $this->shortname = 'foursquare';
+        $this->has_ajaxsync = true;
     }
 
     public function register_settings() {
@@ -59,11 +60,9 @@ class foursquare_reclaim_module extends reclaim_module {
             }
         }
 ?>
-        <tr valign="top">
-            <th colspan="2"><a name="<?php echo $this->shortName(); ?>"></a><h3 id=""><?php _e('foursquare', 'reclaim'); ?></h3></th>
-        </tr>
 <?php
-        parent::display_settings($this->shortname);
+        $displayname = __('foursquare', 'reclaim');
+        parent::display_settings($this->shortname, $displayname);
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('foursquare client id', 'reclaim'); ?></th>
