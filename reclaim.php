@@ -96,8 +96,13 @@ class reclaim_core {
         add_action('wp_logout', array($this, 'myEndSession'), 1, 2);
         add_action('wp_login', array($this, 'myEndSession'), 1, 3);
 
-        add_filter('post_link', array($this, 'original_permalink'), 1, 4);
-        add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
+		if (get_option('reclaim_link_original')) {
+		// to do: differentiate between mods and post types
+		// i.e. link formats could always link to source, mods
+		// only if user wants to
+            add_filter('post_link', array($this, 'original_permalink'), 1, 4);
+            add_filter('post_type_link', array($this, 'original_permalink'), 1, 5);
+        }
         add_filter('the_content', array($this, 'reclaim_content'), 100);
 
         add_action('reclaim_update_hook', array($this, 'updateMods'));
@@ -249,6 +254,7 @@ class reclaim_core {
     public function register_settings() {
         register_setting('reclaim-social-settings', 'reclaim_update_interval');
         register_setting('reclaim-social-settings', 'reclaim_auto_update');
+        register_setting('reclaim-social-settings', 'reclaim_link_original');
         register_setting('reclaim-social-settings', 'reclaim_show_map');
         foreach($this->mods_loaded as $mod) {
             $mod['instance']->register_settings();
@@ -279,7 +285,11 @@ class reclaim_core {
                 <th scope="row"><label for="reclaim_update_interval"><?php _e('Update Interval (in seconds)', 'reclaim'); ?></label></th>
                 <td><input type="text" name="reclaim_update_interval" value="<?php echo self::get_interval(); ?>" /></td>
             </tr>
-             <tr valign="top">
+            <tr valign="top">
+                <th scope="row"><label for="reclaim_link_original"><?php _e('Link to original content', 'reclaim'); ?></label></th>
+                <td><input type="checkbox" name="reclaim_link_original" value="1" <?php checked(get_option('reclaim_link_original')); ?> /></td>
+            </tr>
+            <tr valign="top">
                 <th scope="row"><label for="reclaim_show_map"><?php _e('Show integrated map', 'reclaim'); ?></label></th>
                 <td><input type="checkbox" name="reclaim_show_map" value="1" <?php checked(get_option('reclaim_show_map')); ?> /></td>
             </tr>
@@ -296,6 +306,7 @@ class reclaim_core {
 <?php
     }
 
+    // also see function syndication_permalink in feedwordpress/feedwordpress.php
     public function original_permalink($permalink = '', $post = null, $leavename = false, $sample = false) {
         global $id;
 
