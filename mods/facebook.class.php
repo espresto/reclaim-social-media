@@ -19,12 +19,13 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
-    private static $count = 400;
+    private static $count = 40;
+    private static $max_import_loops = 1;
     private static $timeout = 60;
 
     public function __construct() {
         $this->shortname = 'facebook';
-        $this->has_ajaxsync = false;
+        $this->has_ajaxsync = true;
     }
 
     public function register_settings() {
@@ -190,8 +191,11 @@ class facebook_reclaim_module extends reclaim_module {
                     $data = self::map_data($rawData);
                     parent::insert_posts($data);
 
-                    if ( !$forceResync && count($data) > 0 &&
-                         intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate) ) {
+                    if (
+                        !$forceResync && count($data) > 0
+                        && intval($rawData['data'][count($rawData['data'])-1]["created_time"]) < intval($lastupdate)
+                        || $i > self::$max_import_loops
+                        ) {
                         // abort requests if we've already seen these events
                         $urlNext = "";
                     }
@@ -212,6 +216,71 @@ class facebook_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
+    // called from ajax sync, calls import_tweet()
+    public function ajax_resync_items() {
+        $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
+    	$offset = intval( $_POST['offset'] );
+    	$limit = intval( $_POST['limit'] );
+    	$count = intval( $_POST['count'] );
+    	$next_url = isset($_POST['next_url']) ? $_POST['next_url'] : null;
+    
+        self::log($this->shortName().' ' . $type . ' resync '.$offset.'-'.($offset + $limit).':'.$count);
+    	
+    	$return = array(
+    		'success' => false,
+    		'error' => '',
+			'result' => null
+    	);
+    	
+        if (get_option('facebook_username') && get_option('facebook_user_id') &&  get_option('facebook_oauth_token')) {
+            if ($next_url != '') {
+                $rawData = parent::import_via_curl($next_url, self::$timeout);
+            } else {
+                $rawData = parent::import_via_curl(sprintf(self::$apiurl, get_option('facebook_user_id'), self::$count, substr(get_bloginfo('language'), 0, 2), get_option('facebook_oauth_token')), self::$timeout);
+            }
+
+            $rawData = json_decode($rawData, true);
+            if (!($rawData['error']['code'])) {
+                $data = self::map_data($rawData, $type);
+                parent::insert_posts($data);
+                update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+
+                if (!isset($rawData['paging']['next'])) { 
+                    //$return['error'] = sprintf(__('%s %s import done.', 'reclaim'), $type, $this->shortname); 
+                    $return['result'] = array(
+                        // when we're done, tell ajax script the number of imported items
+                        // and that we're done (offset == count)
+                        'offset' => $offset + sizeof($data),
+                        'count' => $offset + sizeof($data),
+                        'next_url' => null,
+                    );
+                } else {
+                    $return['result'] = array(
+                        'offset' => $offset + sizeof($data),
+                        // take the next pagination url instead of calculating
+                        // a self one
+                        'next_url' => $rawData['paging']['next'],
+                    );
+                }
+                $return['success'] = true;
+            }
+            elseif (isset($rawdata['error']['code']) != 200) {
+                $return['error'] = $rawData['error']['message'] . " (Error code " . $rawData['error']['code'] . ")";
+            }
+            else $return['error'] = sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname);
+        }
+        else $return['error'] = sprintf(__('%s %s user data missing. No import was done', 'reclaim'), $this->shortname, $type);
+
+    	echo(json_encode($return));
+    	 
+    	die();
+    }
+
+
+    public function count_items() {
+    	return 999999;
+    }
+
     private function map_data($rawData) {
         $data = array();
         if (!is_array($rawData['data'])) {
@@ -230,6 +299,7 @@ class facebook_reclaim_module extends reclaim_module {
                     && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
                     && $entry['application']['namespace'] != "NetworkedBlogs" // no  NetworkedBlogs syndication
                     && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
+                    && $entry['application']['namespace'] != "friendfeed" // no friendfeed
                     )
                )
                && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
