@@ -240,7 +240,7 @@ class moves_reclaim_module extends reclaim_module {
                 $image_url = '';
                 $tags = '';
                 $link = '';
-                $title = sprintf(__('Activity on %s', 'reclaim'), date(get_option('date_format'), strtotime($day["date"])));
+                $title = sprintf(__('Activity on %s', 'reclaim'), date_i18n(get_option('date_format'), strtotime($day["date"])));
 
                 $post_meta['moves_api_data'] = json_encode($day);
                 $activity_grouped = $this->construct_activity_group_array($day);
