@@ -99,11 +99,11 @@ class bookmarks_reclaim_module extends reclaim_module {
             $published = $item->get_date();
             $description = self::process_content($item);
 	        
-	        $bookmarks_api_url_parsed = parse_url(get_option('bookmarks_api_url'));
+            $bookmarks_api_url_parsed = parse_url(get_option('bookmarks_api_url'));
             $is_pinboard = ($bookmarks_api_url_parsed['host'] == "feeds.pinboard.in");
             $tags = array();
 
-			if ($category= $item->get_category() && $is_pinboard) {
+            if ($category= $item->get_category() && $is_pinboard) {
                 $tags = explode( " ", $item->get_category()->get_label() );
             } else {
                 foreach ($item->get_categories() as $category) {
@@ -112,6 +112,7 @@ class bookmarks_reclaim_module extends reclaim_module {
             }
             // filter tags, tnx to http://stackoverflow.com/questions/369602/delete-an-element-from-an-array
             $tags = array_diff($tags, array("w", "s"));
+            
 
             /*
             *  set post meta galore start
