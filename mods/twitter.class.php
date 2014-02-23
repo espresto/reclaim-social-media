@@ -81,7 +81,9 @@ class twitter_reclaim_module extends reclaim_module {
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('twitter user secret', 'reclaim'); ?></th>
-            <td><input type="text" name="twitter_user_secret" value="<?php echo get_option('twitter_user_secret'); ?>" /></td>
+            <td><input type="text" name="twitter_user_secret" value="<?php echo get_option('twitter_user_secret'); ?>" />
+            <p class="description"><?php echo sprintf(__('Some help on how to get the keys and secrets <a href="%s">here</a>.','reclaim'), 'https://github.com/espresto/reclaim-social-media/wiki/Get-API-keys-for-Twitter'); ?></p>
+            </td>
         </tr>
 <?php
     }

@@ -51,23 +51,27 @@ class youtube_reclaim_module extends reclaim_module {
             <td><input type="checkbox" name="youtube_import_favs" value="1" <?php checked(get_option('youtube_import_favs')); ?> />
             <?php if (get_option('youtube_import_favs')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
             <?php if (get_option('youtube_import_favs')) { ?><input type="submit" class="button button-secondary <?php echo $this->shortName(); ?>_count_all_items" value="<?php _e('Count with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
+            <p class="description"><?php _e('Count value returned by YouTube API might not be accurate.','reclaim'); ?></p>
             </td>
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Category for Favs', 'reclaim'); ?></th>
             <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => 'youtube_favs_category', 'hide_empty' => 0, 'selected' => get_option('youtube_favs_category'))); ?></td>
         </tr>
+<?php if (get_option('google_api_key')) :?>
         <tr valign="top">
             <th scope="row"><?php _e('Get activity? (i.e. videos you gave a thumbs up)', 'reclaim'); ?></th>
             <td><input type="checkbox" name="youtube_import_activity" value="1" <?php checked(get_option('youtube_import_activity')); ?> />
-            <?php if (get_option('youtube_import_activity')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'activity'}" /><?php } ?>
+            <?php if (get_option('youtube_import_activity')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync activity with ajax', 'reclaim'); ?>" data-resync="{type:'activity'}" /><?php } ?>
             <?php if (get_option('youtube_import_activity')) { ?><input type="submit" class="button button-secondary <?php echo $this->shortName(); ?>_count_all_items" value="<?php _e('Count with ajax', 'reclaim'); ?>" data-resync="{type:'activity'}" /><?php } ?>
+            <p class="description"><?php _e('Count value returned by YouTube API might not be accurate.','reclaim'); ?></p>
             </td>
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Category for activity', 'reclaim'); ?></th>
             <td><?php wp_dropdown_categories(array('hierarchical' => 1, 'name' => 'youtube_activity_category', 'hide_empty' => 0, 'selected' => get_option('youtube_activity_category'))); ?></td>
         </tr>
+<?php endif;?>
         <tr valign="top">
             <th scope="row"><?php _e('YouTube username', 'reclaim'); ?></th>
             <td><input type="text" name="youtube_username" value="<?php echo get_option('youtube_username'); ?>" /></td>

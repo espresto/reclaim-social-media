@@ -95,6 +95,7 @@ class facebook_reclaim_module extends reclaim_module {
             <th scope="row"><label for="facebook_app_secret"><?php _e('Facebook app secret', 'reclaim'); ?></label></th>
             <td><input type="text" name="facebook_app_secret" value="<?php echo get_option('facebook_app_secret'); ?>" />
             <input type="hidden" name="facebook_oauth_token" value="<?php echo get_option('facebook_oauth_token'); ?>" />
+            <p class="description"><?php echo sprintf(__('Some help on how to get the keys and secrets <a href="%s">here</a>.','reclaim'), 'https://github.com/espresto/reclaim-social-media/wiki/Get-App-Credentials-for-Facebook'); ?></p>
             </td>
         </tr>
         <tr valign="top">
