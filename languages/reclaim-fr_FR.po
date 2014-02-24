@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-02-24 21:11+0100\n"
-"PO-Revision-Date: 2014-02-24 21:19+0100\n"
+"PO-Revision-Date: 2014-02-24 21:23+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -454,7 +454,7 @@ msgstr ""
 #: mods/youtube.class.php:63
 msgid "Get activity? (i.e. videos you gave a thumbs up)"
 msgstr ""
-"Retourner les activités (p.ex. les vidéos que vous avez marqué comme "
+"Retrouvez les activités (p.ex. les vidéos que vous avez marqué comme "
 "<em>J'aime</em>"
 
 #: mods/youtube.class.php:65
