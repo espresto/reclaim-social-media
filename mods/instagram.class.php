@@ -45,21 +45,28 @@ class instagram_reclaim_module extends reclaim_module {
     }
 
     public function display_settings() {
-        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='instagram') && (isset($_SESSION['hybridauth_user_profile']))) {
+        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='instagram') && (isset($_SESSION['login'])) ) { //&& (isset($_SESSION['hybridauth_user_profile']))
             $user_profile       = json_decode($_SESSION['hybridauth_user_profile']);
             $user_access_tokens = json_decode($_SESSION['hybridauth_user_access_tokens']);
-            $error = $_SESSION['e'];
+            $login              = $_SESSION['login'];
+            $error              = $_SESSION['e'];
 
             if ($error) {
-                echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
+                echo '<div class="error"><p>'.esc_html( $error ).'</p></div>';
             }
             else {
                 update_option('instagram_user_id', $user_profile->identifier);
                 update_option('instagram_user_name', $user_profile->displayName);
                 update_option('instagram_access_token', $user_access_tokens->access_token);
             }
+            if ( $login == 0 ) {
+                update_option('instagram_user_id', '');
+                update_option('instagram_user_name', '');
+                update_option('instagram_access_token', '');
+            }
 //            print_r($_SESSION);
 //            echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
+//            echo "<pre>" . print_r( $_SESSION, true ) . "</pre>" ;
 //            echo $user_access_tokens->accessToken;
 //            echo $user_profile->displayName;
             if(session_id()) {
@@ -145,6 +152,13 @@ class instagram_reclaim_module extends reclaim_module {
                 .'&mod='.$this->shortname
                 .'&callbackUrl='.$callback
                 .'">'.$link_text.'</a>';
+                echo '<a class="button button-secondary" href="'
+                    .plugins_url( '/helper/hybridauth/hybridauth_helper.php' , dirname(__FILE__) )
+                    .'?'
+                    .'&mod='.$this->shortname
+                    .'&callbackUrl='.$callback
+                    .'&login=0'
+                    .'">logout</a>';
 
             }
             else {

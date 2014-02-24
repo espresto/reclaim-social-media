@@ -39,23 +39,19 @@ class facebook_reclaim_module extends reclaim_module {
     }
 
     public function display_settings() {
-        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') ) {
+        if ( isset( $_GET['link']) && (strtolower($_GET['mod'])=='facebook') && (isset($_SESSION['login'])) ) {
             $user_profile       = json_decode($_SESSION['hybridauth_user_profile']);
             $user_access_tokens = json_decode($_SESSION['hybridauth_user_access_tokens']);
             $login              = $_SESSION['login'];
             $error              = $_SESSION['e'];
 
             if ($error!="") {
-                echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $error ),'</p></div>';
-                //echo '<div class="error"><p><strong>Error:</strong> ',esc_html( $e ),'</p></div>';
+                echo '<div class="error"><p>'.esc_html( $error ).'</p></div>';
             }
             else {
                 update_option('facebook_user_id', $user_profile->identifier);
                 update_option('facebook_username', $user_profile->displayName);
                 update_option('facebook_oauth_token', $user_access_tokens->access_token);
-                if (session_id()) {
-                    //session_destroy ();
-                }
             }
 
             if ( $login == 0 ) {
@@ -68,6 +64,9 @@ class facebook_reclaim_module extends reclaim_module {
 //            echo "<pre>" . print_r( $user_profile, true ) . "</pre>" ;
 //            echo $user_access_token->accessToken;
 //            $user_profile->displayName
+            if(session_id()) {
+                session_destroy ();
+            }
         }
 
 ?>
@@ -77,14 +76,14 @@ class facebook_reclaim_module extends reclaim_module {
 ?>
         <tr valign="top">
             <th scope="row"><?php _e('Facebook user ID', 'reclaim'); ?></th>
-            <td><?php echo get_option('facebook_user_id'); ?>
-            <input type="hidden" name="facebook_user_id" value="<?php echo get_option('facebook_user_id'); ?>" />
+            <td><?php //echo get_option('facebook_user_id'); ?>
+            <input type="text" name="facebook_user_id" value="<?php echo get_option('facebook_user_id'); ?>" />
             </td>
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('Facebook user name', 'reclaim'); ?></th>
-            <td><?php echo get_option('facebook_username'); ?>
-            <input type="hidden" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
+            <td><?php //echo get_option('facebook_username'); ?>
+            <input type="text" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
             </td>
         </tr>
         <tr valign="top">
@@ -342,7 +341,7 @@ class facebook_reclaim_module extends reclaim_module {
                 $post_meta["_post_generator"] = $this->shortname;
 
                 // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
-                // to be able to retrieve facebook comments and likes (if social is
+                // to be able to retrieve facebook comments and likes (if social is 
                 // installed)
                 $from = $entry['from']['id'];
                 $id = $entry['id'];
