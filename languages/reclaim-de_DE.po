@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-23 23:37+0100\n"
-"PO-Revision-Date: 2014-02-23 23:40+0100\n"
+"POT-Creation-Date: 2014-02-24 18:08+0100\n"
+"PO-Revision-Date: 2014-02-24 18:08+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -33,8 +33,8 @@ msgstr "Letzte Aktualisierung %s"
 msgid "Resync with ajax"
 msgstr "Synchronisiseren (Ajax)"
 
-#: mod.class.php:55 mods/instagram.class.php:78 mods/twitter.class.php:59
-#: mods/youtube.class.php:53 mods/youtube.class.php:64
+#: mod.class.php:55 mods/instagram.class.php:85 mods/twitter.class.php:59
+#: mods/youtube.class.php:53 mods/youtube.class.php:66
 msgid "Count with ajax"
 msgstr "Zählen"
 
@@ -221,10 +221,10 @@ msgstr "Keine %s Daten"
 #: mods/flickr.class.php:112 mods/foursquare.class.php:155
 #: mods/foursquare.class.php:186 mods/github.class.php:78
 #: mods/goodreads.class.php:81 mods/google_plus.class.php:101
-#: mods/google_plus.class.php:121 mods/instagram.class.php:207
-#: mods/instagram.class.php:266 mods/moves.class.php:170
-#: mods/moves.class.php:222 mods/twitter.class.php:101 mods/vine.class.php:77
-#: mods/vine.class.php:118 mods/youtube.class.php:114
+#: mods/google_plus.class.php:121 mods/instagram.class.php:221
+#: mods/instagram.class.php:280 mods/moves.class.php:170
+#: mods/moves.class.php:222 mods/twitter.class.php:103 mods/vine.class.php:77
+#: mods/vine.class.php:118 mods/youtube.class.php:118
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
@@ -234,25 +234,30 @@ msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
 msgid "View on %s"
 msgstr "Auf %s ansehen"
 
-#: mods/facebook.class.php:75
+#: mods/facebook.class.php:74
 msgid "Facebook"
 msgstr "Facebook"
 
-#: mods/facebook.class.php:79
+#: mods/facebook.class.php:78
 msgid "Facebook user ID"
 msgstr "Facebook User ID"
 
-#: mods/facebook.class.php:85
+#: mods/facebook.class.php:84
 msgid "Facebook user name"
 msgstr "Facebook Benutzername"
 
-#: mods/facebook.class.php:91
+#: mods/facebook.class.php:90
 msgid "Facebook app id"
 msgstr "Facebook App ID"
 
-#: mods/facebook.class.php:95
+#: mods/facebook.class.php:94
 msgid "Facebook app secret"
 msgstr "Facebook App Secret"
+
+#: mods/facebook.class.php:97 mods/twitter.class.php:85
+#, php-format
+msgid "Some help on how to get the keys and secrets <a href=\"%s\">here</a>."
+msgstr "Hilfe zum den Keys und Secrets <a href=\"%s\">hier</a>."
 
 #: mods/facebook.class.php:105
 msgid "Authorize with Facebook"
@@ -264,7 +269,7 @@ msgid "<p>Facebook is authorized as %s</p>"
 msgstr "<p>Bei Facebook angemeldet als %s</p>"
 
 #: mods/facebook.class.php:109 mods/foursquare.class.php:96
-#: mods/instagram.class.php:129 mods/moves.class.php:111
+#: mods/instagram.class.php:136 mods/moves.class.php:111
 msgid "Authorize again"
 msgstr "Nochmal anmelden"
 
@@ -289,15 +294,15 @@ msgstr "%s schloss mit einem Fehler ab. Fahre fort mit %s"
 
 #: mods/facebook.class.php:270 mods/foursquare.class.php:153
 #: mods/foursquare.class.php:184 mods/google_plus.class.php:98
-#: mods/instagram.class.php:191 mods/instagram.class.php:264
+#: mods/instagram.class.php:205 mods/instagram.class.php:278
 #: mods/moves.class.php:168 mods/moves.class.php:220 mods/vine.class.php:115
-#: mods/youtube.class.php:88 mods/youtube.class.php:177
+#: mods/youtube.class.php:92 mods/youtube.class.php:181
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s gab keine Daten zurück. Kein Import ausgeführt."
 
 #: mods/facebook.class.php:272 mods/flickr.class.php:171
-#: mods/twitter.class.php:138 mods/youtube.class.php:179
+#: mods/twitter.class.php:140 mods/youtube.class.php:183
 #, php-format
 msgid "%s %s user data missing. No import was done"
 msgstr "%s %s Benutzer Daten fehlen. Kein Import ausgeführt"
@@ -331,7 +336,7 @@ msgstr "Flickr User ID"
 msgid "(optional) flickr api key"
 msgstr "Flickr API Key (optional)"
 
-#: mods/flickr.class.php:169 mods/twitter.class.php:234
+#: mods/flickr.class.php:169 mods/twitter.class.php:236
 #, php-format
 msgid "%s %s returned no data. No import was done"
 msgstr "%s %s hat keine Daten zurückgeliefert. Kein Import ausgeführt"
@@ -357,7 +362,7 @@ msgstr "Foursquare Client Secret"
 msgid "Get your Foursquare client and credentials <a href=\"%s\">here</a>. "
 msgstr "Die Foursquare Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
 
-#: mods/foursquare.class.php:79 mods/instagram.class.php:110
+#: mods/foursquare.class.php:79 mods/instagram.class.php:117
 #: mods/moves.class.php:94
 #, php-format
 msgid "Use <code>%s</code> as \"Redirect URI\""
@@ -455,86 +460,86 @@ msgstr ""
 msgid "View on Google+"
 msgstr "Auf Google+ ansehen"
 
-#: mods/instagram.class.php:71
+#: mods/instagram.class.php:78
 msgid "instagram"
 msgstr "Instagram"
 
-#: mods/instagram.class.php:75 mods/twitter.class.php:56
+#: mods/instagram.class.php:82 mods/twitter.class.php:56
 #: mods/youtube.class.php:50
 msgid "Get Favs?"
 msgstr "Favs holen?"
 
-#: mods/instagram.class.php:77 mods/twitter.class.php:58
-#: mods/youtube.class.php:52 mods/youtube.class.php:63
+#: mods/instagram.class.php:84 mods/twitter.class.php:58
+#: mods/youtube.class.php:52
 msgid "Resync favs with ajax"
 msgstr "Favs synchronisieren (Ajax)"
 
-#: mods/instagram.class.php:82 mods/twitter.class.php:63
-#: mods/youtube.class.php:57
+#: mods/instagram.class.php:89 mods/twitter.class.php:63
+#: mods/youtube.class.php:58
 msgid "Category for Favs"
 msgstr "Kategorie für Favs"
 
-#: mods/instagram.class.php:86
+#: mods/instagram.class.php:93
 msgid "Instagram user id"
 msgstr "Instagram User ID"
 
-#: mods/instagram.class.php:92
+#: mods/instagram.class.php:99
 msgid "Instagram user name"
 msgstr "Instagram Benutzername"
 
-#: mods/instagram.class.php:98
+#: mods/instagram.class.php:105
 msgid "Instagram client id"
 msgstr "Instagram Client ID"
 
-#: mods/instagram.class.php:103
+#: mods/instagram.class.php:110
 msgid "Instagram client secret"
 msgstr "Instagram Client Secret"
 
-#: mods/instagram.class.php:109
+#: mods/instagram.class.php:116
 #, php-format
 msgid "Get your Instagram client and credentials <a href=\"%s\">here</a>. "
 msgstr ""
 "Die Instagram-daten (client and credentials) gibts <a href=\"%s\">hier</a>. "
 
-#: mods/instagram.class.php:125
+#: mods/instagram.class.php:132
 msgid "Authorize with Instagram"
 msgstr "Bei Instagram anmelden"
 
-#: mods/instagram.class.php:128
+#: mods/instagram.class.php:135
 #, php-format
 msgid "<p>Instagram authorized as %s</p>"
 msgstr "<p>Bei Instagram angemeldet als %s</p>"
 
-#: mods/instagram.class.php:151
+#: mods/instagram.class.php:165
 msgid "enter instagram app id and secret"
 msgstr "Die Instagram App ID und Secret eingeben"
 
-#: mods/instagram.class.php:189
+#: mods/instagram.class.php:203
 #, php-format
 msgid "END %s import"
 msgstr "END %s import"
 
-#: mods/instagram.class.php:202
+#: mods/instagram.class.php:216
 #, php-format
 msgid "END %s favs import"
 msgstr "END %s favs import"
 
-#: mods/instagram.class.php:204 mods/youtube.class.php:98
+#: mods/instagram.class.php:218 mods/youtube.class.php:102
 #, php-format
 msgid "%s favs returned no data. No import was done"
 msgstr "%s favs returned no data. No import was done"
 
-#: mods/instagram.class.php:308
+#: mods/instagram.class.php:322
 #, php-format
 msgid "I faved an Instagram from %s"
 msgstr "Ich habe ein Instagram von %s gefavt"
 
-#: mods/instagram.class.php:371
+#: mods/instagram.class.php:385
 #, php-format
 msgid "I uploaded <a href=\"%s\">an instagram</a>."
 msgstr "Ich habe ein <a href=\"%s\">Instagram</a> hochgeladen."
 
-#: mods/instagram.class.php:377 mods/instagram.class.php:384
+#: mods/instagram.class.php:391 mods/instagram.class.php:398
 msgid "View on Instagram"
 msgstr "Auf Instagram ansehen"
 
@@ -662,17 +667,17 @@ msgstr "Twitter User Token"
 msgid "twitter user secret"
 msgstr "Twitter User Secret"
 
-#: mods/twitter.class.php:94
+#: mods/twitter.class.php:96
 #, php-format
 msgid "starting %s import"
 msgstr "Starte %s Import"
 
-#: mods/twitter.class.php:97
+#: mods/twitter.class.php:99
 #, php-format
 msgid "starting %s-favs import"
 msgstr "Starte %s-Favs Import"
 
-#: mods/twitter.class.php:184
+#: mods/twitter.class.php:186
 #, php-format
 msgid ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
@@ -681,17 +686,17 @@ msgstr ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
 "batch: %s, req-ok: %d, error: %s"
 
-#: mods/twitter.class.php:272
+#: mods/twitter.class.php:274
 #, php-format
 msgid "I favorited a tweet by @%s"
 msgstr "Ich habe einen Tweet von @%s favorisiert"
 
-#: mods/twitter.class.php:273
+#: mods/twitter.class.php:275
 #, php-format
 msgid "I favorited a tweet by <a href=\"%s\">@%s</a>"
 msgstr "Ich habe einen Tweet von <a href=\"%s\">@%s</a> favorisiert"
 
-#: mods/twitter.class.php:399
+#: mods/twitter.class.php:401
 msgid "View on Twitter"
 msgstr "Auf Twitter ansehen"
 
@@ -716,40 +721,49 @@ msgstr "<p>Von <a href=\"%s\">@%s</a> gerevined.</p>"
 msgid "YouTube"
 msgstr "YouTube"
 
-#: mods/youtube.class.php:61
+#: mods/youtube.class.php:54 mods/youtube.class.php:67
+msgid "Count value returned by YouTube API might not be accurate."
+msgstr ""
+"Von der YouTube API zurückgelieferte Anzahl ist möglicherweise nicht akkurat."
+
+#: mods/youtube.class.php:63
 msgid "Get activity? (i.e. videos you gave a thumbs up)"
 msgstr ""
 "Aktivitäten holen? (z.B. Video die mit einem <em>Daumen-hoch</em> bewertet "
 "wurden)"
 
-#: mods/youtube.class.php:68
+#: mods/youtube.class.php:65
+msgid "Resync activity with ajax"
+msgstr "Synchronisiseren (Ajax)"
+
+#: mods/youtube.class.php:71
 msgid "Category for activity"
 msgstr "Kategorie für Aktivitäten"
 
-#: mods/youtube.class.php:72
+#: mods/youtube.class.php:76
 msgid "YouTube username"
 msgstr "YouTube Benutzername"
 
-#: mods/youtube.class.php:105
+#: mods/youtube.class.php:109
 #, php-format
 msgid "%s activity returned data. Import will be done"
 msgstr "%s hat Daten geliefert. Import läuft."
 
-#: mods/youtube.class.php:110
+#: mods/youtube.class.php:114
 #, php-format
 msgid "%s activity returned no data. No import was done"
 msgstr "%s hat keine daten geliefert. Es wurde nichts importiert."
 
-#: mods/youtube.class.php:233
+#: mods/youtube.class.php:237
 #, php-format
 msgid "I added a video from %s to my YouTube favorites"
 msgstr "Ich ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
 
-#: mods/youtube.class.php:238
+#: mods/youtube.class.php:242
 msgid "I rated a video on YouTube"
 msgstr "Ich habe ein Video auf YouTube bewertet"
 
-#: mods/youtube.class.php:277
+#: mods/youtube.class.php:281
 #, php-format
 msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
 msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
