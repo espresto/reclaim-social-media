@@ -56,6 +56,7 @@ class twitter_reclaim_module extends reclaim_module {
             <th scope="row"><?php _e('Get Favs?', 'reclaim'); ?></th>
             <td><input type="checkbox" name="twitter_import_favs" value="1" <?php checked(get_option('twitter_import_favs')); ?> />
             <?php if (get_option('twitter_import_favs')) { ?><input type="submit" class="button button-primary <?php echo $this->shortName(); ?>_resync_items" value="<?php _e('Resync favs with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
+            <?php if (get_option('twitter_import_favs')) { ?><input type="submit" class="button button-secondary <?php echo $this->shortName(); ?>_count_all_items" value="<?php _e('Count with ajax', 'reclaim'); ?>" data-resync="{type:'favs'}" /><?php } ?>
             </td>
         </tr>
         <tr valign="top">
@@ -80,7 +81,9 @@ class twitter_reclaim_module extends reclaim_module {
         </tr>
         <tr valign="top">
             <th scope="row"><?php _e('twitter user secret', 'reclaim'); ?></th>
-            <td><input type="text" name="twitter_user_secret" value="<?php echo get_option('twitter_user_secret'); ?>" /></td>
+            <td><input type="text" name="twitter_user_secret" value="<?php echo get_option('twitter_user_secret'); ?>" />
+            <p class="description"><?php echo sprintf(__('Some help on how to get the keys and secrets <a href="%s">here</a>.','reclaim'), 'https://github.com/espresto/reclaim-social-media/wiki/Get-API-keys-for-Twitter'); ?></p>
+            </td>
         </tr>
 <?php
     }
@@ -277,6 +280,7 @@ class twitter_reclaim_module extends reclaim_module {
 
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
+            $post_meta["_reclaim_post_type"] = $type;
 
             // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
             // to be able to retrieve twitter replies (if wp-social is installed)
@@ -319,7 +323,7 @@ class twitter_reclaim_module extends reclaim_module {
 
     public function count_items() {
         $type = isset($_POST['type']) ? $_POST['type'] : $type;
-        if ($type == "favs") { return 99999; }
+        if ($type == "favs") { return 999999; }
         $reqOptions = array(
             'screen_name' => get_option('twitter_username'),
             'include_entities' => "false"

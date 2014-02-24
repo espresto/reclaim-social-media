@@ -91,19 +91,20 @@ jQuery(document).ready(function($) {
 		},
 		
 		// functions that get called on click or something like that
-		count_all_items: function() {
+		count_all_items: function(options) {
 			if (this.is_running()) {
 				this.ajax_abort();
 			}
 			else {
 				this.ajax_start(admin_reclaim_script_translation.Count_items_and_posts);
-	
-				this.ajax('count_all_items', {}, $.proxy(function(result) {
+				var o = $.extend({}, options);
+
+				this.ajax('count_all_items', o, $.proxy(function(result) {
 					this.ajax_end(result);
 				}, this));
 			}
 		},
-		
+
 		resync_items: function(options) {
 			if (this.is_running()) {
 				this.ajax_abort();
@@ -162,7 +163,8 @@ jQuery(document).ready(function($) {
 		},
 	
 		run : function () {
-			this.r.ajax_start(admin_reclaim_script_translation.Resyncing_items + (this.count - this.data.offset));
+			if (this.count == 999999) { this.r.ajax_start(admin_reclaim_script_translation.Resyncing_items + this.data.offset); }
+			else { this.r.ajax_start(admin_reclaim_script_translation.Resyncing_items + (this.count - this.data.offset) ); }
 			
 			// take these values always from config
 			this.data['limit'] = this.limit;

@@ -124,6 +124,7 @@ class vine_reclaim_module extends reclaim_module {
 
     private function map_data($rawData) {
         $data = array();
+        $type = "posts";
         //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['records'] as $entry){
             $description = htmlentities($entry['description']);
@@ -156,10 +157,12 @@ class vine_reclaim_module extends reclaim_module {
             if (isset($entry['repost']) && $entry['repost'] != "") {
                 $post_content = sprintf(__('<p>Revined from <a href="%s">@%s</a>.</p>', 'reclaim'), $entry['permalinkUrl'], $entry['username']). "[embed_code]";
                 $post_meta["revined"] = 1;
+                $type = "shares";
             } else {
                 $post_content = "[embed_code]";
                 $post_meta["revined"] = 0;
             }
+            $post_meta["_reclaim_post_type"] = $type;
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),

@@ -52,7 +52,7 @@ class reclaim_module {
             <td>
                     <?php if ($this->has_ajaxsync()) :?>
                         <input type="submit" class="button button-primary <?php echo $modname; ?>_resync_items" value="<?php _e('Resync with ajax', 'reclaim'); ?>" />
-                        <input type="submit" id="<?php echo $modname; ?>_count_all_items" class="button button-secondary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
+                        <input type="submit" class="<?php echo $modname; ?>_count_all_items button button-secondary" value="<?php _e('Count with ajax', 'reclaim'); ?>" />
                     <?php else :?>
                         <input type="submit" class="button button-primary" value="<?php _e('Re-Sync', 'reclaim'); ?>" name="<?php echo $modname; ?>_resync" />
                     <?php endif;?>
@@ -174,7 +174,15 @@ class reclaim_module {
     /**
      *
      */
-    public function count_posts() {
+    public function count_posts($type = null) {
+        if (isset($type)) { 
+            $type_query =  array(
+                                 'key' => '_reclaim_post_type',
+                                 'value' => $type,
+                                 'compare' => 'like'
+                            );
+        } else {$type_query = array();}
+
     	$posts = new WP_Query(array(
     			'posts_per_page' => -1,
     			'post_type' => 'post',
@@ -183,7 +191,8 @@ class reclaim_module {
     							'key' => '_post_generator',
     							'value' => $this->shortName(),
     							'compare' => 'like'
-    					)
+    					), 
+    					$type_query
     			)
     	));
 
@@ -413,11 +422,14 @@ class reclaim_module {
 	}
 	
 	public function ajax_count_all_items() {
+		$items = $this->count_items( $_POST['type'] );
+		if ($items == 999999) {$items = __('Unknown number of', 'reclaim');}
+		$posts = $this->count_posts( $_POST['type'] );
 		echo (json_encode(array(
 			'success' => true,
-			'result' => $this->count_items().' '
+			'result' => $items.' '
             	.__('items available', 'reclaim')
-            	.', '.$this->count_posts().' '
+            	.', '.$posts.' '
             	.__('posts created', 'reclaim')
 		)));
 		
@@ -438,6 +450,7 @@ class reclaim_module {
 		$offset = intval( $_POST['offset'] );
 		$limit = intval( $_POST['limit'] );
 		$count = intval( $_POST['count'] );
+		$type = $_POST['type'];
 		
 		self::log($this->shortName().' resync '.$offset.'-'.($offset + $limit).':'.$count);
 		
@@ -456,10 +469,14 @@ class reclaim_module {
 			var modname = '<?php echo($this->shortName()); ?>';
 
 			
-			$('#'+modname+'_count_all_items').click(function(eventObject) {
+			$('.'+modname+'_count_all_items').click(function(eventObject) {
 				var r = reclaim.getInstance(modname, eventObject);
+				var options = {};
+				if ($(eventObject.target).data('resync')) {
+					options = eval('('+$(eventObject.target).data('resync')+')');
+				}
 
-				r.count_all_items();
+				r.count_all_items(options);
 				
 				return false;
 			});
