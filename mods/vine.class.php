@@ -127,7 +127,8 @@ class vine_reclaim_module extends reclaim_module {
         $type = "posts";
         //echo '<li><a href="'.$record->permalinkUrl.'">'.$record->description.' @ '.$record->venueName.'</a></li>';
         foreach($rawData['records'] as $entry){
-            $description = htmlentities($entry['description']);
+            //$description = htmlentities($entry['description']);
+            $description = $entry['description'];
             $venueName = $entry['venueName'];
             if (isset($description) && isset($venueName)) {
             	$title = $description . ' @ ' . $venueName;
