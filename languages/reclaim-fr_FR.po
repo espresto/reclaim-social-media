@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-24 21:11+0100\n"
-"PO-Revision-Date: 2014-02-24 21:23+0100\n"
+"POT-Creation-Date: 2014-02-26 06:51+0100\n"
+"PO-Revision-Date: 2014-02-26 07:00+0100\n"
 "Last-Translator: Daniel Nix <daniel.nix@gmail.com>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: fr_FR\n"
@@ -25,16 +25,16 @@ msgstr "Activé"
 #: mod.class.php:43
 #, php-format
 msgid "last update %s"
-msgstr "Dernières mises      à jour le %s"
+msgstr "Dernières mises  à jour le %s"
 
 #: mod.class.php:54
 msgid "Resync with ajax"
-msgstr "Resynchroniser (Ajax)"
+msgstr "Resynchroniser"
 
 #: mod.class.php:55 mods/instagram.class.php:85 mods/youtube.class.php:53
 #: mods/youtube.class.php:66 mods/twitter.class.php:59
 msgid "Count with ajax"
-msgstr "Nbre d'éléments (ajax)"
+msgstr "Calculer le nombre d'éléments"
 
 #: mod.class.php:57
 msgid "Re-Sync"
@@ -590,7 +590,7 @@ msgstr "marche"
 
 #: mods/moves.class.php:500
 msgid "transport"
-msgstr "transport"
+msgstr "transports"
 
 #: mods/moves.class.php:644
 msgid "Steps"
@@ -740,7 +740,7 @@ msgstr "Activités Facebook"
 
 #: mods/facebook.class.php:461
 msgid "multiple items"
-msgstr "multiple items"
+msgstr "éléments multiples"
 
 #: mods/facebook.class.php:465
 #, php-format
@@ -749,7 +749,7 @@ msgstr "%s a aimé <a href=\"%s\">%s</a>"
 
 #: mods/facebook.class.php:528
 msgid "View on Facebook"
-msgstr "Afficher sur Facebook"
+msgstr "Montrer sur Facebook"
 
 #~ msgid "GET failed with: %s"
 #~ msgstr "GET failed with: %s"
