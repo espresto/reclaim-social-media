@@ -15,10 +15,13 @@ display: block;
 {
 	display: none;
 }
+
 .list-view .site-content .format-video .post-thumbnail,
 .list-view .site-content .format-image .post-thumbnail,
+.list-view .site-content .format-audio .post-thumbnail,
 article.format-video div.entry-media,
 article.format-image div.entry-media,
+article.format-audio div.entry-media,
 article.format-video .wp-post-image
 {
 	display: none;
@@ -47,7 +50,8 @@ height: 120px;
 display: block;
 }
 .list-view .site-content .format-video .post-thumbnail,
-.list-view .site-content .format-image .post-thumbnail 
+.list-view .site-content .format-image .post-thumbnail,
+.list-view .site-content .format-audio .post-thumbnail
 {
 display: block;
 }

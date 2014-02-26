@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-24 18:08+0100\n"
-"PO-Revision-Date: 2014-02-24 18:08+0100\n"
+"POT-Creation-Date: 2014-02-27 00:27+0100\n"
+"PO-Revision-Date: 2014-02-27 00:27+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -33,8 +33,9 @@ msgstr "Letzte Aktualisierung %s"
 msgid "Resync with ajax"
 msgstr "Synchronisiseren (Ajax)"
 
-#: mod.class.php:55 mods/instagram.class.php:85 mods/twitter.class.php:59
-#: mods/youtube.class.php:53 mods/youtube.class.php:66
+#: mod.class.php:55 mods/instagram.class.php:85 mods/soundcloud.class.php:87
+#: mods/twitter.class.php:59 mods/youtube.class.php:53
+#: mods/youtube.class.php:66
 msgid "Count with ajax"
 msgstr "Zählen"
 
@@ -223,8 +224,9 @@ msgstr "Keine %s Daten"
 #: mods/goodreads.class.php:81 mods/google_plus.class.php:101
 #: mods/google_plus.class.php:121 mods/instagram.class.php:221
 #: mods/instagram.class.php:280 mods/moves.class.php:170
-#: mods/moves.class.php:222 mods/twitter.class.php:103 mods/vine.class.php:77
-#: mods/vine.class.php:118 mods/youtube.class.php:118
+#: mods/moves.class.php:222 mods/soundcloud.class.php:223
+#: mods/soundcloud.class.php:270 mods/twitter.class.php:103
+#: mods/vine.class.php:77 mods/vine.class.php:118 mods/youtube.class.php:118
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
@@ -270,6 +272,7 @@ msgstr "<p>Bei Facebook angemeldet als %s</p>"
 
 #: mods/facebook.class.php:109 mods/foursquare.class.php:96
 #: mods/instagram.class.php:136 mods/moves.class.php:111
+#: mods/soundcloud.class.php:138
 msgid "Authorize again"
 msgstr "Nochmal anmelden"
 
@@ -295,8 +298,10 @@ msgstr "%s schloss mit einem Fehler ab. Fahre fort mit %s"
 #: mods/facebook.class.php:270 mods/foursquare.class.php:153
 #: mods/foursquare.class.php:184 mods/google_plus.class.php:98
 #: mods/instagram.class.php:205 mods/instagram.class.php:278
-#: mods/moves.class.php:168 mods/moves.class.php:220 mods/vine.class.php:115
-#: mods/youtube.class.php:92 mods/youtube.class.php:181
+#: mods/moves.class.php:168 mods/moves.class.php:220
+#: mods/soundcloud.class.php:207 mods/soundcloud.class.php:268
+#: mods/vine.class.php:115 mods/youtube.class.php:92
+#: mods/youtube.class.php:181
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s gab keine Daten zurück. Kein Import ausgeführt."
@@ -363,7 +368,7 @@ msgid "Get your Foursquare client and credentials <a href=\"%s\">here</a>. "
 msgstr "Die Foursquare Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
 
 #: mods/foursquare.class.php:79 mods/instagram.class.php:117
-#: mods/moves.class.php:94
+#: mods/moves.class.php:94 mods/soundcloud.class.php:119
 #, php-format
 msgid "Use <code>%s</code> as \"Redirect URI\""
 msgstr "<code>%s</code> als \"Redirect URI\" benutzen"
@@ -464,18 +469,18 @@ msgstr "Auf Google+ ansehen"
 msgid "instagram"
 msgstr "Instagram"
 
-#: mods/instagram.class.php:82 mods/twitter.class.php:56
-#: mods/youtube.class.php:50
+#: mods/instagram.class.php:82 mods/soundcloud.class.php:84
+#: mods/twitter.class.php:56 mods/youtube.class.php:50
 msgid "Get Favs?"
 msgstr "Favs holen?"
 
-#: mods/instagram.class.php:84 mods/twitter.class.php:58
-#: mods/youtube.class.php:52
+#: mods/instagram.class.php:84 mods/soundcloud.class.php:86
+#: mods/twitter.class.php:58 mods/youtube.class.php:52
 msgid "Resync favs with ajax"
 msgstr "Favs synchronisieren (Ajax)"
 
-#: mods/instagram.class.php:89 mods/twitter.class.php:63
-#: mods/youtube.class.php:58
+#: mods/instagram.class.php:89 mods/soundcloud.class.php:91
+#: mods/twitter.class.php:63 mods/youtube.class.php:58
 msgid "Category for Favs"
 msgstr "Kategorie für Favs"
 
@@ -514,17 +519,18 @@ msgstr "<p>Bei Instagram angemeldet als %s</p>"
 msgid "enter instagram app id and secret"
 msgstr "Die Instagram App ID und Secret eingeben"
 
-#: mods/instagram.class.php:203
+#: mods/instagram.class.php:203 mods/soundcloud.class.php:205
 #, php-format
 msgid "END %s import"
 msgstr "END %s import"
 
-#: mods/instagram.class.php:216
+#: mods/instagram.class.php:216 mods/soundcloud.class.php:218
 #, php-format
 msgid "END %s favs import"
 msgstr "END %s favs import"
 
-#: mods/instagram.class.php:218 mods/youtube.class.php:102
+#: mods/instagram.class.php:218 mods/soundcloud.class.php:220
+#: mods/youtube.class.php:102
 #, php-format
 msgid "%s favs returned no data. No import was done"
 msgstr "%s favs returned no data. No import was done"
@@ -643,6 +649,58 @@ msgstr "Schritte"
 msgid "h"
 msgstr "h"
 
+#: mods/soundcloud.class.php:80
+msgid "Soundcloud"
+msgstr "Soundcloud"
+
+#: mods/soundcloud.class.php:95
+msgid "SoundCloud user id"
+msgstr "SoundCloud User ID"
+
+#: mods/soundcloud.class.php:101
+msgid "SoundCloud user name"
+msgstr "SoundCloud Benutzername"
+
+#: mods/soundcloud.class.php:107
+msgid "SoundCloud client id"
+msgstr "SoundCloud Client ID"
+
+#: mods/soundcloud.class.php:112
+msgid "SoundCloud client secret"
+msgstr "SoundCloud „Client Secret“"
+
+#: mods/soundcloud.class.php:118
+#, php-format
+msgid "Get your SoundCloud client and credentials <a href=\"%s\">here</a>. "
+msgstr "Die SoundCloud Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
+
+#: mods/soundcloud.class.php:134
+msgid "Authorize with SoundCloud"
+msgstr "Bei SoundCloud anmelden"
+
+#: mods/soundcloud.class.php:137
+#, php-format
+msgid "<p>SoundCloud authorized as %s</p>"
+msgstr "<p>SoundCloud angemeldet als %s</p>"
+
+#: mods/soundcloud.class.php:167
+msgid "Enter SoundCloud app id and secret"
+msgstr "Die SoundCloud „App ID“ and „Secret“ eingeben"
+
+#: mods/soundcloud.class.php:308
+#, php-format
+msgid "I faved an track on SoundCloud from %s"
+msgstr "Ich habe ein Stück auf SoundCloud von %s gefavt"
+
+#: mods/soundcloud.class.php:362
+#, php-format
+msgid "I uploaded <a href=\"%s\">a track</a> to SoundCloud."
+msgstr "Ich habe <a href=\"%s\">ein Stück</a> auf SoundCloud geladen."
+
+#: mods/soundcloud.class.php:364 mods/soundcloud.class.php:371
+msgid "View on SoundCloud"
+msgstr "Auf SoundCloud ansehen"
+
 #: mods/twitter.class.php:52
 msgid "Twitter"
 msgstr "Twitter"
@@ -712,7 +770,7 @@ msgstr "Vine E-Mail"
 msgid "vine password"
 msgstr "Vine Passwort"
 
-#: mods/vine.class.php:158
+#: mods/vine.class.php:159
 #, php-format
 msgid "<p>Revined from <a href=\"%s\">@%s</a>.</p>"
 msgstr "<p>Von <a href=\"%s\">@%s</a> gerevined.</p>"
@@ -767,6 +825,9 @@ msgstr "Ich habe ein Video auf YouTube bewertet"
 #, php-format
 msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
 msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
+
+#~ msgid "View on soundcloud"
+#~ msgstr "Auf SoundCloud ansehen"
 
 #, fuzzy
 #~ msgid "%s"
