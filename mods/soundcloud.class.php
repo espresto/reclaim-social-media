@@ -111,7 +111,7 @@ class soundcloud_reclaim_module extends reclaim_module {
         <tr valign="top">
             <th scope="row"><?php _e('SoundCloud client secret', 'reclaim'); ?></th>
             <td><input type="text" type="password" name="soundcloud_client_secret" value="<?php echo get_option('soundcloud_client_secret'); ?>" />
-            <input type="text" name="soundcloud_access_token" value="<?php echo get_option('soundcloud_access_token'); ?>" />
+            <input type="hidden" name="soundcloud_access_token" value="<?php echo get_option('soundcloud_access_token'); ?>" />
             <p class="description">
             
             <?php
