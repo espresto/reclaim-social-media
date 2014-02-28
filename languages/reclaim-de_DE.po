@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-27 00:27+0100\n"
-"PO-Revision-Date: 2014-02-27 00:27+0100\n"
+"POT-Creation-Date: 2014-02-28 01:50+0100\n"
+"PO-Revision-Date: 2014-02-28 01:52+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -213,7 +213,7 @@ msgstr ""
 "feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
 
 #: mods/bookmarks.class.php:77 mods/flickr.class.php:96
-#: mods/goodreads.class.php:72 mods/vine.class.php:74
+#: mods/goodreads.class.php:72 mods/vine.class.php:74 mods/yelp.class.php:78
 #, php-format
 msgid "no %s data"
 msgstr "Keine %s Daten"
@@ -226,12 +226,13 @@ msgstr "Keine %s Daten"
 #: mods/instagram.class.php:280 mods/moves.class.php:170
 #: mods/moves.class.php:222 mods/soundcloud.class.php:223
 #: mods/soundcloud.class.php:270 mods/twitter.class.php:103
-#: mods/vine.class.php:77 mods/vine.class.php:118 mods/youtube.class.php:118
+#: mods/vine.class.php:77 mods/vine.class.php:118 mods/yelp.class.php:87
+#: mods/youtube.class.php:118
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
 
-#: mods/bookmarks.class.php:159
+#: mods/bookmarks.class.php:159 mods/yelp.class.php:162
 #, php-format
 msgid "View on %s"
 msgstr "Auf %s ansehen"
@@ -774,6 +775,28 @@ msgstr "Vine Passwort"
 #, php-format
 msgid "<p>Revined from <a href=\"%s\">@%s</a>.</p>"
 msgstr "<p>Von <a href=\"%s\">@%s</a> gerevined.</p>"
+
+#: mods/yelp.class.php:37
+msgid "Yelp"
+msgstr "Yelp"
+
+#: mods/yelp.class.php:45
+msgid "Yelp User ID"
+msgstr "Yelp User ID"
+
+#: mods/yelp.class.php:47
+msgid "Enter your Yelp User ID (not name). (i.e. a2Q607M2qn7Ik3XS3fzmvQ)"
+msgstr ""
+"Die Yelp Benutzer-ID eingeben (nicht den Benutzernamen). (Zum Beispiel "
+"a2Q607M2qn7Ik3XS3fzmvQ)"
+
+#: mods/yelp.class.php:108
+msgid "I wrote a review on Yelp"
+msgstr "Ich habe einen Beitrag auf Yelp geschrieben"
+
+#: mods/yelp.class.php:109
+msgid "View on Yelp"
+msgstr "Auf Yelp ansehen"
 
 #: mods/youtube.class.php:46
 msgid "YouTube"
