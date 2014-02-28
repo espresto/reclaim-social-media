@@ -40,6 +40,7 @@ define('RECLAIM_PLUGIN_URL', plugins_url('', __FILE__));
 
 class reclaim_core {
     private $mods_loaded = array();
+    private static $mod_name_list = array();
     private static $instance = 0;
     private static $options_page_url = 'options-general.php?page=reclaim/reclaim.php';
 
@@ -59,6 +60,7 @@ class reclaim_core {
             $this->mods_loaded[] = array('name' => $name,
                                          'active' => get_option($name.'_active'),
                                          'instance' => new $cName);
+            if (get_option($name.'_active')) { $this->mod_name_list[] = $name;}
         }
 
         foreach ($this->mods_loaded as $mod) {
@@ -106,6 +108,15 @@ class reclaim_core {
         add_filter('the_content', array($this, 'reclaim_content'), 100);
 
         add_action('reclaim_update_hook', array($this, 'updateMods'));
+    }
+
+    // not sure if this is done right … (felix)
+    public function modNameList() {
+        if ( !self::$mod_name_list ) {
+            $reclaim = new reclaim_core();
+            return $reclaim->mod_name_list;
+        }
+        return self::$mod_name_list;
     }
 
     public static function instance() {

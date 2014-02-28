@@ -238,10 +238,30 @@ class twitter_reclaim_module extends reclaim_module {
         return $return;
     }
 
+    private function filter_item($entry) {
+        // first, lets get an array of all actice mods
+        $needles = reclaim_core::modNameList();
+        // we don't want twitter to filter itself
+        if(($key = array_search('twitter', $needles)) !== false) {
+            unset($needles[$key]);
+        }
+        // and now lets check if the tweet source matches any of the mod names
+        // this should filter out instagram, yelp, youtube, etc.
+        if (parent::strpos_array($entry['source'], $needles)) {
+            parent::log('filtered a tweet because of this source: '. $entry['source']);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
     private function map_data($rawData, $type = "posts") {
         $data = array();
         $tags = array();
         foreach($rawData as $entry){
+        // first check if post should be filtered
+        if (!self::filter_item($entry)) {
             $content = self::construct_content($entry);
             $tags = self::get_hashtags($entry);
 
@@ -307,7 +327,8 @@ class twitter_reclaim_module extends reclaim_module {
                 'ext_guid' => $entry["id_str"],
                 'post_meta' => $post_meta
             );
-        }
+        } // end if filter
+        } // end foreach
         return $data;
     }
 
