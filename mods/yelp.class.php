@@ -18,7 +18,7 @@
 
 class yelp_reclaim_module extends reclaim_module {
     private static $timeout = 15;
-    private static $count = 10; // pinboard.in maximum: 400 ?count=400
+    private static $count = 10; // maximum: 10
     private static $post_format = 'article'; // no specific format
 
     public function __construct() {
@@ -39,10 +39,9 @@ class yelp_reclaim_module extends reclaim_module {
 ?>
         <tr valign="top">
             <th scope="row">
-                Yelp settings
+                <label for="yelp_user_id"><?php _e('Yelp User ID', 'reclaim'); ?></label>
             </th>
             <td>
-                <label for="yelp_user_id"><?php _e('Yelp User ID', 'reclaim'); ?></label>
                 <input type="text" name="yelp_user_id" class="widefat" value="<?php echo get_option('yelp_user_id'); ?>" />
                 <p class="description"><?php _e('Enter your Yelp User ID (not name). (i.e. a2Q607M2qn7Ik3XS3fzmvQ)', 'reclaim'); ?></p>
             </td>
@@ -92,60 +91,56 @@ class yelp_reclaim_module extends reclaim_module {
         $count = self::$count;
 
         foreach( $feed->get_items( 0, $count ) as $item ) {
-            $tags = array();
-            $title 	= str_replace("on Yelp", "", $item->get_title());
-            $id 	= $item->get_permalink();
-            $link 	= $item->get_permalink();
-            $image_url = '';
-            $published = $item->get_date();
-            //http://www.yelp.com/biz/salon-graf-frisiersalon-berlin#hrid:C2JflaCF8jja2a5PHr7iHQ
-            // lets get the yelp id
-            preg_match_all('/#hrid:(\w+)/', $link, $match);
-    		$hrid = $match[1][0];
-    		// scrape the full description, not only the shortend RSS version
-            // $description = self::process_content($item);
-            $description = self::get_yelp_description($link, $hrid);
-            $description = '<p class="anonce-yelp"><a rel="syndication" href="'.$link.'">'.__('I wrote a review on Yelp', 'reclaim').'</a>:</p>'.$description;
-            $description .= '<p class="viewpost-yelp">(<a rel="syndication" href="'.$link.'">'.__('View on Yelp', 'reclaim').'</a>)</p>';
-            // toto: 
-            // remember last seen id
-            
+            $id = $item->get_permalink();
+            // check if item already exists. if so, 
+            // no need to run through scraping et all
+            if (!parent::post_exists($id)) {
+                $title 	= str_replace("on Yelp", "", $item->get_title());
+                $link 	= $item->get_permalink();
+                $image_url = '';
+                $published = $item->get_date();
+                // http://www.yelp.com/biz/salon-graf-frisiersalon-berlin#hrid:C2JflaCF8jja2a5PHr7iHQ
+                // lets get the yelp id from the url (hrid)
+                preg_match_all('/#hrid:(\w+)/', $link, $match);
+                $hrid = $match[1][0];
+                // scrape the full description, not only the shortened RSS version
+                // $description = self::process_content($item);
+                $description = '<p class="anonce-yelp"><a rel="syndication" href="'.$link.'">'.__('I wrote a review on Yelp', 'reclaim').'</a>:</p>';
+                $description .= self::get_yelp_description($link, $hrid);
+                $description .= '<p class="viewpost-yelp">(<a rel="syndication" href="'.$link.'">'.__('View on Yelp', 'reclaim').'</a>)</p>';
 
-            /*
-            *  set post meta galore start
-            */
-            $post_meta["_".$this->shortname."_link_id"] = $id;
-            $post_meta["_post_generator"] = $this->shortname;
-            // in case someone uses WordPress Post Formats Admin UI
-            // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
-            $post_meta["_format_link_url"]  = $link;
-            //geo:long
-            //geo:lat
-            $post_meta["geo_latitude"] = $item->get_latitude();
-            $post_meta["geo_longitude"] = $item->get_longitude();
+                /*
+                *  set post meta galore start
+                */
+                $post_meta["_".$this->shortname."_link_id"] = $id;
+                $post_meta["_post_generator"] = $this->shortname;
+                // in case someone uses WordPress Post Formats Admin UI
+                // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
+                $post_meta["_format_link_url"]  = $link;
+                $post_meta["geo_latitude"] = $item->get_latitude();
+                $post_meta["geo_longitude"] = $item->get_longitude();
+                /*
+                *  set post meta galore end
+                */
 
-            /*
-            *  set post meta galore end
-            */
-            
-
-            $data[] = array(
-                'post_author' => get_option(self::shortName().'_author'),
-                'post_category' => array(get_option(self::shortName().'_category')),
-                'post_format' => self::$post_format,
-                'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($published))),
-//                'post_excerpt' => $description,
-//                'post_content' => $description['constructed'],
-                'post_content' => $description,
-                'post_title' => $title,
-                'post_type' => 'post',
-                'post_status' => 'publish',
-                'ext_permalink' => $link,
-                'ext_image' => $image_url,
-                'tags_input' => $tags,
-                'ext_guid' => $id,
-                'post_meta' => $post_meta
-            );
+                $data[] = array(
+                    'post_author' => get_option(self::shortName().'_author'),
+                    'post_category' => array(get_option(self::shortName().'_category')),
+                    'post_format' => self::$post_format,
+                    'post_date' => get_date_from_gmt(date('Y-m-d H:i:s', strtotime($published))),
+//                    'post_excerpt' => $description,
+//                    'post_content' => $description['constructed'],
+                    'post_content' => $description,
+                    'post_title' => $title,
+                    'post_type' => 'post',
+                    'post_status' => 'publish',
+                    'ext_permalink' => $link,
+                    'ext_image' => $image_url,
+                    'tags_input' => $tags,
+                    'ext_guid' => $id,
+                    'post_meta' => $post_meta
+                );
+            }
 
         }
         return $data;

@@ -226,6 +226,23 @@ class reclaim_module {
         return trim($response['body']);
     }
 
+    public static function post_exists($id) {
+        return get_posts(array(
+                'post_type' => 'post',
+                // this is how we honor posts in the trash or marked as draft:
+                // if the exist, these will not be resyndicated 
+                // (without this, posts could not be deleted)
+                'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
+                'meta_query' => array(
+                    array(
+                        'key' => 'original_guid',
+                        'value' => $id,
+                        'compare' => 'like'
+                    )
+                )
+            ));
+    }
+
     /**
     *
     */
@@ -235,21 +252,7 @@ class reclaim_module {
         }
 
         foreach ($data as $post) {
-            $exists = get_posts(array(
-                'post_type' => 'post',
-                // this is how we honor posts in the trash or marked as draft:
-                // if the exist, these will not be resyndicated 
-                // (without this, posts could not be deleted)
-                'post_status' => array('publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', 'trash'),
-                'meta_query' => array(
-                    array(
-                        'key' => 'original_guid',
-                        'value' => $post['ext_guid'],
-                        'compare' => 'like'
-                    )
-                )
-            ));
-            if (!$exists) {
+            if (!self::post_exists($post['ext_guid'])) {
                 $inserted_post_id = wp_insert_post($post);
                 update_post_meta($inserted_post_id, 'original_permalink', $post['ext_permalink']);
                 update_post_meta($inserted_post_id, 'original_guid', $post['ext_guid']);
@@ -324,7 +327,7 @@ class reclaim_module {
 
         // sometimes facebook offers very long filename
         // if so, file_put_contents() throws an error
-        if (strlen($newfilename) > 70) {
+        if ( (strlen($newfilename) > 70) || (strlen($newfilename) < 10) ) {
             $newfilename = uniqid() . $ext;
         }
 
