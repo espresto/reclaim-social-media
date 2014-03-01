@@ -101,12 +101,15 @@ class yelp_reclaim_module extends reclaim_module {
                 $published = $item->get_date();
                 // http://www.yelp.com/biz/salon-graf-frisiersalon-berlin#hrid:C2JflaCF8jja2a5PHr7iHQ
                 // lets get the yelp id from the url (hrid)
-                preg_match_all('/#hrid:(\w+)/', $link, $match);
+                //preg_match_all('/#hrid:(\w+)/', $link, $match);
+                preg_match_all('/#hrid:(.*)/', $link, $match);
                 $hrid = $match[1][0];
                 // scrape the full description, not only the shortened RSS version
                 // $description = self::process_content($item);
+
+                $long_description = self::get_yelp_description($link, $hrid);
                 $description = '<p class="anonce-yelp"><a rel="syndication" href="'.$link.'">'.__('I wrote a review on Yelp', 'reclaim').'</a>:</p>';
-                $description .= self::get_yelp_description($link, $hrid);
+                $description .= ($long_description != '' ? $long_description : self::process_content($item));
                 $description .= '<p class="viewpost-yelp">(<a rel="syndication" href="'.$link.'">'.__('View on Yelp', 'reclaim').'</a>)</p>';
 
                 /*
@@ -195,7 +198,6 @@ class yelp_reclaim_module extends reclaim_module {
         //
         // <meta name="yelp-biz-id" content="KP_8I0zN9s50fWWf-S6mgg">
         $bizID = $html->find('meta[name="yelp-biz-id"]',0)->content;
-        
         // on this page will get our review for sure
         // so lets construct the url
         $sendToFriendPage = 'http://www.yelp.com/biz_share?bizid='.$bizID.'&return_url=foo&reviewid='.$id;
@@ -208,8 +210,18 @@ class yelp_reclaim_module extends reclaim_module {
         $body = trim($response['body']);
         $html = new simple_html_dom();
         $html->load($body);
+        // fix relative yelp urls 
+        // (<a href="/redir?url=http%3A%2F%2Flandbrot.de&amp;s=3bfa424ca015c75831beb8ebe85fadd0eb9f19ff676338045a36d1fd9a8399e7" target="_blank" rel="nofollow">landbrot.de</a>)
+        // http://stackoverflow.com/questions/4784243/how-do-i-extract-query-parameters-from-an-url-string-in-php
+        foreach($html->find('a') as $link) {
+            $query = parse_url('http://www.yelp.com' . $link->href, PHP_URL_QUERY);
+            parse_str($query, $params);
+            $link->href = urldecode($params['url']);
+            //$link->href = 'http://www.yelp.com' . $link->href;
+        }
         // now get our review
         $ret = $html->find('div[id=biz_review]',0)->innertext;
+
         return $ret;
     }
 

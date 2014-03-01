@@ -40,7 +40,7 @@ define('RECLAIM_PLUGIN_URL', plugins_url('', __FILE__));
 
 class reclaim_core {
     private $mods_loaded = array();
-    private static $mod_name_list = array();
+    private $active_mod_name_list = array();
     private static $instance = 0;
     private static $options_page_url = 'options-general.php?page=reclaim/reclaim.php';
 
@@ -60,8 +60,9 @@ class reclaim_core {
             $this->mods_loaded[] = array('name' => $name,
                                          'active' => get_option($name.'_active'),
                                          'instance' => new $cName);
-            if (get_option($name.'_active')) { $this->mod_name_list[] = $name;}
+            if (get_option($name.'_active')) { $this->active_mod_name_list[] = $name;}
         }
+        update_option('reclaim_active_mod_name_list', $this->active_mod_name_list);
 
         foreach ($this->mods_loaded as $mod) {
             if (is_admin()) {
@@ -93,7 +94,7 @@ class reclaim_core {
         //dashboard widget
         add_action('wp_dashboard_setup', array($this, 'add_dashboard_widgets') );
         
-        // get those sessions strated, before it's too late
+        // get those sessions started, before it's too late
         // don't know if this works properly
         add_action('wp_logout', array($this, 'myEndSession'), 1, 2);
         add_action('wp_login', array($this, 'myEndSession'), 1, 3);
@@ -110,13 +111,8 @@ class reclaim_core {
         add_action('reclaim_update_hook', array($this, 'updateMods'));
     }
 
-    // not sure if this is done right … (felix)
     public function modNameList() {
-        if ( !self::$mod_name_list ) {
-            $reclaim = new reclaim_core();
-            return $reclaim->mod_name_list;
-        }
-        return self::$mod_name_list;
+        return get_option('reclaim_active_mod_name_list');
     }
 
     public static function instance() {
@@ -267,6 +263,7 @@ class reclaim_core {
         register_setting('reclaim-social-settings', 'reclaim_auto_update');
         register_setting('reclaim-social-settings', 'reclaim_link_original');
         register_setting('reclaim-social-settings', 'reclaim_show_map');
+        register_setting('reclaim-social-settings', 'reclaim_active_mod_name_list');
         foreach($this->mods_loaded as $mod) {
             $mod['instance']->register_settings();
         }
