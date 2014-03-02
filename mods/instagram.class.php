@@ -200,19 +200,21 @@ class instagram_reclaim_module extends reclaim_module {
                 $data = self::map_data($rawData, 'posts');
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_posts_last_update', current_time('timestamp'));
-                parent::log(sprintf(__('END %s import', 'reclaim'), $this->shortname));
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
+                parent::log(sprintf(__('END %s posts import', 'reclaim'), $this->shortname));
             }
             else parent::log(sprintf(__('%s returned no data. No import was done', 'reclaim'), $this->shortname));
 
             if (get_option('instagram_import_favs')) {
             //get favs
-            $rawData = parent::import_via_curl(sprintf(self::$fav_apiurl, get_option('instagram_access_token'), self::$count), self::$timeout);
+            $rawData = parent::import_via_curl(sprintf(self::$fav_apiurl, 'user', get_option('instagram_access_token'), self::$count), self::$timeout);
             $rawData = json_decode($rawData, true);
 
             if ($rawData) {
                     $data = self::map_data($rawData, 'favs');
                     parent::insert_posts($data);
                     update_option('reclaim_'.$this->shortname.'_favs_last_update', current_time('timestamp'));
+                    update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
                     parent::log(sprintf(__('END %s favs import', 'reclaim'), $this->shortname));
                 }
                 else parent::log(sprintf(__('%s favs returned no data. No import was done', 'reclaim'), $this->shortname));
@@ -244,7 +246,7 @@ class instagram_reclaim_module extends reclaim_module {
             }
             else {
                 $apiurl_ = ($type == 'posts' ? self::$apiurl : self::$fav_apiurl);
-                $rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count, $min_id), self::$timeout);
+                $rawData = parent::import_via_curl(sprintf($apiurl_, get_option('instagram_user_id'), get_option('instagram_access_token'), self::$count), self::$timeout);
             }
 
             $rawData = json_decode($rawData, true);
@@ -252,6 +254,7 @@ class instagram_reclaim_module extends reclaim_module {
                 $data = self::map_data($rawData, $type);
                 parent::insert_posts($data);
                 update_option('reclaim_'.$this->shortname.'_'.$type.'_last_update', current_time('timestamp'));
+                update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
                 
                 if (!isset($rawData['pagination']['next_url'])) { 
                     //$return['error'] = sprintf(__('%s %s import done.', 'reclaim'), $type, $this->shortname); 
