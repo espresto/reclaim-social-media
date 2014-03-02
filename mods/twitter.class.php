@@ -180,16 +180,15 @@ class twitter_reclaim_module extends reclaim_module {
                 $reqOk = $return['result']['reqOk'];
                 $reqOk = (self::$max_import_loops > 0 && $i >= self::$max_import_loops ? false : $reqOk);
                 $reqOK = (isset($return['error']) ? false : $reqOk);
-                // store the last-seen-id, which is the first message of the first request
-                $lastseenid = (!isset($lastid) && $reqOk ? $lastseenid = $data[0]["ext_guid"] : null);
+                // last-seen-id already stored by import_tweets()
+                $lastseenid = get_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id');
                 $lastid = $return['result']['next_url'];
                 parent::log(sprintf(__('Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in batch: %s, req-ok: %d, error: %s', 'reclaim'), $type, $return['result']['offset'], $lastseenid, $lastid, $reqOk, $return['error']));
                 $i++;
             } while ($reqOk);
 
             update_option('reclaim_'.$this->shortname.'_last_update', current_time('timestamp'));
-            update_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id', $lastseenid);
-            }
+        }
 
     // utility function that makes the actual API calls for ajax_resync_items() and resync_items ()
     private function import_tweets($apiurl_, $reqOptions, $type = "posts", $offset = 0) {

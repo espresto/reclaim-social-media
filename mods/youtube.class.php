@@ -106,7 +106,6 @@ class youtube_reclaim_module extends reclaim_module {
                 $rawData = json_decode($rawData, true);
 
                 if (is_array($rawData)) {
-                    parent::log(sprintf(__('%s activity returned data. Import will be done', 'reclaim'), $this->shortname));
                     $data = self::map_data($rawData, 'activity');
                     parent::insert_posts($data);
                     update_option('reclaim_'.$this->shortname.'_activity_last_update', current_time('timestamp'));
@@ -197,8 +196,6 @@ class youtube_reclaim_module extends reclaim_module {
             if ($type == 'favs') { $rawData = parent::import_via_curl(sprintf(self::$fav_apiurl, get_option('youtube_username'), self::$count), self::$timeout); }
             if ($type == 'activity') { $rawData = parent::import_via_curl(sprintf(self::$activity_apiurl, get_option('youtube_username'), get_option('google_api_key'), 50).'&start-index=100', self::$timeout); } // max-results = 50 gets more accurate count, don't ask me why
             $rawData = json_decode($rawData, true);
-            parent::log($type);
-            //parent::log(print_r($rawData, true));
             return $rawData['feed']['openSearch$totalResults']['$t'];
         }
         else {

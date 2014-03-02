@@ -176,7 +176,6 @@ class facebook_reclaim_module extends reclaim_module {
             $errors = 0;
             $i = 0;
             while (strlen($urlNext) > 0) {
-                parent::log(sprintf(__('GETTING for %s from %s', 'reclaim'), $this->shortname, $urlNext));
                 $rawData = parent::import_via_curl($urlNext, self::$timeout);
                 if ($rawData) {
                     $errors = 0;
@@ -280,6 +279,29 @@ class facebook_reclaim_module extends reclaim_module {
     public function count_items() {
     	return 999999;
     }
+    private function filter_item($entry) {
+        /*
+        * filtering
+        * we don't want tweets, or ifft-stuff, cause that would
+        * duplicate the other feeds (or would it not?)
+        */
+        if ( 
+                    (
+                    $entry['application']['name'] != "Twitter" // no tweets
+                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
+                    && $entry['application']['namespace'] != "NetworkedBlogs" // no  NetworkedBlogs syndication
+                    && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
+                    && $entry['application']['namespace'] != "friendfeed" // no friendfeed
+                    )
+               && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
+               // difficult: if privacy value is empty, is it public? it seems to me, but i'm not sure
+               && ( ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
+               && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
+            )
+        { return false; }
+        else 
+        { return true; }
+    }
 
     private function map_data($rawData) {
         $data = array();
@@ -288,28 +310,10 @@ class facebook_reclaim_module extends reclaim_module {
             return false;
         }
         foreach($rawData['data'] as $entry) {
-            if (    (
-                    /*
-                     * filtering
-                     * we don't want tweets, or ifft-stuff, cause that would
-                     * duplicate the other feeds (or would it not?)
-                     */
-                    (
-                    $entry['application']['name'] != "Twitter" // no tweets
-                    && $entry['application']['namespace'] != "rssgraffiti" // no blog stuff
-                    && $entry['application']['namespace'] != "NetworkedBlogs" // no  NetworkedBlogs syndication
-                    && $entry['application']['namespace'] != "ifthisthenthat" // no instagrams and ifttt
-                    && $entry['application']['namespace'] != "friendfeed" // no friendfeed
-                    )
-               )
-               && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
-               // difficult: if privacy value is empty, is it public? it seems to me, but i'm not sure
-               && ( ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
-               && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
-            ) {
+            if (!self::filter_item($entry)) {
                 /*
-                 * OK, everything is filtered now, lets proceed ...
-                 */
+                * OK, everything is filtered now, lets proceed ...
+                */
                 $link = self::get_link($entry, 0);
                 $image = self::get_image_url($entry);
                 $title = self::get_title($entry);
