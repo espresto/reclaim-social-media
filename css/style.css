@@ -122,6 +122,10 @@ div.entry-content p.viewpost-google,
 div.entry-content p.viewpost-facebook,
 div.entry-content p.viewpost-flickr,
 div.entry-content p.viewpost-instagram,
+div.entry-content p.viewpost-soundcloud,
+div.entry-content p.viewpost-yelp,
+div.entry-content p.viewpost-moves,
+div.entry-content p.viewpost-tumblr,
 div.entry-content p.viewpost-bookmarks 
 {
 float: right;

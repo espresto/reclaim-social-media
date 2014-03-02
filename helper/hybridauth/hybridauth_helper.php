@@ -46,6 +46,9 @@ if (file_exists( __DIR__ . '/../../vendor/autoload.php')) {
             $user_profile = $adapter->getUserProfile();
 			//?
 //			$adapter->disconnect();
+            if ($mod == "tumblr") {
+                $full_user_profile = $adapter->api()->api( 'user/info' ); 
+            }
 		}
 		catch( Exception $e ){
 			$reclaim_error = "" . $e->getMessage();
@@ -72,8 +75,9 @@ if (file_exists( __DIR__ . '/../../vendor/autoload.php')) {
 			$reclaim_error = 'got no user profile from '.$mod.'.';
 
 		$_SESSION['e'] = $reclaim_error;
-//		echo $reclaim_error;
-//		print_r($user_profile);
+		//echo "".$reclaim_error;
+		//print_r($config);
+		//print_r($_SESSION);
 		$url = $callback;
 		header( "Location: $url" ) ;
 	}
@@ -87,6 +91,7 @@ if (file_exists( __DIR__ . '/../../vendor/autoload.php')) {
 
 		$_SESSION['hybridauth_user_access_tokens'] =  json_encode($access_tokens);
 		$_SESSION['hybridauth_user_profile'] = json_encode($user_profile);
+		$_SESSION['hybridauth_full_user_profile'] = json_encode($full_user_profile);
 		$_SESSION['e'] = $reclaim_error;
         $_SESSION['login'] = 1;
 		$url = $callback;
