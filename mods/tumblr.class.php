@@ -362,7 +362,7 @@ class tumblr_reclaim_module extends reclaim_module {
                     }
                 }
                 if ($entry['type']=='quote') {
-                    $title = wp_strip_all_tags($entry['text']);
+                    $title = parent::short_title(wp_strip_all_tags($entry['text']), '&nbsp;&hellip;', 10);
                     $post_content = '<blockquote>'.$entry['text'].'</blockquote>';
                     $post_content .= $entry['source'];
                     $post_meta["_format_quote_source_name"] = $entry['source_url'];
@@ -374,17 +374,18 @@ class tumblr_reclaim_module extends reclaim_module {
                     $post_meta["_format_link_url"] = $entry['url'];
                 }
                 if ($entry['type']=='chat') {
-                    $title = '';
+                    // save the dialogue in a meta field or render dialogue?
+                    // "dialogue":[{"name":"","label":"","phrase":"Baasal warataa kono na tampina"},{"name":"","label":"","phrase":"Poverty does not kill but makes one tired"},{"name":"","label":"","phrase":"***"},{"name":"","label":"","phrase":"Si bahe cum\u0257i gooto fof \u00f1ifata ko waare mum"},{"name":"","label":"","phrase":"If the beards are all on fire, each person must put out his own beard"},{"name":"","label":"","phrase":"***"},{"name":"","label":"","phrase":"\u0253e nengasa \u0253e ne nguuba yaajay kono luggidtaa"},{"name":"","label":"","phrase":"If some are digging and some are burying it will be wide but never deep"},{"name":"","label":"","phrase":"***"},{"name":"","label":"","phrase":"Maw\u0257o ina joo\u0257oo yi\u0027ii cukalel \u0257aroo ro\u014bku yi\u0027ude"},{"name":"","label":"","phrase":"A seated elder sees what a standing child misses"}]
                     $post_content = $entry['body'];
                 }
                 if ($entry['type']=='audio') {
-                    $title = wp_strip_all_tags($entry['id3_title']);
+                    $title = parent::short_title(wp_strip_all_tags($entry['id3_title']), '&nbsp;&hellip;', 10);
                     $post_content = $entry['caption'].$entry['player'];
                     $embed_code = $entry['player'];
                     $post_meta["_format_link_url"] = $entry['source_url'];
                 }
                 if ($entry['type']=='video') {
-                    $title = $entry['source_title'];
+                    $title = $entry['source_title'] == '' ? parent::short_title(wp_strip_all_tags($entry['caption']), '&nbsp;&hellip;', 10) : $entry['source_title'];
                     $post_content = $entry['caption'].'[embed_code]';
                     $embed_code = $entry['player'][2]['embed_code'];
                     $post_meta["_format_link_url"] = $entry['permalink_url']; // source_url

@@ -303,7 +303,7 @@ class facebook_reclaim_module extends reclaim_module {
         { return true; }
     }
 
-    private function map_data($rawData) {
+    private function map_data($rawData, $type="posts") {
         $data = array();
         if (!is_array($rawData['data'])) {
             // sometimes it's not an array
@@ -343,6 +343,7 @@ class facebook_reclaim_module extends reclaim_module {
                 // hidden fields for adding syndication links later
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
+                $post_meta["_reclaim_post_type"] = $type;
 
                 // setting for social plugin (https://github.com/crowdfavorite/wp-social/)
                 // to be able to retrieve facebook comments and likes (if social is 

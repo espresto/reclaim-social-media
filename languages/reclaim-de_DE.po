@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Reclaim\n"
-"POT-Creation-Date: 2014-02-28 01:50+0100\n"
-"PO-Revision-Date: 2014-02-28 01:52+0100\n"
+"POT-Creation-Date: 2014-03-03 13:02+0100\n"
+"PO-Revision-Date: 2014-03-03 13:05+0100\n"
 "Last-Translator: ix <ix@wirres.net>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
@@ -34,8 +34,8 @@ msgid "Resync with ajax"
 msgstr "Synchronisiseren (Ajax)"
 
 #: mod.class.php:55 mods/instagram.class.php:85 mods/soundcloud.class.php:87
-#: mods/twitter.class.php:59 mods/youtube.class.php:53
-#: mods/youtube.class.php:66
+#: mods/tumblr.class.php:107 mods/twitter.class.php:59
+#: mods/youtube.class.php:53 mods/youtube.class.php:66
 msgid "Count with ajax"
 msgstr "Zählen"
 
@@ -74,15 +74,15 @@ msgstr "BEGIN %s import %s"
 msgid "END %s import %s"
 msgstr "END %s import %s"
 
-#: mod.class.php:426
+#: mod.class.php:429
 msgid "Unknown number of"
 msgstr "Unbekannte Anzahl von"
 
-#: mod.class.php:431
+#: mod.class.php:434
 msgid "items available"
 msgstr "Einträge vorhanden"
 
-#: mod.class.php:433
+#: mod.class.php:436
 msgid "posts created"
 msgstr "Einträge erstellt"
 
@@ -90,87 +90,87 @@ msgstr "Einträge erstellt"
 msgid "At least PHP version 5.3.2 is required for Reclaim Social Media."
 msgstr "Für Reclaim Social Media wird mindestens PHP version 5.3.2 benötigt."
 
-#: reclaim.php:183
+#: reclaim.php:190
 msgid "Cancel "
 msgstr "Abbrechen "
 
-#: reclaim.php:184
+#: reclaim.php:191
 msgid "Canceled."
 msgstr "Abgebrochen."
 
-#: reclaim.php:185
+#: reclaim.php:192
 msgid "Whoops! Returned data must be not null."
 msgstr "Ups! Die zurückgelieferte Zahl darf nicht gleich null sein."
 
-#: reclaim.php:186
+#: reclaim.php:193
 msgid "Error occured: "
 msgstr "Fehler: "
 
-#: reclaim.php:187
+#: reclaim.php:194
 msgid "Count items and posts..."
 msgstr "Zähle vorhandene Elemente und Artikel …"
 
-#: reclaim.php:188
+#: reclaim.php:195
 msgid "Count items..."
 msgstr "Zähle Elemente …"
 
-#: reclaim.php:189
+#: reclaim.php:196
 msgid "item count is not a valid number. value="
 msgstr "Zurückgelieferte Elementanzahl ist keine Zahl. value="
 
-#: reclaim.php:190
+#: reclaim.php:197
 msgid "Not a valid item count: "
 msgstr "Ungültige Elementanzahl: "
 
-#: reclaim.php:191
+#: reclaim.php:198
 msgid "Resyncing items: "
 msgstr "Synchronisiere Elemente: "
 
-#: reclaim.php:192
+#: reclaim.php:199
 msgid "result.offset is not a number: value="
 msgstr "result.offset ist keine Zahl: value="
 
-#: reclaim.php:193
+#: reclaim.php:200
 msgid " items resynced, duration: "
 msgstr " Elemente synchronisiert, Dauer: "
 
-#: reclaim.php:205
+#: reclaim.php:212
 msgid "Auto Update"
 msgstr "Auto-Update"
 
-#: reclaim.php:205
+#: reclaim.php:212
 msgid "On"
 msgstr "An"
 
-#: reclaim.php:205
+#: reclaim.php:212
 msgid "Off"
 msgstr "Aus"
 
-#: reclaim.php:250 reclaim.php:273
+#: reclaim.php:257 reclaim.php:281
 msgid "Reclaim Social Accounts Settings"
 msgstr "Reclaim Konten Einstellungen"
 
-#: reclaim.php:250
+#: reclaim.php:257
 msgid "Reclaim"
 msgstr "Reclaim"
 
-#: reclaim.php:278
+#: reclaim.php:286
 msgid "General Settings"
 msgstr "Allgemeine Einstellungen"
 
-#: reclaim.php:281
+#: reclaim.php:289
 msgid "Auto-update"
 msgstr "Auto-update"
 
-#: reclaim.php:285
+#: reclaim.php:293
 msgid "Update Interval (in seconds)"
 msgstr "Aktualisierungsinterval (in Sekunden)"
 
-#: reclaim.php:289
+#: reclaim.php:297
 msgid "Link to original content"
 msgstr "Überschriften und Kommentarlinks mit Originalinhalten verlinken"
 
-#: reclaim.php:293
+#: reclaim.php:301
 msgid "Show integrated map"
 msgstr "Karte anzeigen"
 
@@ -213,26 +213,27 @@ msgstr ""
 "feeds.delicious.com/v2/rss/{username}/{tag[+tag+...+tag]}</code>)"
 
 #: mods/bookmarks.class.php:77 mods/flickr.class.php:96
-#: mods/goodreads.class.php:72 mods/vine.class.php:74 mods/yelp.class.php:78
+#: mods/goodreads.class.php:72 mods/vine.class.php:74 mods/yelp.class.php:77
 #, php-format
 msgid "no %s data"
 msgstr "Keine %s Daten"
 
-#: mods/bookmarks.class.php:86 mods/facebook.class.php:216
+#: mods/bookmarks.class.php:86 mods/facebook.class.php:215
 #: mods/flickr.class.php:112 mods/foursquare.class.php:155
 #: mods/foursquare.class.php:186 mods/github.class.php:78
 #: mods/goodreads.class.php:81 mods/google_plus.class.php:101
-#: mods/google_plus.class.php:121 mods/instagram.class.php:221
-#: mods/instagram.class.php:280 mods/moves.class.php:170
+#: mods/google_plus.class.php:121 mods/instagram.class.php:223
+#: mods/instagram.class.php:283 mods/moves.class.php:170
 #: mods/moves.class.php:222 mods/soundcloud.class.php:223
-#: mods/soundcloud.class.php:270 mods/twitter.class.php:103
-#: mods/vine.class.php:77 mods/vine.class.php:118 mods/yelp.class.php:87
-#: mods/youtube.class.php:118
+#: mods/soundcloud.class.php:270 mods/tumblr.class.php:255
+#: mods/tumblr.class.php:306 mods/twitter.class.php:103 mods/vine.class.php:77
+#: mods/vine.class.php:118 mods/yelp.class.php:86 mods/youtube.class.php:117
 #, php-format
 msgid "%s user data missing. No import was done"
 msgstr "%s Benutzerdaten fehlen. Keinen Import ausgeführt."
 
-#: mods/bookmarks.class.php:159 mods/yelp.class.php:162
+#: mods/bookmarks.class.php:159 mods/tumblr.class.php:395
+#: mods/twitpic.class.php:159 mods/yelp.class.php:160
 #, php-format
 msgid "View on %s"
 msgstr "Auf %s ansehen"
@@ -273,7 +274,7 @@ msgstr "<p>Bei Facebook angemeldet als %s</p>"
 
 #: mods/facebook.class.php:109 mods/foursquare.class.php:96
 #: mods/instagram.class.php:136 mods/moves.class.php:111
-#: mods/soundcloud.class.php:138
+#: mods/soundcloud.class.php:138 mods/tumblr.class.php:152
 msgid "Authorize again"
 msgstr "Nochmal anmelden"
 
@@ -281,52 +282,48 @@ msgstr "Nochmal anmelden"
 msgid "getting FB token"
 msgstr "Hole FB-Token"
 
-#: mods/facebook.class.php:179
-#, php-format
-msgid "GETTING for %s from %s"
-msgstr "GETTING for %s from %s"
-
-#: mods/facebook.class.php:206
+#: mods/facebook.class.php:205
 #, php-format
 msgid "%s ended with an error. Aborted getting %s"
 msgstr "%s schloss mit einem Fehler ab. Abgebrochen während %s"
 
-#: mods/facebook.class.php:209
+#: mods/facebook.class.php:208
 #, php-format
 msgid "%s ended with an error. Continue anyway with %s"
 msgstr "%s schloss mit einem Fehler ab. Fahre fort mit %s"
 
-#: mods/facebook.class.php:270 mods/foursquare.class.php:153
+#: mods/facebook.class.php:269 mods/foursquare.class.php:153
 #: mods/foursquare.class.php:184 mods/google_plus.class.php:98
-#: mods/instagram.class.php:205 mods/instagram.class.php:278
+#: mods/instagram.class.php:206 mods/instagram.class.php:281
 #: mods/moves.class.php:168 mods/moves.class.php:220
 #: mods/soundcloud.class.php:207 mods/soundcloud.class.php:268
-#: mods/vine.class.php:115 mods/youtube.class.php:92
-#: mods/youtube.class.php:181
+#: mods/tumblr.class.php:229 mods/tumblr.class.php:304 mods/vine.class.php:115
+#: mods/youtube.class.php:92 mods/youtube.class.php:180
 #, php-format
 msgid "%s returned no data. No import was done"
 msgstr "%s gab keine Daten zurück. Kein Import ausgeführt."
 
-#: mods/facebook.class.php:272 mods/flickr.class.php:171
-#: mods/twitter.class.php:140 mods/youtube.class.php:183
+#: mods/facebook.class.php:271 mods/flickr.class.php:171
+#: mods/twitpic.class.php:133 mods/twitter.class.php:140
+#: mods/youtube.class.php:182
 #, php-format
 msgid "%s %s user data missing. No import was done"
 msgstr "%s %s Benutzer Daten fehlen. Kein Import ausgeführt"
 
-#: mods/facebook.class.php:437
+#: mods/facebook.class.php:441
 msgid "Facebook activity"
 msgstr "Facebook Aktivität"
 
-#: mods/facebook.class.php:461
+#: mods/facebook.class.php:465
 msgid "multiple items"
 msgstr "mehrfache Elemente"
 
-#: mods/facebook.class.php:465
+#: mods/facebook.class.php:469
 #, php-format
 msgid "%s liked <a href=\"%s\">%s</a>"
 msgstr "%s gefiel <a href=\"%s\">%s</a>"
 
-#: mods/facebook.class.php:528
+#: mods/facebook.class.php:532
 msgid "View on Facebook"
 msgstr "Auf Facebook ansehen"
 
@@ -342,12 +339,13 @@ msgstr "Flickr User ID"
 msgid "(optional) flickr api key"
 msgstr "Flickr API Key (optional)"
 
-#: mods/flickr.class.php:169 mods/twitter.class.php:236
+#: mods/flickr.class.php:169 mods/twitpic.class.php:131
+#: mods/twitter.class.php:235
 #, php-format
 msgid "%s %s returned no data. No import was done"
 msgstr "%s %s hat keine Daten zurückgeliefert. Kein Import ausgeführt"
 
-#: mods/flickr.class.php:326
+#: mods/flickr.class.php:326 mods/twitpic.class.php:222
 msgid "View on Flickr"
 msgstr "Auf Flickr ansehen"
 
@@ -370,6 +368,7 @@ msgstr "Die Foursquare Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
 
 #: mods/foursquare.class.php:79 mods/instagram.class.php:117
 #: mods/moves.class.php:94 mods/soundcloud.class.php:119
+#: mods/tumblr.class.php:133
 #, php-format
 msgid "Use <code>%s</code> as \"Redirect URI\""
 msgstr "<code>%s</code> als \"Redirect URI\" benutzen"
@@ -476,7 +475,8 @@ msgid "Get Favs?"
 msgstr "Favs holen?"
 
 #: mods/instagram.class.php:84 mods/soundcloud.class.php:86
-#: mods/twitter.class.php:58 mods/youtube.class.php:52
+#: mods/tumblr.class.php:106 mods/twitter.class.php:58
+#: mods/youtube.class.php:52
 msgid "Resync favs with ajax"
 msgstr "Favs synchronisieren (Ajax)"
 
@@ -520,33 +520,34 @@ msgstr "<p>Bei Instagram angemeldet als %s</p>"
 msgid "enter instagram app id and secret"
 msgstr "Die Instagram App ID und Secret eingeben"
 
-#: mods/instagram.class.php:203 mods/soundcloud.class.php:205
+#: mods/instagram.class.php:204 mods/tumblr.class.php:227
+#: mods/twitpic.class.php:118
 #, php-format
-msgid "END %s import"
-msgstr "END %s import"
+msgid "END %s posts import"
+msgstr "END %s posts import"
 
-#: mods/instagram.class.php:216 mods/soundcloud.class.php:218
+#: mods/instagram.class.php:218 mods/soundcloud.class.php:218
 #, php-format
 msgid "END %s favs import"
 msgstr "END %s favs import"
 
-#: mods/instagram.class.php:218 mods/soundcloud.class.php:220
+#: mods/instagram.class.php:220 mods/soundcloud.class.php:220
 #: mods/youtube.class.php:102
 #, php-format
 msgid "%s favs returned no data. No import was done"
 msgstr "%s favs returned no data. No import was done"
 
-#: mods/instagram.class.php:322
+#: mods/instagram.class.php:325
 #, php-format
 msgid "I faved an Instagram from %s"
 msgstr "Ich habe ein Instagram von %s gefavt"
 
-#: mods/instagram.class.php:385
+#: mods/instagram.class.php:388
 #, php-format
 msgid "I uploaded <a href=\"%s\">an instagram</a>."
 msgstr "Ich habe ein <a href=\"%s\">Instagram</a> hochgeladen."
 
-#: mods/instagram.class.php:391 mods/instagram.class.php:398
+#: mods/instagram.class.php:394 mods/instagram.class.php:401
 msgid "View on Instagram"
 msgstr "Auf Instagram ansehen"
 
@@ -688,6 +689,11 @@ msgstr "<p>SoundCloud angemeldet als %s</p>"
 msgid "Enter SoundCloud app id and secret"
 msgstr "Die SoundCloud „App ID“ and „Secret“ eingeben"
 
+#: mods/soundcloud.class.php:205
+#, php-format
+msgid "END %s import"
+msgstr "END %s import"
+
 #: mods/soundcloud.class.php:308
 #, php-format
 msgid "I faved an track on SoundCloud from %s"
@@ -701,6 +707,81 @@ msgstr "Ich habe <a href=\"%s\">ein Stück</a> auf SoundCloud geladen."
 #: mods/soundcloud.class.php:364 mods/soundcloud.class.php:371
 msgid "View on SoundCloud"
 msgstr "Auf SoundCloud ansehen"
+
+#: mods/tumblr.class.php:80
+msgid "tumblr"
+msgstr "Tumblr"
+
+#: mods/tumblr.class.php:84
+msgid "Primary Tumblr blog"
+msgstr "Primäres Tumblrblog"
+
+#: mods/tumblr.class.php:90
+msgid "Primary Tumblr user name"
+msgstr "Primärer Tumblr Benutzername"
+
+#: mods/tumblr.class.php:104
+#, php-format
+msgid "Synchronise secondary blog %s?"
+msgstr "Sekundäres Blog %s synchronisieren?"
+
+#: mods/tumblr.class.php:111
+#, php-format
+msgid "Category for %s"
+msgstr "Kategorie für %s"
+
+#: mods/tumblr.class.php:121
+msgid "Tumblr OAuth Consumer Key"
+msgstr "Tumblr OAuth Consumer Key"
+
+#: mods/tumblr.class.php:126
+msgid "Tumblr Secret Key"
+msgstr "Tumblr Secret Key"
+
+#: mods/tumblr.class.php:132
+#, php-format
+msgid "Get your Tumblr client and credentials <a href=\"%s\">here</a>. "
+msgstr "Die Tumblr Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
+
+#: mods/tumblr.class.php:148
+msgid "Authorize with Tumblr"
+msgstr "Bei Tumblr anmelden"
+
+#: mods/tumblr.class.php:151
+#, php-format
+msgid ""
+"<p><img src=\"%s\" class=\"reclaim_avatar\" width=\"32\" height=\"32\" align="
+"\"left\">Tumblr authorized as <span class=\"name\">%s</span></li></p>"
+msgstr ""
+"<p><img src=\"%s\" class=\"reclaim_avatar\" width=\"32\" height=\"32\" align="
+"\"left\">Bei Tumblr angemeldet als <span class=\"name\">%s</span></li></p>"
+
+#: mods/tumblr.class.php:181
+msgid "enter Tumblr app id and secret"
+msgstr "Die Tumblr „App ID“ und „Secret“ eingeben"
+
+#: mods/tumblr.class.php:361
+#, php-format
+msgid ", source: <a href=\"%s\">%s</a>"
+msgstr ", Quelle: <a href=\"%s\">%s</a>"
+
+#: mods/tumblr.class.php:399
+#, php-format
+msgid "I faved an Tumblr from %s"
+msgstr "Ich habe einen Tumblr-Beitrag von %s gefavt"
+
+#: mods/twitpic.class.php:42
+msgid "TwitPic"
+msgstr "TwitPic"
+
+#: mods/twitpic.class.php:46
+msgid "TwitPic user name (same as on Twitter)"
+msgstr "TwitPic Benutzername (wie bei Twitter)"
+
+#: mods/twitpic.class.php:159
+#, php-format
+msgid "view on %s"
+msgstr "auf %s ansehen"
 
 #: mods/twitter.class.php:52
 msgid "Twitter"
@@ -745,17 +826,17 @@ msgstr ""
 "Retrieved set of twitter messages (%s): %d, last seen id: %s, last id in "
 "batch: %s, req-ok: %d, error: %s"
 
-#: mods/twitter.class.php:274
+#: mods/twitter.class.php:293
 #, php-format
 msgid "I favorited a tweet by @%s"
 msgstr "Ich habe einen Tweet von @%s favorisiert"
 
-#: mods/twitter.class.php:275
+#: mods/twitter.class.php:294
 #, php-format
 msgid "I favorited a tweet by <a href=\"%s\">@%s</a>"
 msgstr "Ich habe einen Tweet von <a href=\"%s\">@%s</a> favorisiert"
 
-#: mods/twitter.class.php:401
+#: mods/twitter.class.php:421
 msgid "View on Twitter"
 msgstr "Auf Twitter ansehen"
 
@@ -780,21 +861,21 @@ msgstr "<p>Von <a href=\"%s\">@%s</a> gerevined.</p>"
 msgid "Yelp"
 msgstr "Yelp"
 
-#: mods/yelp.class.php:45
+#: mods/yelp.class.php:42
 msgid "Yelp User ID"
 msgstr "Yelp User ID"
 
-#: mods/yelp.class.php:47
+#: mods/yelp.class.php:46
 msgid "Enter your Yelp User ID (not name). (i.e. a2Q607M2qn7Ik3XS3fzmvQ)"
 msgstr ""
 "Die Yelp Benutzer-ID eingeben (nicht den Benutzernamen). (Zum Beispiel "
 "a2Q607M2qn7Ik3XS3fzmvQ)"
 
-#: mods/yelp.class.php:108
+#: mods/yelp.class.php:111
 msgid "I wrote a review on Yelp"
 msgstr "Ich habe einen Beitrag auf Yelp geschrieben"
 
-#: mods/yelp.class.php:109
+#: mods/yelp.class.php:113
 msgid "View on Yelp"
 msgstr "Auf Yelp ansehen"
 
@@ -825,29 +906,30 @@ msgstr "Kategorie für Aktivitäten"
 msgid "YouTube username"
 msgstr "YouTube Benutzername"
 
-#: mods/youtube.class.php:109
-#, php-format
-msgid "%s activity returned data. Import will be done"
-msgstr "%s hat Daten geliefert. Import läuft."
-
-#: mods/youtube.class.php:114
+#: mods/youtube.class.php:113
 #, php-format
 msgid "%s activity returned no data. No import was done"
 msgstr "%s hat keine daten geliefert. Es wurde nichts importiert."
 
-#: mods/youtube.class.php:237
+#: mods/youtube.class.php:234
 #, php-format
 msgid "I added a video from %s to my YouTube favorites"
 msgstr "Ich ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
 
-#: mods/youtube.class.php:242
+#: mods/youtube.class.php:239
 msgid "I rated a video on YouTube"
 msgstr "Ich habe ein Video auf YouTube bewertet"
 
-#: mods/youtube.class.php:281
+#: mods/youtube.class.php:278
 #, php-format
 msgid "<a href=\"%s\">%s</a> from <a href=\"%s\">%s</a>:"
 msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
+
+#~ msgid "GETTING for %s from %s"
+#~ msgstr "GETTING for %s from %s"
+
+#~ msgid "%s activity returned data. Import will be done"
+#~ msgstr "%s hat Daten geliefert. Import läuft."
 
 #~ msgid "View on soundcloud"
 #~ msgstr "Auf SoundCloud ansehen"

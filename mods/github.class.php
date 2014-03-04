@@ -78,7 +78,7 @@ class github_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function map_data($rawData) {
+    private function map_data($rawData, $type="posts") {
         $data = array();
         $tags = array();
         foreach($rawData as $entry) {
@@ -93,6 +93,7 @@ class github_reclaim_module extends reclaim_module {
             
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
+            $post_meta["_reclaim_post_type"] = $type;
 
             // http://codex.wordpress.org/Function_Reference/wp_insert_post
             $data[] = array(

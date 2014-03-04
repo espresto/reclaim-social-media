@@ -104,8 +104,8 @@ class twitter_reclaim_module extends reclaim_module {
     }
 
     // called from ajax sync, calls import_tweet()
-    public function ajax_resync_items() {
-        $type = isset($_POST['type']) ? $_POST['type'] : 'posts';
+    public function ajax_resync_items($type="posts") {
+        $type = isset($_POST['type']) ? $_POST['type'] : $type;
     	$offset = intval( $_POST['offset'] );
     	$limit = intval( $_POST['limit'] );
     	$count = intval( $_POST['count'] );
@@ -146,7 +146,7 @@ class twitter_reclaim_module extends reclaim_module {
 
     // called from import(), uses import_tweet()
     private function resync_items( $forceResync, $type = "posts" ) {
-
+            $type = isset($_POST['type']) ? $_POST['type'] : $type;
             $lastseenid = get_option('reclaim_'.$this->shortname.'_'.$type.'_last_seen_id');
             $reqOptions = array(
                 'lang' => substr(get_bloginfo('language'), 0, 2),
@@ -217,7 +217,7 @@ class twitter_reclaim_module extends reclaim_module {
 				'next_url' => $lastid,
 				'reqOk' => $reqOk,
 			);
-    		$return['success'] = true;
+    		$return['success'] = $reqOk;
 		}
         elseif ($tmhOAuth->response['code'] != 200) { //&& $offset != 0
             /*
@@ -341,7 +341,7 @@ class twitter_reclaim_module extends reclaim_module {
         return $tags;
     }
 
-    public function count_items() {
+    public function count_items( $type="posts" ) {
         $type = isset($_POST['type']) ? $_POST['type'] : $type;
         if ($type == "favs") { return 999999; }
         $reqOptions = array(

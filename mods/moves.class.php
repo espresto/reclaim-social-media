@@ -232,7 +232,7 @@ class moves_reclaim_module extends reclaim_module {
      * @param array $rawData
      * @return array
      */
-    private function map_data(array $rawData) {
+    private function map_data(array $rawData, $type="posts") {
         $data = array();
         foreach($rawData as $day){
             if ($this->check_for_import($day) && intval(date("H")) > 2) {
@@ -250,6 +250,7 @@ class moves_reclaim_module extends reclaim_module {
 
                 $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
                 $post_meta["_post_generator"] = $this->shortname;
+                $post_meta["_reclaim_post_type"] = $type;
 
                 $data[] = array(
                     'post_author' => get_option($this->shortname.'_author'),

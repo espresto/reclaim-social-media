@@ -228,9 +228,12 @@ class reclaim_core {
 						<?php checked($mod['active']); ?> /> <a href="<?php echo self::$options_page_url; ?>#<?php echo $mod['instance']->shortName(); ?>"><?php _e($mod['instance']->shortName(), 'reclaim'); ?></a>
 						</td>
 		
-						<td class="count"><?php echo $mod['instance']->count_items() ?>
+						<td class="count"><?php echo $mod['instance']->count_items(); ?>
 						</td>
-						<td class="count"><?php echo $mod['instance']->count_posts() ?>
+						<td class="count"><?php 
+						//echo $mod['instance']->count_posts("posts"); 
+						echo $mod['instance']->count_posts(); 
+						?>
 						</td>
 					</tr>
 					<?php 

@@ -81,7 +81,7 @@ class goodreads_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function map_data($feed) {
+    private function map_data($feed, $type="posts") {
         $data = array();
         $count = self::$count;
 
@@ -129,6 +129,7 @@ class goodreads_reclaim_module extends reclaim_module {
 
             $post_meta["_".$this->shortname."_link_id"] = $entry["id"];
             $post_meta["_post_generator"] = $this->shortname;
+            $post_meta["_reclaim_post_type"] = $type;
 
             $data[] = array(
                 'post_author' => get_option($this->shortname.'_author'),

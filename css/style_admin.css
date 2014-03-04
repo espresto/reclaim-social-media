@@ -7,3 +7,8 @@ table.reclaim-status-table .count
 {
 text-align: right;
 }
+
+.reclaim_avatar 
+{
+padding: 5px;
+}

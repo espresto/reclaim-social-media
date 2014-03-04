@@ -346,10 +346,30 @@ class reclaim_module {
             if ( (!substr_count($headers["content-type"], "image") &&
                  !substr_count($wp_filetype['type'], "image")) || 
                  !isset($headers) ) {
-                self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] );
-                return;
-            }
 
+                if (substr_count($headers["content-type"], "octet-stream")) {
+                    self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] . ' - trying to download it anyways...' );
+                    /* workaround for twitpic: sometimes images return a header application/octet-stream
+                     * in a browsers, this triggers a download. here it means the image won't be loaded.
+                     * this makes it work. :( 
+                     * ix@wirres.net, 2014-03-03
+                     */ 
+                    $headers["content-type"] = "image/jpeg";
+                } else {
+                    self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] );
+                    return;
+                }
+
+            }
+            if (substr_count($headers["content-type"], "octet-stream")) {
+                self::log( basename($imageurl) . ' is not a valid image: ' . $wp_filetype['type'] . ' - ' . $headers["content-type"] . ' - trying to download it anyways (2)...' );
+                /* workaround for twitpic: sometimes images return a header application/octet-stream
+                 * in a browsers, this triggers a download. here it means the image won't be loaded.
+                 * this makes it work. :( 
+                 * ix@wirres.net, 2014-03-03
+                 */ 
+                $headers["content-type"] = "image/jpeg";
+            }
             $image_string = wp_remote_retrieve_body($image_string);
             $fileSaved = file_put_contents($uploads['path'] . "/" . $filename, $image_string);
             if ( !$fileSaved ) {
@@ -506,6 +526,17 @@ class reclaim_module {
 		</script>
 		<?php		
 	}
+
+    function short_title($title = '', $after = '&nbsp;&hellip;', $length) {
+        $mytitle = explode(' ', $title, $length);
+        if (count($mytitle)>=$length) {
+            array_pop($mytitle);
+            $mytitle = implode(" ",$mytitle). $after;
+        } else {
+            $mytitle = implode(" ",$mytitle);
+        }
+        return $mytitle;
+    }
 
     function strpos_array($haystack, $needles) {
         if ( is_array($needles) ) {

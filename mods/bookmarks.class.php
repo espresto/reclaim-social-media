@@ -86,7 +86,7 @@ class bookmarks_reclaim_module extends reclaim_module {
         else parent::log(sprintf(__('%s user data missing. No import was done', 'reclaim'), $this->shortname));
     }
 
-    private function map_data($feed) {
+    private function map_data($feed, $type="posts") {
         $data = array();
         $count = self::$count;
 
@@ -122,6 +122,7 @@ class bookmarks_reclaim_module extends reclaim_module {
             // in case someone uses WordPress Post Formats Admin UI
             // http://alexking.org/blog/2011/10/25/wordpress-post-formats-admin-ui
             $post_meta["_format_link_url"]  = $link;
+            $post_meta["_reclaim_post_type"] = $type;
             /*
             *  set post meta galore end
             */
