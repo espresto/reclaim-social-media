@@ -268,7 +268,7 @@ class reclaim_module {
                     update_post_meta($inserted_post_id, 'embed_code', $post['ext_embed_code']);
                 }
                 //$ext_image = isset($post['ext_image']) && !is_array($post['ext_image']) ? trim($post['ext_image']) : '';
-                if (isset($post['ext_image'])) {
+                if (!empty($post['ext_image'])) {
                     if (!is_array($post['ext_image'])) {
                         update_post_meta($inserted_post_id, 'image_url', trim($post['ext_image']));
                         self::post_image_to_media_library($post['ext_image'], $inserted_post_id, $post['post_title'], true, $post['post_date']);
