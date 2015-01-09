@@ -33,4 +33,4 @@ Alternatively you can install the latest version from git. Go to your WordPress 
 
 Always remember, Reclaim Social Media is still under heavy development and the plugin is not considered stable yet.
 
-Reclaim Social Media requires, that you run at least PHP 5.3.2.
+Reclaim Social Media requires that you run at least PHP 5.3.2 with CURL support (e.g. ``php5-curl`` in Debian).
