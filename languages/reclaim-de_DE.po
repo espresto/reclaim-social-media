@@ -914,7 +914,7 @@ msgstr "%s hat keine daten geliefert. Es wurde nichts importiert."
 #: mods/youtube.class.php:234
 #, php-format
 msgid "I added a video from %s to my YouTube favorites"
-msgstr "Ich ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
+msgstr "Ich habe ein Video von %s zu meinen YouTube Favoriten hinzugefügt"
 
 #: mods/youtube.class.php:239
 msgid "I rated a video on YouTube"
