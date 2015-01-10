@@ -15,7 +15,7 @@
 	"repositories": [
     	{
         	"type": "vcs",
-	        "url": "https://github.com/Youpie/simple-html-dom"
+	        "url": "https://github.com/miclf/simple-html-dom"
 	    },
     	{
         	"type": "vcs",
