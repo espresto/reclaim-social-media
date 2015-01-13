@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Reclaim\n"
 "POT-Creation-Date: 2014-03-03 13:02+0100\n"
 "PO-Revision-Date: 2014-03-03 13:05+0100\n"
-"Last-Translator: ix <ix@wirres.net>\n"
+"Last-Translator: moschlar <moschlar@metalabs.de>\n"
 "Language-Team: ix <ix@wirres.net>\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -31,7 +31,7 @@ msgstr "Letzte Aktualisierung %s"
 
 #: mod.class.php:54
 msgid "Resync with ajax"
-msgstr "Synchronisiseren (Ajax)"
+msgstr "Synchronisieren (Ajax)"
 
 #: mod.class.php:55 mods/instagram.class.php:85 mods/soundcloud.class.php:87
 #: mods/tumblr.class.php:107 mods/twitter.class.php:59
@@ -108,7 +108,7 @@ msgstr "Fehler: "
 
 #: reclaim.php:194
 msgid "Count items and posts..."
-msgstr "Zähle vorhandene Elemente und Artikel …"
+msgstr "Zähle vorhandene Elemente und Artikel ..."
 
 #: reclaim.php:195
 msgid "Count items..."
@@ -148,7 +148,7 @@ msgstr "Aus"
 
 #: reclaim.php:257 reclaim.php:281
 msgid "Reclaim Social Accounts Settings"
-msgstr "Reclaim Konten Einstellungen"
+msgstr "Einstellungen › Reclaim-Konten"
 
 #: reclaim.php:257
 msgid "Reclaim"
@@ -160,11 +160,11 @@ msgstr "Allgemeine Einstellungen"
 
 #: reclaim.php:289
 msgid "Auto-update"
-msgstr "Auto-update"
+msgstr "Auto-Update"
 
 #: reclaim.php:293
 msgid "Update Interval (in seconds)"
-msgstr "Aktualisierungsinterval (in Sekunden)"
+msgstr "Aktualisierungsintervall (in Sekunden)"
 
 #: reclaim.php:297
 msgid "Link to original content"
@@ -188,7 +188,7 @@ msgstr "URL des zu beantwortenden Tweets"
 
 #: helper/social/lib/service/instagram.php:366
 msgid "Retweet Search"
-msgstr "Retweet Suche"
+msgstr "Retweet-Suche"
 
 #: helper/social/lib/service/instagram.php:369
 msgid "Existing Comment"
@@ -261,7 +261,7 @@ msgstr "Facebook App Secret"
 #: mods/facebook.class.php:97 mods/twitter.class.php:85
 #, php-format
 msgid "Some help on how to get the keys and secrets <a href=\"%s\">here</a>."
-msgstr "Hilfe zum den Keys und Secrets <a href=\"%s\">hier</a>."
+msgstr "Hilfe zu den Keys und Secrets <a href=\"%s\">hier</a>."
 
 #: mods/facebook.class.php:105
 msgid "Authorize with Facebook"
@@ -308,11 +308,11 @@ msgstr "%s gab keine Daten zurück. Kein Import ausgeführt."
 #: mods/youtube.class.php:182
 #, php-format
 msgid "%s %s user data missing. No import was done"
-msgstr "%s %s Benutzer Daten fehlen. Kein Import ausgeführt"
+msgstr "%s %s Benutzer-Daten fehlen. Kein Import ausgeführt"
 
 #: mods/facebook.class.php:441
 msgid "Facebook activity"
-msgstr "Facebook Aktivität"
+msgstr "Facebook-Aktivität"
 
 #: mods/facebook.class.php:465
 msgid "multiple items"
@@ -439,7 +439,7 @@ msgid ""
 "Your Google+ profile ID is the long number at the end of your page or "
 "profile URL."
 msgstr ""
-"Die Google+ Profile-ID ist die lange Nummer am Ende der Seiten- oder Profil "
+"Die Google+ Profile-ID ist die lange Nummer am Ende der Seiten- oder Profil-"
 "URL."
 
 #: mods/google_plus.class.php:52
@@ -505,7 +505,7 @@ msgstr "Instagram Client Secret"
 #, php-format
 msgid "Get your Instagram client and credentials <a href=\"%s\">here</a>. "
 msgstr ""
-"Die Instagram-daten (client and credentials) gibts <a href=\"%s\">hier</a>. "
+"Die Instagram-Daten (client and credentials) gibts <a href=\"%s\">hier</a>. "
 
 #: mods/instagram.class.php:132
 msgid "Authorize with Instagram"
@@ -571,7 +571,7 @@ msgstr "Moves Client Secret"
 #, php-format
 msgid "Get your Moves client and credentials <a href=\"%s\">here</a>. "
 msgstr ""
-"Die Moves Daten (client and credentials) gibt es <a href=\"%s\">hier</a>. "
+"Die Moves-Daten (client and credentials) gibt es <a href=\"%s\">hier</a>. "
 
 #: mods/moves.class.php:108
 msgid "Authorize with Moves"
@@ -611,7 +611,7 @@ msgstr " und %s Kilometer gerannt"
 #: mods/moves.class.php:436
 #, php-format
 msgid " and rode bicycle for %s kilometers"
-msgstr " und %s kilometer fahrrad gefahren"
+msgstr " und %s kilometer Fahrrad gefahren"
 
 #: mods/moves.class.php:444
 #, php-format
@@ -674,7 +674,7 @@ msgstr "SoundCloud „Client Secret“"
 #: mods/soundcloud.class.php:118
 #, php-format
 msgid "Get your SoundCloud client and credentials <a href=\"%s\">here</a>. "
-msgstr "Die SoundCloud Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
+msgstr "Die SoundCloud-Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
 
 #: mods/soundcloud.class.php:134
 msgid "Authorize with SoundCloud"
@@ -687,7 +687,7 @@ msgstr "<p>SoundCloud angemeldet als %s</p>"
 
 #: mods/soundcloud.class.php:167
 msgid "Enter SoundCloud app id and secret"
-msgstr "Die SoundCloud „App ID“ and „Secret“ eingeben"
+msgstr "Die SoundCloud \"App ID\" and \"Secret\" eingeben"
 
 #: mods/soundcloud.class.php:205
 #, php-format
@@ -741,7 +741,7 @@ msgstr "Tumblr Secret Key"
 #: mods/tumblr.class.php:132
 #, php-format
 msgid "Get your Tumblr client and credentials <a href=\"%s\">here</a>. "
-msgstr "Die Tumblr Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
+msgstr "Die Tumblr-Anmeldedaten gibt es <a href=\"%s\">hier</a>. "
 
 #: mods/tumblr.class.php:148
 msgid "Authorize with Tumblr"
@@ -758,7 +758,7 @@ msgstr ""
 
 #: mods/tumblr.class.php:181
 msgid "enter Tumblr app id and secret"
-msgstr "Die Tumblr „App ID“ und „Secret“ eingeben"
+msgstr "Die Tumblr \"App ID\" und \"Secret\" eingeben"
 
 #: mods/tumblr.class.php:361
 #, php-format
@@ -942,7 +942,7 @@ msgstr "<a href=\"%s\">%s</a> von <a href=\"%s\">%s</a>:"
 #~ msgstr "GET failed with: %s"
 
 #~ msgid " used transport for %s kilometers and have %s"
-#~ msgstr " für %s kilometer transportmittel benutzt und habe %s"
+#~ msgstr " für %s Kilometer Transportmittel benutzt und habe %s"
 
 #~ msgid "Fahrradfahrt"
 #~ msgstr "Fahrradfahrt"
