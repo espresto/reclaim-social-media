@@ -156,8 +156,9 @@ class facebook_reclaim_module extends reclaim_module {
                     "enabled" => true,
                     "keys"    => array(
                         "id" => get_option('facebook_app_id'),
-                        "secret" => get_option('facebook_app_secret')
+                        "secret" => get_option('facebook_app_secret'),
                     ),
+                    "scope" => "read_stream, user_photos"
                 ),
             ),
         );
