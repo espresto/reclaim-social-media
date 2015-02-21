@@ -19,6 +19,7 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
+    private static $photo_url = 'https://graph.facebook.com/%s/picture?access_token=%s';
     private static $count = 40;
     private static $max_import_loops = 1;
     private static $timeout = 60;
@@ -418,6 +419,10 @@ class facebook_reclaim_module extends reclaim_module {
 
     private function get_image_url($entry) {
         $image = '';
+        if ($entry['type'] === 'photo') {
+        	$url = sprintf(self::$photo_url, $entry['object_id'], get_option('facebook_oauth_token'));
+        	return $url;
+        }
         if (isset($entry['picture'])) {
             $image = $entry['picture'];
             if ($image) {
