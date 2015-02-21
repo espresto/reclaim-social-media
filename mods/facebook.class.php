@@ -36,6 +36,7 @@ class facebook_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'facebook_app_id');
         register_setting('reclaim-social-settings', 'facebook_app_secret');
         register_setting('reclaim-social-settings', 'facebook_oauth_token');
+        register_setting('reclaim-social-settings', 'facebook_import_non_public_items');
     }
 
     public function display_settings() {
@@ -85,6 +86,10 @@ class facebook_reclaim_module extends reclaim_module {
             <td><?php //echo get_option('facebook_username'); ?>
             <input type="text" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
             </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row"><label for="facebook_import_non_public_items"><?php _e('Include nonpublic items', 'reclaim'); ?></label></th>
+            <td><input type="checkbox" name="facebook_import_non_public_items" value="1" <?php checked(get_option('facebook_import_non_public_items')); ?> /></td>
         </tr>
         <tr valign="top">
             <th scope="row"><label for="facebook_app_id"><?php _e('Facebook app id', 'reclaim'); ?></label></th>
@@ -295,7 +300,7 @@ class facebook_reclaim_module extends reclaim_module {
                     )
                && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
                // difficult: if privacy value is empty, is it public? it seems to me, but i'm not sure
-               && ( ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
+               && ( get_option('facebook_import_non_public_items') || ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
                && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
             )
         { return false; }
