@@ -360,6 +360,10 @@ class facebook_reclaim_module extends reclaim_module {
                 $broadcasted_ids = array();
                 $broadcasted_ids[$this->shortname][$from][$id] = array('message' => '','urls' => '');
                 $post_meta["_social_broadcasted_ids"] = $broadcasted_ids;
+                $tags = [];
+                if ($entry['application']['namespace']){
+                	$tags[] = 'fb-app:'.$entry['application']['namespace'];
+                }
 
                 /*
                 *  set post meta galore end
@@ -377,7 +381,8 @@ class facebook_reclaim_module extends reclaim_module {
                     'ext_permalink' => $link,
                     'ext_image' => $image,
                     'ext_guid' => $entry["id"],
-                    'post_meta' => $post_meta
+                    'post_meta' => $post_meta,
+                	'tags_input' => $tags,
                 );
             }
         }
