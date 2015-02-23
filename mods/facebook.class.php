@@ -362,6 +362,8 @@ class facebook_reclaim_module extends reclaim_module {
                 $post_meta["_social_broadcasted_ids"] = $broadcasted_ids;
                 $tags = [];
                 if ($entry['application']['namespace']){
+                	$post_meta['applicationName'] = $entry['application']['name'];
+                	$post_meta['applicationNamespace'] = $entry['application']['namespace'];
                 	$tags[] = 'fb-app:'.$entry['application']['namespace'];
                 }
 
