@@ -19,6 +19,7 @@
 
 class facebook_reclaim_module extends reclaim_module {
     private static $apiurl= "https://graph.facebook.com/%s/feed/?limit=%s&locale=%s&access_token=%s";
+    private static $photo_url = 'https://graph.facebook.com/%s/picture?access_token=%s';
     private static $count = 40;
     private static $max_import_loops = 1;
     private static $timeout = 60;
@@ -36,6 +37,7 @@ class facebook_reclaim_module extends reclaim_module {
         register_setting('reclaim-social-settings', 'facebook_app_id');
         register_setting('reclaim-social-settings', 'facebook_app_secret');
         register_setting('reclaim-social-settings', 'facebook_oauth_token');
+        register_setting('reclaim-social-settings', 'facebook_import_non_public_items');
     }
 
     public function display_settings() {
@@ -85,6 +87,10 @@ class facebook_reclaim_module extends reclaim_module {
             <td><?php //echo get_option('facebook_username'); ?>
             <input type="text" name="facebook_username" value="<?php echo get_option('facebook_username'); ?>" />
             </td>
+        </tr>
+        <tr valign="top">
+            <th scope="row"><label for="facebook_import_non_public_items"><?php _e('Include nonpublic items', 'reclaim'); ?></label></th>
+            <td><input type="checkbox" name="facebook_import_non_public_items" value="1" <?php checked(get_option('facebook_import_non_public_items')); ?> /></td>
         </tr>
         <tr valign="top">
             <th scope="row"><label for="facebook_app_id"><?php _e('Facebook app id', 'reclaim'); ?></label></th>
@@ -151,8 +157,9 @@ class facebook_reclaim_module extends reclaim_module {
                     "enabled" => true,
                     "keys"    => array(
                         "id" => get_option('facebook_app_id'),
-                        "secret" => get_option('facebook_app_secret')
+                        "secret" => get_option('facebook_app_secret'),
                     ),
+                    "scope" => "read_stream, user_photos"
                 ),
             ),
         );
@@ -295,7 +302,7 @@ class facebook_reclaim_module extends reclaim_module {
                     )
                && ( $entry['status_type'] != "approved_friend" ) // no new friend anouncements
                // difficult: if privacy value is empty, is it public? it seems to me, but i'm not sure
-               && ( ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
+               && ( get_option('facebook_import_non_public_items') || ($entry['privacy']['value'] == "") || ($entry['privacy']['value'] == "EVERYONE") ) // privacy OK? is it public?
                && $entry['from']['id'] == get_option('facebook_user_id') // only own stuff $user_name stuff
             )
         { return false; }
@@ -353,6 +360,12 @@ class facebook_reclaim_module extends reclaim_module {
                 $broadcasted_ids = array();
                 $broadcasted_ids[$this->shortname][$from][$id] = array('message' => '','urls' => '');
                 $post_meta["_social_broadcasted_ids"] = $broadcasted_ids;
+                $tags = [];
+                if ($entry['application']['namespace']){
+                	$post_meta['applicationName'] = $entry['application']['name'];
+                	$post_meta['applicationNamespace'] = $entry['application']['namespace'];
+                	$tags[] = 'fb-app:'.$entry['application']['namespace'];
+                }
 
                 /*
                 *  set post meta galore end
@@ -370,7 +383,8 @@ class facebook_reclaim_module extends reclaim_module {
                     'ext_permalink' => $link,
                     'ext_image' => $image,
                     'ext_guid' => $entry["id"],
-                    'post_meta' => $post_meta
+                    'post_meta' => $post_meta,
+                	'tags_input' => $tags,
                 );
             }
         }
@@ -412,6 +426,10 @@ class facebook_reclaim_module extends reclaim_module {
 
     private function get_image_url($entry) {
         $image = '';
+        if ($entry['type'] === 'photo') {
+        	$url = sprintf(self::$photo_url, $entry['object_id'], get_option('facebook_oauth_token'));
+        	return $url;
+        }
         if (isset($entry['picture'])) {
             $image = $entry['picture'];
             if ($image) {
